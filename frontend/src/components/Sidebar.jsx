@@ -1,144 +1,49 @@
 import React from 'react';
-import { 
-  Home, 
-  Search, 
-  Library, 
-  PlusSquare, 
-  Heart, 
-  Disc, 
-  Flame, 
-  Radio, 
-  Sparkles,
-  Music,
-  Globe
-} from 'lucide-react';
+import { Home, Library, Flame } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
-import { ONLINE_PLAYLISTS } from '../services/api';
 
 export default function Sidebar() {
-  const { 
-    currentView, 
-    viewParam, 
-    navigateTo, 
-    customPlaylists, 
-    likedTrackIds, 
-    setIsCreatePlaylistOpen 
-  } = useAudio();
+  const { currentView, navigateTo } = useAudio();
 
   return (
-    <aside className="sidebar">
-      {/* Top Nav Card */}
-      <div className="sidebar-box">
-        {/* Brand Header */}
-        <div className="brand-header" onClick={() => navigateTo('home')} style={{ cursor: 'pointer' }}>
-          <div className="brand-logo">
-            <Flame size={20} fill="#ffffff" />
-          </div>
-          <div className="brand-title">
-            music<span className="red-dot">.k</span>
-          </div>
-          <span className="brand-badge">ONLINE</span>
+    <aside className="sidebar" style={{ width: '220px', padding: '16px 12px' }}>
+      {/* Brand Header */}
+      <div 
+        className="brand-header" 
+        onClick={() => navigateTo('home')} 
+        style={{ cursor: 'pointer', padding: '8px 10px', marginBottom: '24px' }}
+      >
+        <div className="brand-logo" style={{ width: '32px', height: '32px' }}>
+          <Flame size={18} fill="#ffffff" />
         </div>
-
-        {/* Primary Navigation */}
-        <ul className="nav-list">
-          <li>
-            <button 
-              className={`nav-item-btn ${currentView === 'home' ? 'active' : ''}`}
-              onClick={() => navigateTo('home')}
-            >
-              <Home size={22} className="nav-icon" />
-              <span>Home</span>
-            </button>
-          </li>
-          <li>
-            <button 
-              className={`nav-item-btn ${currentView === 'search' ? 'active' : ''}`}
-              onClick={() => navigateTo('search')}
-            >
-              <Search size={22} className="nav-icon" />
-              <span>Search</span>
-            </button>
-          </li>
-          <li>
-            <button 
-              className={`nav-item-btn ${currentView === 'library' ? 'active' : ''}`}
-              onClick={() => navigateTo('library')}
-            >
-              <Library size={22} className="nav-icon" />
-              <span>Your Library</span>
-            </button>
-          </li>
-        </ul>
+        <div className="brand-title" style={{ fontSize: '1.25rem' }}>
+          music<span className="red-dot">.k</span>
+        </div>
       </div>
 
-      {/* Library & Playlists Box */}
-      <div className="sidebar-box library-box">
-        <div className="library-header">
+      {/* Clean Navigation: Only Home and Your Library */}
+      <ul className="nav-list" style={{ gap: '6px' }}>
+        <li>
           <button 
-            className="library-title-btn"
+            className={`nav-item-btn ${currentView === 'home' ? 'active' : ''}`}
+            onClick={() => navigateTo('home')}
+            style={{ padding: '12px 14px', fontSize: '0.95rem' }}
+          >
+            <Home size={20} className="nav-icon" />
+            <span>Home</span>
+          </button>
+        </li>
+        <li>
+          <button 
+            className={`nav-item-btn ${currentView === 'library' ? 'active' : ''}`}
             onClick={() => navigateTo('library')}
+            style={{ padding: '12px 14px', fontSize: '0.95rem' }}
           >
-            <Disc size={20} color="#FF2A3A" />
-            <span>Playlists & Mixes</span>
+            <Library size={20} className="nav-icon" />
+            <span>Your Library</span>
           </button>
-          
-          <button 
-            className="action-icon-btn" 
-            title="Create Playlist"
-            onClick={() => setIsCreatePlaylistOpen(true)}
-          >
-            <PlusSquare size={19} />
-          </button>
-        </div>
-
-        {/* Liked Songs Quick Item */}
-        <div 
-          className={`playlist-item-row ${currentView === 'liked' ? 'active' : ''}`}
-          onClick={() => navigateTo('liked')}
-        >
-          <div className="playlist-row-icon-liked">
-            <Heart size={20} fill="#ffffff" />
-          </div>
-          <div className="playlist-row-info">
-            <span className="playlist-row-title">Liked Songs</span>
-            <span className="playlist-row-subtitle">{likedTrackIds.length} tracks • Saved</span>
-          </div>
-        </div>
-
-        {/* Playlist List Scrollable */}
-        <div className="library-scroll">
-          {/* Custom User Playlists */}
-          {customPlaylists.map(pl => (
-            <div 
-              key={pl.id}
-              className={`playlist-item-row ${currentView === 'playlist' && viewParam === pl.id ? 'active' : ''}`}
-              onClick={() => navigateTo('playlist', pl.id)}
-            >
-              <img src={pl.coverUrl} alt={pl.title} className="playlist-row-img" />
-              <div className="playlist-row-info">
-                <span className="playlist-row-title">{pl.title}</span>
-                <span className="playlist-row-subtitle">Playlist • By You</span>
-              </div>
-            </div>
-          ))}
-
-          {/* Online Red Playlists */}
-          {ONLINE_PLAYLISTS.map(pl => (
-            <div 
-              key={pl.id}
-              className={`playlist-item-row ${currentView === 'playlist' && viewParam === pl.id ? 'active' : ''}`}
-              onClick={() => navigateTo('playlist', pl.id)}
-            >
-              <img src={pl.coverUrl} alt={pl.title} className="playlist-row-img" />
-              <div className="playlist-row-info">
-                <span className="playlist-row-title">{pl.title}</span>
-                <span className="playlist-row-subtitle">music.k Stream</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+        </li>
+      </ul>
     </aside>
   );
 }

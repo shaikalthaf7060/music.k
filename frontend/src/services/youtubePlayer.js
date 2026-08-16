@@ -1,9 +1,8 @@
 /**
- * YouTube IFrame API Controller & Accurate Video Resolver for music.k (Youtify Engine)
- * Controls background YouTube video playback, volume, seeking, and state sync.
+ * YouTube IFrame API Controller & Full-Song Stream Engine for music.k
+ * Streams full-length online audio directly from YouTube (no 30s limits).
  */
 
-// Cache for resolved YouTube Video IDs
 const YT_ID_CACHE = new Map([
   ["the weeknd blinding lights", "4NRXx6U8ABQ"],
   ["the weeknd ft. daft punk starboy", "dQTJ8sbm4Tg"],
@@ -31,16 +30,16 @@ export async function resolveExactYouTubeId(title, artist) {
   if (!title) return "4NRXx6U8ABQ";
   const cleanKey = `${artist || ''} ${title}`.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
 
-  // Check cache first
+  // 1. Direct cache check
   for (const [key, id] of YT_ID_CACHE.entries()) {
     if (cleanKey.includes(key) || key.includes(cleanKey)) {
       return id;
     }
   }
 
-  // Live YouTube Query via Invidious / Piped public search instances
+  // 2. Query public Invidious / Piped search instances for full-length video ID
   const searchEndpoints = [
-    `https://inv.nadeko.net/api/v1/search?q=${encodeURIComponent(`${artist || ''} ${title} official audio`)}`,
+    `https://inv.nadeko.net/api/v1/search?q=${encodeURIComponent(`${artist || ''} ${title} audio`)}`,
     `https://invidious.nerdvpn.de/api/v1/search?q=${encodeURIComponent(`${artist || ''} ${title} audio`)}`,
     `https://vid.priv.au/api/v1/search?q=${encodeURIComponent(`${artist || ''} ${title}`)}`
   ];
@@ -48,7 +47,7 @@ export async function resolveExactYouTubeId(title, artist) {
   for (const endpoint of searchEndpoints) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2500);
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
 
       const res = await fetch(endpoint, { signal: controller.signal });
       clearTimeout(timeoutId);
@@ -64,12 +63,10 @@ export async function resolveExactYouTubeId(title, artist) {
           }
         }
       }
-    } catch (e) {
-      // Continue to next endpoint
-    }
+    } catch (e) {}
   }
 
-  return null;
+  return "4NRXx6U8ABQ";
 }
 
 class YouTubePlayerController {
@@ -79,9 +76,6 @@ class YouTubePlayerController {
     this.currentVideoId = null;
     this.listeners = new Set();
     this.pendingVideoId = null;
-    this.htmlAudio = new Audio();
-    this.htmlAudio.crossOrigin = "anonymous";
-    this.isUsingHtmlAudio = false;
   }
 
   init(containerId = 'yt-player-iframe', onStateChange = null) {
@@ -136,7 +130,6 @@ class YouTubePlayerController {
             this.notifyListeners('stateChange', event.data);
           },
           onError: (event) => {
-            console.warn('YouTube Player Error:', event.data);
             this.notifyListeners('error', event.data);
           }
         }
@@ -160,29 +153,13 @@ class YouTubePlayerController {
   }
 
   async playTrackAccurate(track) {
-    // 1. If track has direct previewUrl from search, start it immediately for 0-latency playback!
-    if (track.previewUrl) {
-      this.isUsingHtmlAudio = true;
-      if (this.isReady && this.player && this.player.pauseVideo) {
-        this.player.pauseVideo();
-      }
-      this.htmlAudio.src = track.previewUrl;
-      try {
-        await this.htmlAudio.play();
-        this.notifyListeners('stateChange', 1);
-      } catch (e) {}
-    } else {
-      this.isUsingHtmlAudio = false;
-      this.htmlAudio.pause();
-    }
-
-    // 2. Resolve exact YouTube video ID
+    // Resolve exact full-length YouTube video ID
     let vId = track.youtubeId;
     if (!vId) {
       vId = await resolveExactYouTubeId(track.title, track.artist);
     }
     if (!vId) {
-      vId = track.id.startsWith('yt-') ? track.youtubeId : '4NRXx6U8ABQ';
+      vId = track.id && track.id.startsWith('yt-') ? track.youtubeId : '4NRXx6U8ABQ';
     }
 
     this.currentVideoId = vId;
@@ -207,43 +184,30 @@ class YouTubePlayerController {
   }
 
   play() {
-    if (this.isUsingHtmlAudio && this.htmlAudio.src) {
-      this.htmlAudio.play();
-    }
     if (this.isReady && this.player && this.player.playVideo) {
       this.player.playVideo();
     }
   }
 
   pause() {
-    if (this.isUsingHtmlAudio) {
-      this.htmlAudio.pause();
-    }
     if (this.isReady && this.player && this.player.pauseVideo) {
       this.player.pauseVideo();
     }
   }
 
   seekTo(seconds) {
-    if (this.isUsingHtmlAudio) {
-      this.htmlAudio.currentTime = seconds;
-    }
     if (this.isReady && this.player && this.player.seekTo) {
       this.player.seekTo(seconds, true);
     }
   }
 
   setVolume(volumeFraction) {
-    this.htmlAudio.volume = Math.max(0, Math.min(1, volumeFraction));
     if (this.isReady && this.player && this.player.setVolume) {
       this.player.setVolume(Math.round(volumeFraction * 100));
     }
   }
 
   getCurrentTime() {
-    if (this.isUsingHtmlAudio && this.htmlAudio.currentTime) {
-      return this.htmlAudio.currentTime;
-    }
     if (this.isReady && this.player && this.player.getCurrentTime) {
       return this.player.getCurrentTime() || 0;
     }
@@ -251,9 +215,6 @@ class YouTubePlayerController {
   }
 
   getDuration() {
-    if (this.isUsingHtmlAudio && this.htmlAudio.duration) {
-      return this.htmlAudio.duration;
-    }
     if (this.isReady && this.player && this.player.getDuration) {
       return this.player.getDuration() || 0;
     }
