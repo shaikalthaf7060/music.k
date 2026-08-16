@@ -10,12 +10,12 @@ import {
   onAuthStateChanged 
 } from "firebase/auth";
 
-// Read from Vite environment variables (.env) or use defaults
+// Firebase Project Credentials for musick-a7927
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDummyKeyForMusicKSpotifyApp",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "music-k-red.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "music-k-red",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "music-k-red.appspot.com",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "musick-a7927.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "musick-a7927",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "musick-a7927.appspot.com",
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "1234567890",
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:1234567890:web:abcdef123456"
 };
@@ -32,7 +32,6 @@ export const isFirebaseConfigured = () => {
 // 1-Click Google Sign-In
 export const signInWithGoogle = async () => {
   if (!isFirebaseConfigured()) {
-    // If user hasn't added their custom Firebase keys yet, return demo VIP user
     return {
       uid: `google_user_${Date.now()}`,
       displayName: "Google Red Listener",
