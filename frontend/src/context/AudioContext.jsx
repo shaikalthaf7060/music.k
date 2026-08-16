@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { ytController } from '../services/youtubePlayer';
-import { audioEngine } from '../services/synthAudio';
-import { ONLINE_CHARTS, ONLINE_PLAYLISTS, fetchOnlineLyrics } from '../services/api';
+import { ONLINE_CHARTS, fetchOnlineLyrics } from '../services/api';
 import confetti from 'canvas-confetti';
 
 const AudioContext = createContext();
@@ -26,13 +25,12 @@ export function AudioProvider({ children }) {
   const [queue, setQueue] = useState(ONLINE_CHARTS.slice(1));
   const [history, setHistory] = useState([]);
   const [isShuffle, setIsShuffle] = useState(false);
-  const [repeatMode, setRepeatMode] = useState('off'); // 'off', 'all', 'one'
+  const [repeatMode, setRepeatMode] = useState('off');
   const [likedTrackIds, setLikedTrackIds] = useState(() => {
     const saved = localStorage.getItem('musick_liked_tracks');
     return saved ? JSON.parse(saved) : ['yt-01', 'yt-02', 'yt-04'];
   });
   
-  // Custom user playlists (saved in localStorage)
   const [customPlaylists, setCustomPlaylists] = useState(() => {
     const saved = localStorage.getItem('musick_custom_playlists');
     if (saved) {
@@ -49,8 +47,7 @@ export function AudioProvider({ children }) {
     ];
   });
 
-  // Views & Modals state
-  const [currentView, setCurrentView] = useState('home'); // 'home', 'search', 'library', 'playlist', 'liked'
+  const [currentView, setCurrentView] = useState('home');
   const [viewParam, setViewParam] = useState(null);
   const [isLyricsOpen, setIsLyricsOpen] = useState(false);
   const [isVisualizerOpen, setIsVisualizerOpen] = useState(false);
@@ -59,17 +56,15 @@ export function AudioProvider({ children }) {
   const [isCreatePlaylistOpen, setIsCreatePlaylistOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
-  // Lyrics state
   const [activeLyrics, setActiveLyrics] = useState([]);
   const [currentLyricIndex, setCurrentLyricIndex] = useState(-1);
 
-  // Equalizer state
   const [activeEqPreset, setActiveEqPreset] = useState("EDM Crimson");
   const [eqBands, setEqBands] = useState(EQ_PRESETS["EDM Crimson"]);
 
   const pollTimerRef = useRef(null);
+  const lastUpdateRef = useRef(0);
 
-  // Save liked tracks & playlists to localStorage
   useEffect(() => {
     localStorage.setItem('musick_liked_tracks', JSON.stringify(likedTrackIds));
   }, [likedTrackIds]);
@@ -78,11 +73,10 @@ export function AudioProvider({ children }) {
     localStorage.setItem('musick_custom_playlists', JSON.stringify(customPlaylists));
   }, [customPlaylists]);
 
-  // Subscribe to YouTube Player events
+  // Subscribe to YouTube Player state changes
   useEffect(() => {
     const unsubscribe = ytController.subscribe((type, data) => {
       if (type === 'stateChange') {
-        // 1 = PLAYING, 2 = PAUSED, 0 = ENDED
         if (data === 1) {
           setIsPlaying(true);
           const dur = ytController.getDuration();
@@ -98,19 +92,23 @@ export function AudioProvider({ children }) {
     return () => unsubscribe();
   }, [repeatMode, queue, currentTrack, isShuffle]);
 
-  // Time tracker loop when playing
+  // Optimized smooth time tracker loop (1-second tick to prevent UI lag)
   useEffect(() => {
     if (isPlaying) {
       pollTimerRef.current = setInterval(() => {
         const time = ytController.getCurrentTime();
         if (time !== undefined && !isNaN(time)) {
-          setCurrentTime(time);
+          // Only update if changed by at least 1s
+          if (Math.abs(time - lastUpdateRef.current) >= 0.8) {
+            lastUpdateRef.current = time;
+            setCurrentTime(time);
+          }
         }
         const dur = ytController.getDuration();
         if (dur && !isNaN(dur) && dur > 0) {
           setDuration(dur);
         }
-      }, 500);
+      }, 800);
     } else {
       if (pollTimerRef.current) clearInterval(pollTimerRef.current);
     }
@@ -120,7 +118,7 @@ export function AudioProvider({ children }) {
     };
   }, [isPlaying]);
 
-  // Sync lyrics index
+  // Sync active lyric line
   useEffect(() => {
     if (!activeLyrics || activeLyrics.length === 0) {
       setCurrentLyricIndex(-1);
@@ -137,7 +135,7 @@ export function AudioProvider({ children }) {
     setCurrentLyricIndex(matchedIndex);
   }, [currentTime, activeLyrics]);
 
-  // Load lyrics when track changes
+  // Load lyrics when currentTrack changes
   useEffect(() => {
     if (currentTrack) {
       fetchOnlineLyrics(currentTrack).then(res => {
@@ -146,8 +144,8 @@ export function AudioProvider({ children }) {
     }
   }, [currentTrack]);
 
-  // Play a specific track
-  const playTrack = (track, playlistContext = null) => {
+  // Play a specific track (with exact song resolution)
+  const playTrack = useCallback((track, playlistContext = null) => {
     if (playlistContext) {
       const nextInList = playlistContext.filter(t => t.id !== track.id);
       setQueue(nextInList);
@@ -159,15 +157,15 @@ export function AudioProvider({ children }) {
 
     setCurrentTrack(track);
     setCurrentTime(0);
+    lastUpdateRef.current = 0;
     setDuration(track.duration || 200);
 
-    // If track has a direct YouTube video ID
-    const yId = track.youtubeId || (track.id.startsWith('yt-') ? track.youtubeId : '4NRXx6U8ABQ');
-    ytController.loadAndPlay(yId);
+    // Accurate playback via ytController
+    ytController.playTrackAccurate(track);
     setIsPlaying(true);
-  };
+  }, [currentTrack]);
 
-  const togglePlay = () => {
+  const togglePlay = useCallback(() => {
     if (isPlaying) {
       ytController.pause();
       setIsPlaying(false);
@@ -175,7 +173,7 @@ export function AudioProvider({ children }) {
       ytController.play();
       setIsPlaying(true);
     }
-  };
+  }, [isPlaying]);
 
   const handleTrackEnd = () => {
     if (repeatMode === 'one') {
@@ -186,7 +184,7 @@ export function AudioProvider({ children }) {
     }
   };
 
-  const nextTrack = () => {
+  const nextTrack = useCallback(() => {
     if (queue.length > 0) {
       let nextIndex = 0;
       if (isShuffle) {
@@ -205,12 +203,13 @@ export function AudioProvider({ children }) {
     } else {
       setIsPlaying(false);
     }
-  };
+  }, [queue, isShuffle, repeatMode, tracks, currentTrack, playTrack]);
 
-  const prevTrack = () => {
+  const prevTrack = useCallback(() => {
     if (currentTime > 3) {
       ytController.seekTo(0);
       setCurrentTime(0);
+      lastUpdateRef.current = 0;
       return;
     }
 
@@ -222,22 +221,24 @@ export function AudioProvider({ children }) {
     } else {
       ytController.seekTo(0);
       setCurrentTime(0);
+      lastUpdateRef.current = 0;
     }
-  };
+  }, [currentTime, history, currentTrack, playTrack]);
 
-  const seek = (timeInSeconds) => {
+  const seek = useCallback((timeInSeconds) => {
     ytController.seekTo(timeInSeconds);
     setCurrentTime(timeInSeconds);
-  };
+    lastUpdateRef.current = timeInSeconds;
+  }, []);
 
-  const setVolume = (val) => {
+  const setVolume = useCallback((val) => {
     const v = parseFloat(val);
     setVolumeState(v);
     setIsMuted(v === 0);
     ytController.setVolume(v);
-  };
+  }, []);
 
-  const toggleMute = () => {
+  const toggleMute = useCallback(() => {
     if (isMuted) {
       setIsMuted(false);
       setVolumeState(prevVolume || 0.85);
@@ -248,19 +249,21 @@ export function AudioProvider({ children }) {
       setVolumeState(0);
       ytController.setVolume(0);
     }
-  };
+  }, [isMuted, prevVolume, volume]);
 
-  const toggleShuffle = () => {
+  const toggleShuffle = useCallback(() => {
     setIsShuffle(prev => !prev);
-  };
+  }, []);
 
-  const toggleRepeat = () => {
-    if (repeatMode === 'off') setRepeatMode('all');
-    else if (repeatMode === 'all') setRepeatMode('one');
-    else setRepeatMode('off');
-  };
+  const toggleRepeat = useCallback(() => {
+    setRepeatMode(prev => {
+      if (prev === 'off') return 'all';
+      if (prev === 'all') return 'one';
+      return 'off';
+    });
+  }, []);
 
-  const toggleLike = (trackId) => {
+  const toggleLike = useCallback((trackId) => {
     setLikedTrackIds(prev => {
       const exists = prev.includes(trackId);
       if (!exists) {
@@ -277,9 +280,9 @@ export function AudioProvider({ children }) {
         return prev.filter(id => id !== trackId);
       }
     });
-  };
+  }, []);
 
-  const createPlaylist = (title, description = "") => {
+  const createPlaylist = useCallback((title, description = "") => {
     const newId = `custom-${Date.now()}`;
     const newPl = {
       id: newId,
@@ -298,9 +301,9 @@ export function AudioProvider({ children }) {
       });
     } catch (e) {}
     return newPl;
-  };
+  }, [currentTrack]);
 
-  const addTrackToPlaylist = (playlistId, trackId) => {
+  const addTrackToPlaylist = useCallback((playlistId, trackId) => {
     setCustomPlaylists(prev => prev.map(pl => {
       if (pl.id === playlistId) {
         if (!pl.tracks.includes(trackId)) {
@@ -309,35 +312,37 @@ export function AudioProvider({ children }) {
       }
       return pl;
     }));
-  };
+  }, []);
 
-  const removeTrackFromPlaylist = (playlistId, trackId) => {
+  const removeTrackFromPlaylist = useCallback((playlistId, trackId) => {
     setCustomPlaylists(prev => prev.map(pl => {
       if (pl.id === playlistId) {
         return { ...pl, tracks: pl.tracks.filter(id => id !== trackId) };
       }
       return pl;
     }));
-  };
+  }, []);
 
-  const setEqualizerBand = (index, valueDb) => {
-    const updated = [...eqBands];
-    updated[index] = valueDb;
-    setEqBands(updated);
+  const setEqualizerBand = useCallback((index, valueDb) => {
+    setEqBands(prev => {
+      const updated = [...prev];
+      updated[index] = valueDb;
+      return updated;
+    });
     setActiveEqPreset("Custom");
-  };
+  }, []);
 
-  const applyEqPreset = (presetName) => {
+  const applyEqPreset = useCallback((presetName) => {
     if (EQ_PRESETS[presetName]) {
       setActiveEqPreset(presetName);
       setEqBands(EQ_PRESETS[presetName]);
     }
-  };
+  }, []);
 
-  const navigateTo = (view, param = null) => {
+  const navigateTo = useCallback((view, param = null) => {
     setCurrentView(view);
     setViewParam(param);
-  };
+  }, []);
 
   return (
     <AudioContext.Provider

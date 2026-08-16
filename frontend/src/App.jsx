@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { AudioProvider, useAudio } from './context/AudioContext';
 import { ytController } from './services/youtubePlayer';
 import Sidebar from './components/Sidebar';
@@ -20,12 +20,12 @@ function MainAppContent() {
   const { currentView, viewParam } = useAudio();
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Mount YouTube IFrame API controller on app startup
+  // Mount YouTube IFrame API controller once
   useEffect(() => {
     ytController.init('yt-player-iframe');
   }, []);
 
-  const renderActiveView = () => {
+  const activeViewComponent = useMemo(() => {
     switch (currentView) {
       case 'home':
         return <HomeView />;
@@ -40,7 +40,7 @@ function MainAppContent() {
       default:
         return <HomeView />;
     }
-  };
+  }, [currentView, viewParam, searchQuery]);
 
   return (
     <div className="app-container">
@@ -54,25 +54,25 @@ function MainAppContent() {
 
         {/* Scrollable View Content */}
         <div className="content-scrollable">
-          {renderActiveView()}
+          {activeViewComponent}
         </div>
       </main>
 
       {/* Persistent Bottom Player Bar */}
       <PlayerBar />
 
-      {/* Discreet YouTube Player Stream Mount (Plays online audio in background) */}
+      {/* Zero-Overhead Background Audio Mount */}
       <div 
         style={{ 
           position: 'fixed', 
-          bottom: '100px', 
-          right: '20px', 
-          width: '200px', 
-          height: '112px', 
-          zIndex: -1, 
-          opacity: 0.01, 
+          bottom: 0, 
+          right: 0, 
+          width: '1px', 
+          height: '1px', 
+          opacity: 0, 
           pointerEvents: 'none',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          zIndex: -9999
         }}
       >
         <div id="yt-player-iframe" style={{ width: '100%', height: '100%' }} />
