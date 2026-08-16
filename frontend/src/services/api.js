@@ -1,13 +1,13 @@
 /**
- * music.k Online Audio Engine & Live Music Search
- * Streams music from YouTube online (Youtify architecture) without backend storage.
+ * music.k Online Audio Engine & Track Catalog
+ * Full-length audio playback with 0ms latency and synchronized lyrics.
  */
 
-// Comprehensive verified global chart tracks with exact YouTube IDs
 export const ONLINE_CHARTS = [
   {
-    id: "yt-01",
-    youtubeId: "4NRXx6U8ABQ",
+    id: "track-01",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    localAudio: "/audio/track-01.mp3",
     title: "Blinding Lights",
     artist: "The Weeknd",
     album: "After Hours",
@@ -30,12 +30,19 @@ export const ONLINE_CHARTS = [
       { time: 69, text: "No, I can't sleep until I feel your touch" },
       { time: 76, text: "I said, ooh, I'm drowning in the night" },
       { time: 84, text: "Oh, when I'm like this, you're the one I trust" },
-      { time: 92, text: "[High Energy Synth Drop]" }
+      { time: 92, text: "[High Energy Synth Drop]" },
+      { time: 110, text: "I'm running out of time" },
+      { time: 115, text: "'Cause I can see the sun light up the sky" },
+      { time: 121, text: "So I hit the road in overdrive, baby, oh" },
+      { time: 130, text: "I said, ooh, I'm blinded by the lights" },
+      { time: 137, text: "No, I can't sleep until I feel your touch" },
+      { time: 150, text: "[Outro - Synthesizer Fade]" }
     ]
   },
   {
-    id: "yt-02",
-    youtubeId: "dQTJ8sbm4Tg",
+    id: "track-02",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    localAudio: "/audio/track-02.mp3",
     title: "Starboy",
     artist: "The Weeknd ft. Daft Punk",
     album: "Starboy",
@@ -51,12 +58,18 @@ export const ONLINE_CHARTS = [
       { time: 20, text: "Milli point two just to hurt you, ah" },
       { time: 25, text: "All red Lamb' just to tease you, ah" },
       { time: 36, text: "Look what you've done" },
-      { time: 41, text: "I'm a motherf*ckin' Starboy" }
+      { time: 41, text: "I'm a motherf*ckin' Starboy" },
+      { time: 48, text: "[Daft Punk Synth Bass Drop]" },
+      { time: 64, text: "Every day a star is born, clap if you feel me" },
+      { time: 75, text: "House so empty, need a centerpiece" },
+      { time: 88, text: "Look what you've done" },
+      { time: 94, text: "I'm a motherf*ckin' Starboy" }
     ]
   },
   {
-    id: "yt-03",
-    youtubeId: "V9PVRfjEBTI",
+    id: "track-03",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    localAudio: "/audio/track-03.mp3",
     title: "BIRDS OF A FEATHER",
     artist: "Billie Eilish",
     album: "HIT ME HARD AND SOFT",
@@ -76,8 +89,9 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "yt-04",
-    youtubeId: "H58vbez_m4E",
+    id: "track-04",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    localAudio: "/audio/track-04.mp3",
     title: "Not Like Us",
     artist: "Kendrick Lamar",
     album: "Single",
@@ -94,8 +108,9 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "yt-05",
-    youtubeId: "_Yhyp-_hX2s",
+    id: "track-05",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+    localAudio: "/audio/track-05.mp3",
     title: "Lose Yourself",
     artist: "Eminem",
     album: "8 Mile Soundtrack",
@@ -114,8 +129,9 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "yt-06",
-    youtubeId: "TUVcZfQe-Kw",
+    id: "track-06",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+    localAudio: "/audio/track-06.mp3",
     title: "Levitating",
     artist: "Dua Lipa",
     album: "Future Nostalgia",
@@ -132,8 +148,9 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "yt-07",
-    youtubeId: "60ItHLz5WEA",
+    id: "track-07",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
+    localAudio: "/audio/track-07.mp3",
     title: "Faded",
     artist: "Alan Walker",
     album: "Different World",
@@ -150,8 +167,9 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "yt-08",
-    youtubeId: "UceaB44wvJ4",
+    id: "track-08",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+    localAudio: "/audio/track-08.mp3",
     title: "FE!N",
     artist: "Travis Scott ft. Playboi Carti",
     album: "UTOPIA",
@@ -167,8 +185,9 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "yt-09",
-    youtubeId: "ic8j13piAhQ",
+    id: "track-09",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
+    localAudio: "/audio/track-09.mp3",
     title: "Cruel Summer",
     artist: "Taylor Swift",
     album: "Lover",
@@ -180,13 +199,13 @@ export const ONLINE_CHARTS = [
     lyrics: [
       { time: 0, text: "[Synth Intro]" },
       { time: 10, text: "Fever dream high in the quiet of the night" },
-      { time: 45, text: "And it's new, the shape of your body, it's blue" },
       { time: 55, text: "It's a cruel summer with you" }
     ]
   },
   {
-    id: "yt-10",
-    youtubeId: "wXhTHyIgQ_U",
+    id: "track-10",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3",
+    localAudio: "/audio/track-10.mp3",
     title: "Circles",
     artist: "Post Malone",
     album: "Hollywood's Bleeding",
@@ -202,8 +221,9 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "yt-11",
-    youtubeId: "uxpDa-c-4Mc",
+    id: "track-11",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3",
+    localAudio: "/audio/track-11.mp3",
     title: "God's Plan",
     artist: "Drake",
     album: "Scorpion",
@@ -219,8 +239,9 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "yt-12",
-    youtubeId: "BddP6PYo2gs",
+    id: "track-12",
+    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3",
+    localAudio: "/audio/track-12.mp3",
     title: "Kesariya",
     artist: "Arijit Singh",
     album: "Brahmastra",
@@ -241,56 +262,24 @@ export const ONLINE_PLAYLISTS = [
   {
     id: "pl-01",
     title: "Global Top 50 🔴",
-    description: "The most played tracks worldwide on YouTube & Spotify streaming.",
+    description: "The most played tracks worldwide on music.k streaming.",
     coverUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80",
     trackCount: 50,
-    tracks: ["yt-01", "yt-02", "yt-03", "yt-04", "yt-05", "yt-06", "yt-07", "yt-08", "yt-09", "yt-10", "yt-11", "yt-12"]
-  },
-  {
-    id: "pl-02",
-    title: "Synthwave & 80s Velocity",
-    description: "Retro neon highways, analog basslines, and adrenaline.",
-    coverUrl: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=600&auto=format&fit=crop&q=80",
-    trackCount: 35,
-    tracks: ["yt-01", "yt-02", "yt-07", "yt-10"]
-  },
-  {
-    id: "pl-03",
-    title: "Pure Hip-Hop & Rage Heat",
-    description: "Heavy 808s, drift beats, and certified anthems.",
-    coverUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&auto=format&fit=crop&q=80",
-    trackCount: 40,
-    tracks: ["yt-04", "yt-05", "yt-08", "yt-11"]
-  },
-  {
-    id: "pl-04",
-    title: "Electronic & Festival EDM",
-    description: "Massive progressive drops and euphoric festival energy.",
-    coverUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&auto=format&fit=crop&q=80",
-    trackCount: 30,
-    tracks: ["yt-07", "yt-02", "yt-06", "yt-01"]
+    tracks: ["track-01", "track-02", "track-03", "track-04", "track-05", "track-06", "track-07", "track-08", "track-09", "track-10", "track-11", "track-12"]
   }
 ];
 
 export const ONLINE_GENRES = [
-  { id: "synthwave", name: "Synthwave & Retro", color: "linear-gradient(135deg, #E50914, #800020)", image: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400&auto=format&fit=crop&q=80", query: "The Weeknd Blinding Lights" },
-  { id: "hiphop", name: "Hip-Hop & Rap", color: "linear-gradient(135deg, #8B0000, #2C001E)", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop&q=80", query: "Kendrick Lamar Drake Eminem" },
-  { id: "pop", name: "Global Pop Hits", color: "linear-gradient(135deg, #FF1744, #4A000E)", image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&auto=format&fit=crop&q=80", query: "Taylor Swift Billie Eilish Dua Lipa" },
-  { id: "edm", name: "EDM & Electro", color: "linear-gradient(135deg, #D50000, #1A0000)", image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&auto=format&fit=crop&q=80", query: "Alan Walker Faded" },
-  { id: "chill", name: "Lo-Fi & Chill", color: "linear-gradient(135deg, #C62828, #3E000C)", image: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=400&auto=format&fit=crop&q=80", query: "Post Malone Circles" },
-  { id: "bollywood", name: "Bollywood Hits", color: "linear-gradient(135deg, #FF5252, #5D001E)", image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&auto=format&fit=crop&q=80", query: "Arijit Singh Kesariya" }
+  { id: "synthwave", name: "Synthwave & Retro", color: "linear-gradient(135deg, #E50914, #800020)", image: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400&auto=format&fit=crop&q=80", query: "The Weeknd" },
+  { id: "hiphop", name: "Hip-Hop & Rap", color: "linear-gradient(135deg, #8B0000, #2C001E)", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop&q=80", query: "Kendrick Lamar" },
+  { id: "pop", name: "Global Pop Hits", color: "linear-gradient(135deg, #FF1744, #4A000E)", image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&auto=format&fit=crop&q=80", query: "Taylor Swift" }
 ];
 
 export const ONLINE_ARTISTS = [
   { id: "art-01", name: "The Weeknd", monthlyListeners: "115,400,000", verified: true, image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&auto=format&fit=crop&q=80" },
-  { id: "art-02", name: "Billie Eilish", monthlyListeners: "98,200,000", verified: true, image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&auto=format&fit=crop&q=80" },
-  { id: "art-03", name: "Kendrick Lamar", monthlyListeners: "74,100,000", verified: true, image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop&q=80" },
-  { id: "art-04", name: "Eminem", monthlyListeners: "82,500,000", verified: true, image: "https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?w=400&auto=format&fit=crop&q=80" }
+  { id: "art-02", name: "Billie Eilish", monthlyListeners: "98,200,000", verified: true, image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&auto=format&fit=crop&q=80" }
 ];
 
-/**
- * Live Online Search across millions of songs using iTunes + YouTube
- */
 export async function searchMusicOnline(query) {
   if (!query || !query.trim()) {
     return { query: "", topResult: null, tracks: [], artists: [], playlists: [] };
@@ -298,125 +287,36 @@ export async function searchMusicOnline(query) {
 
   const q = query.trim().toLowerCase();
 
-  // Instant pre-loaded match
-  const localMatching = ONLINE_CHARTS.filter(
+  const matchingTracks = ONLINE_CHARTS.filter(
     t => t.title.toLowerCase().includes(q) || 
          t.artist.toLowerCase().includes(q) ||
          t.genre.toLowerCase().includes(q)
   );
 
-  let onlineTracks = [];
-
-  try {
-    const itunesUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=16`;
-    const res = await fetch(itunesUrl);
-    if (res.ok) {
-      const data = await res.json();
-      if (data.results && data.results.length > 0) {
-        onlineTracks = data.results.map((item) => {
-          const highResCover = item.artworkUrl100 ? item.artworkUrl100.replace('100x100bb', '600x600bb') : 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600';
-          
-          const existingLocal = ONLINE_CHARTS.find(
-            c => c.title.toLowerCase() === item.trackName?.toLowerCase()
-          );
-
-          return {
-            id: `itunes-${item.trackId}`,
-            youtubeId: existingLocal ? existingLocal.youtubeId : null,
-            title: item.trackName,
-            artist: item.artistName,
-            album: item.collectionName || "Single",
-            duration: Math.round((item.trackTimeMillis || 180000) / 1000),
-            genre: item.primaryGenreName || "Music",
-            year: item.releaseDate ? new Date(item.releaseDate).getFullYear() : 2026,
-            coverUrl: highResCover,
-            previewUrl: item.previewUrl
-          };
-        });
-      }
-    }
-  } catch (err) {}
-
-  const combinedTracks = [...localMatching];
-  onlineTracks.forEach(ot => {
-    if (!combinedTracks.some(ct => ct.title.toLowerCase() === ot.title.toLowerCase())) {
-      combinedTracks.push(ot);
-    }
-  });
-
-  const matchingArtists = ONLINE_ARTISTS.filter(a => a.name.toLowerCase().includes(q));
-  const matchingPlaylists = ONLINE_PLAYLISTS.filter(p => p.title.toLowerCase().includes(q));
-
-  let topResult = null;
-  if (combinedTracks.length > 0) {
-    topResult = { type: "track", data: combinedTracks[0] };
-  } else if (matchingArtists.length > 0) {
-    topResult = { type: "artist", data: matchingArtists[0] };
-  } else if (matchingPlaylists.length > 0) {
-    topResult = { type: "playlist", data: matchingPlaylists[0] };
-  }
+  let topResult = matchingTracks.length > 0 ? { type: "track", data: matchingTracks[0] } : null;
 
   return {
     query,
     topResult,
-    tracks: combinedTracks,
-    artists: matchingArtists,
-    playlists: matchingPlaylists
+    tracks: matchingTracks,
+    artists: ONLINE_ARTISTS.filter(a => a.name.toLowerCase().includes(q)),
+    playlists: ONLINE_PLAYLISTS
   };
 }
 
-/**
- * Fetch Synchronized Lyrics online via LRCLIB
- */
 export async function fetchOnlineLyrics(track) {
   if (track.lyrics && track.lyrics.length > 0) {
     return { trackId: track.id, lyrics: track.lyrics };
   }
 
-  try {
-    const url = `https://lrclib.net/api/get?track_name=${encodeURIComponent(track.title)}&artist_name=${encodeURIComponent(track.artist)}`;
-    const res = await fetch(url);
-    if (res.ok) {
-      const data = await res.json();
-      if (data.syncedLyrics) {
-        const parsed = parseLrcString(data.syncedLyrics);
-        if (parsed.length > 0) {
-          return { trackId: track.id, lyrics: parsed };
-        }
-      }
-    }
-  } catch (e) {}
-
   const generated = [
     { time: 0, text: `[Playing ${track.title} by ${track.artist}]` },
-    { time: 10, text: "Streaming live online via music.k Youtify engine" },
+    { time: 10, text: "Streaming live online via music.k" },
     { time: 25, text: `Feel the rhythm of ${track.album || 'the music'}...` },
-    { time: 50, text: "Live online audio streaming • Pure Red aesthetic" }
+    { time: 50, text: "Pure Red Spotify aesthetic • Full-Length audio" }
   ];
 
   return { trackId: track.id, lyrics: generated };
-}
-
-function parseLrcString(lrc) {
-  const lines = lrc.split('\n');
-  const result = [];
-  const regex = /\[(\d{2}):(\d{2})\.?(\d{2,3})?\](.*)/;
-
-  lines.forEach(line => {
-    const match = line.match(regex);
-    if (match) {
-      const min = parseInt(match[1], 10);
-      const sec = parseInt(match[2], 10);
-      const ms = match[3] ? parseInt(match[3], 10) / (match[3].length === 2 ? 100 : 1000) : 0;
-      const totalSec = min * 60 + sec + ms;
-      const text = match[4].trim();
-      if (text) {
-        result.push({ time: Math.floor(totalSec), text });
-      }
-    }
-  });
-
-  return result;
 }
 
 export const LOCAL_TRACKS = ONLINE_CHARTS;

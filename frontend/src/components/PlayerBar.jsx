@@ -14,8 +14,7 @@ import {
   Mic2, 
   ListMusic, 
   Activity, 
-  Sliders,
-  Tv
+  Sliders
 } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 
@@ -41,7 +40,6 @@ export default function PlayerBar() {
     isQueueOpen,
     isVisualizerOpen,
     isEqualizerOpen,
-    isVideoModalOpen,
     togglePlay,
     seek,
     setVolume,
@@ -55,7 +53,6 @@ export default function PlayerBar() {
     setIsQueueOpen,
     setIsVisualizerOpen,
     setIsEqualizerOpen,
-    setIsVideoModalOpen,
     navigateTo
   } = useAudio();
 
@@ -90,7 +87,7 @@ export default function PlayerBar() {
           <span 
             className="player-title" 
             title={currentTrack.title}
-            onClick={() => navigateTo('playlist', 'pl-01')}
+            onClick={() => navigateTo('home')}
             style={{ cursor: 'pointer' }}
           >
             {currentTrack.title}
@@ -98,8 +95,6 @@ export default function PlayerBar() {
           <span 
             className="player-artist" 
             title={currentTrack.artist}
-            onClick={() => navigateTo('artist', currentTrack.artist)}
-            style={{ cursor: 'pointer' }}
           >
             {currentTrack.artist}
           </span>
@@ -191,15 +186,6 @@ export default function PlayerBar() {
 
       {/* Right: Tools & Volume */}
       <div className="player-right">
-        {/* Video Mode Toggle */}
-        <button 
-          className={`tool-icon-btn ${isVideoModalOpen ? 'active' : ''}`}
-          onClick={() => setIsVideoModalOpen(prev => !prev)}
-          title="Watch YouTube Video"
-        >
-          <Tv size={18} />
-        </button>
-
         {/* Synced Lyrics Toggle */}
         <button 
           className={`tool-icon-btn ${isLyricsOpen ? 'active' : ''}`}

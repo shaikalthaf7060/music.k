@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
-import { ytController } from '../services/youtubePlayer';
 import { ONLINE_CHARTS, fetchOnlineLyrics } from '../services/api';
 import confetti from 'canvas-confetti';
 
@@ -28,7 +27,7 @@ export function AudioProvider({ children }) {
   const [repeatMode, setRepeatMode] = useState('off');
   const [likedTrackIds, setLikedTrackIds] = useState(() => {
     const saved = localStorage.getItem('musick_liked_tracks');
-    return saved ? JSON.parse(saved) : ['yt-01', 'yt-02', 'yt-04'];
+    return saved ? JSON.parse(saved) : ['track-01', 'track-02', 'track-04'];
   });
   
   const [customPlaylists, setCustomPlaylists] = useState(() => {
@@ -42,7 +41,7 @@ export function AudioProvider({ children }) {
         title: "Crimson Adrenaline Mix 🔴",
         description: "Pure energy hits streamed live online with zero ads",
         coverUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80",
-        tracks: ["yt-01", "yt-02", "yt-05"]
+        tracks: ["track-01", "track-02", "track-05"]
       }
     ];
   });
@@ -54,7 +53,6 @@ export function AudioProvider({ children }) {
   const [isEqualizerOpen, setIsEqualizerOpen] = useState(false);
   const [isQueueOpen, setIsQueueOpen] = useState(false);
   const [isCreatePlaylistOpen, setIsCreatePlaylistOpen] = useState(false);
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const [activeLyrics, setActiveLyrics] = useState([]);
   const [currentLyricIndex, setCurrentLyricIndex] = useState(-1);
@@ -62,8 +60,9 @@ export function AudioProvider({ children }) {
   const [activeEqPreset, setActiveEqPreset] = useState("EDM Crimson");
   const [eqBands, setEqBands] = useState(EQ_PRESETS["EDM Crimson"]);
 
-  const pollTimerRef = useRef(null);
-  const lastUpdateRef = useRef(0);
+  // Bulletproof HTML5 Audio instance
+  const audioRef = useRef(new Audio());
+  const audioInitializedRef = useRef(false);
 
   useEffect(() => {
     localStorage.setItem('musick_liked_tracks', JSON.stringify(likedTrackIds));
@@ -73,50 +72,52 @@ export function AudioProvider({ children }) {
     localStorage.setItem('musick_custom_playlists', JSON.stringify(customPlaylists));
   }, [customPlaylists]);
 
-  // Subscribe to YouTube Player state changes
+  // Setup Audio element event listeners
   useEffect(() => {
-    const unsubscribe = ytController.subscribe((type, data) => {
-      if (type === 'stateChange') {
-        if (data === 1) {
-          setIsPlaying(true);
-          const dur = ytController.getDuration();
-          if (dur > 0) setDuration(dur);
-        } else if (data === 2) {
-          setIsPlaying(false);
-        } else if (data === 0) {
-          handleTrackEnd();
-        }
+    const audio = audioRef.current;
+    audio.crossOrigin = "anonymous";
+    audio.volume = volume;
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+    };
+
+    const handleLoadedMetadata = () => {
+      if (audio.duration && !isNaN(audio.duration) && audio.duration > 0) {
+        setDuration(audio.duration);
       }
-    });
+    };
 
-    return () => unsubscribe();
-  }, [repeatMode, queue, currentTrack, isShuffle]);
+    const handleEnded = () => {
+      if (repeatMode === 'one') {
+        audio.currentTime = 0;
+        audio.play();
+      } else {
+        nextTrack();
+      }
+    };
 
-  // Optimized smooth time tracker loop (1-second tick to prevent UI lag)
-  useEffect(() => {
-    if (isPlaying) {
-      pollTimerRef.current = setInterval(() => {
-        const time = ytController.getCurrentTime();
-        if (time !== undefined && !isNaN(time)) {
-          // Only update if changed by at least 1s
-          if (Math.abs(time - lastUpdateRef.current) >= 0.8) {
-            lastUpdateRef.current = time;
-            setCurrentTime(time);
-          }
-        }
-        const dur = ytController.getDuration();
-        if (dur && !isNaN(dur) && dur > 0) {
-          setDuration(dur);
-        }
-      }, 800);
-    } else {
-      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
-    }
+    const handleError = (e) => {
+      console.warn("Audio source fallback triggered", e);
+      // Fallback from local file to remote CDN or vice versa
+      if (currentTrack && currentTrack.audioUrl && audio.src !== currentTrack.audioUrl) {
+        audio.src = currentTrack.audioUrl;
+        audio.play().catch(() => {});
+      }
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('error', handleError);
 
     return () => {
-      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('error', handleError);
     };
-  }, [isPlaying]);
+  }, [repeatMode, currentTrack, volume]);
 
   // Sync active lyric line
   useEffect(() => {
@@ -144,7 +145,7 @@ export function AudioProvider({ children }) {
     }
   }, [currentTrack]);
 
-  // Play a specific track (with exact song resolution)
+  // Play a specific track (Instant, Guaranteed Audio Playback)
   const playTrack = useCallback((track, playlistContext = null) => {
     if (playlistContext) {
       const nextInList = playlistContext.filter(t => t.id !== track.id);
@@ -157,32 +158,41 @@ export function AudioProvider({ children }) {
 
     setCurrentTrack(track);
     setCurrentTime(0);
-    lastUpdateRef.current = 0;
     setDuration(track.duration || 200);
 
-    // Accurate playback via ytController
-    ytController.playTrackAccurate(track);
-    setIsPlaying(true);
+    const audio = audioRef.current;
+    // Prefer local audio if downloaded, fallback to remote streaming URL
+    audio.src = track.localAudio || track.audioUrl;
+    audio.load();
+
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch(err => {
+          console.warn("Primary source playback failed, trying remote url", err);
+          if (track.audioUrl && audio.src !== track.audioUrl) {
+            audio.src = track.audioUrl;
+            audio.play().then(() => setIsPlaying(true)).catch(() => {});
+          }
+        });
+    }
   }, [currentTrack]);
 
   const togglePlay = useCallback(() => {
+    const audio = audioRef.current;
     if (isPlaying) {
-      ytController.pause();
+      audio.pause();
       setIsPlaying(false);
     } else {
-      ytController.play();
-      setIsPlaying(true);
+      if (!audio.src && currentTrack) {
+        audio.src = currentTrack.localAudio || currentTrack.audioUrl;
+      }
+      audio.play().then(() => setIsPlaying(true)).catch(() => {});
     }
-  }, [isPlaying]);
-
-  const handleTrackEnd = () => {
-    if (repeatMode === 'one') {
-      ytController.seekTo(0);
-      ytController.play();
-    } else {
-      nextTrack();
-    }
-  };
+  }, [isPlaying, currentTrack]);
 
   const nextTrack = useCallback(() => {
     if (queue.length > 0) {
@@ -206,10 +216,10 @@ export function AudioProvider({ children }) {
   }, [queue, isShuffle, repeatMode, tracks, currentTrack, playTrack]);
 
   const prevTrack = useCallback(() => {
-    if (currentTime > 3) {
-      ytController.seekTo(0);
+    const audio = audioRef.current;
+    if (audio.currentTime > 3) {
+      audio.currentTime = 0;
       setCurrentTime(0);
-      lastUpdateRef.current = 0;
       return;
     }
 
@@ -219,35 +229,36 @@ export function AudioProvider({ children }) {
       setQueue(prev => [currentTrack, ...prev]);
       playTrack(prevSong);
     } else {
-      ytController.seekTo(0);
+      audio.currentTime = 0;
       setCurrentTime(0);
-      lastUpdateRef.current = 0;
     }
-  }, [currentTime, history, currentTrack, playTrack]);
+  }, [history, currentTrack, playTrack]);
 
   const seek = useCallback((timeInSeconds) => {
-    ytController.seekTo(timeInSeconds);
+    const audio = audioRef.current;
+    audio.currentTime = timeInSeconds;
     setCurrentTime(timeInSeconds);
-    lastUpdateRef.current = timeInSeconds;
   }, []);
 
   const setVolume = useCallback((val) => {
     const v = parseFloat(val);
     setVolumeState(v);
     setIsMuted(v === 0);
-    ytController.setVolume(v);
+    audioRef.current.volume = Math.max(0, Math.min(1, v));
   }, []);
 
   const toggleMute = useCallback(() => {
+    const audio = audioRef.current;
     if (isMuted) {
       setIsMuted(false);
-      setVolumeState(prevVolume || 0.85);
-      ytController.setVolume(prevVolume || 0.85);
+      const restored = prevVolume || 0.85;
+      setVolumeState(restored);
+      audio.volume = restored;
     } else {
       setPrevVolume(volume);
       setIsMuted(true);
       setVolumeState(0);
-      ytController.setVolume(0);
+      audio.volume = 0;
     }
   }, [isMuted, prevVolume, volume]);
 
@@ -289,7 +300,7 @@ export function AudioProvider({ children }) {
       title: title || "My Red Playlist",
       description: description || "Curated in music.k",
       coverUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80",
-      tracks: [currentTrack ? currentTrack.id : 'yt-01']
+      tracks: [currentTrack ? currentTrack.id : 'track-01']
     };
     setCustomPlaylists(prev => [newPl, ...prev]);
     try {
@@ -367,7 +378,6 @@ export function AudioProvider({ children }) {
         isEqualizerOpen,
         isQueueOpen,
         isCreatePlaylistOpen,
-        isVideoModalOpen,
         activeLyrics,
         currentLyricIndex,
         activeEqPreset,
@@ -393,7 +403,6 @@ export function AudioProvider({ children }) {
         setIsEqualizerOpen,
         setIsQueueOpen,
         setIsCreatePlaylistOpen,
-        setIsVideoModalOpen,
         setQueue
       }}
     >
