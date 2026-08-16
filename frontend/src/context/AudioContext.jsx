@@ -1,5 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { ONLINE_CHARTS, fetchOnlineLyrics } from '../services/api';
+import { 
+  auth, 
+  signInWithGoogle, 
+  registerWithEmail as fbRegister, 
+  loginWithEmail as fbLogin, 
+  logoutFirebase,
+  onAuthStateChanged,
+  isFirebaseConfigured
+} from '../services/firebase';
 import confetti from 'canvas-confetti';
 
 const AudioContext = createContext();
@@ -55,6 +64,26 @@ export function AudioProvider({ children }) {
   const [eqBands, setEqBands] = useState(EQ_PRESETS["EDM Crimson"]);
 
   const audioRef = useRef(new Audio());
+
+  // Listen to Firebase auth state if configured
+  useEffect(() => {
+    if (isFirebaseConfigured() && auth) {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          const profile = {
+            id: user.uid,
+            name: user.displayName || user.email?.split('@')[0] || "VIP Red Member",
+            email: user.email,
+            avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`,
+            tier: "VIP Firebase Member"
+          };
+          setCurrentUser(profile);
+          setAuthToken(user.uid);
+        }
+      });
+      return () => unsubscribe();
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('musick_liked_tracks', JSON.stringify(likedTrackIds));
@@ -292,43 +321,85 @@ export function AudioProvider({ children }) {
     });
   }, []);
 
-  // Authentication Handlers
+  // Firebase + Backend Auth Handlers
+  const loginGoogle = async () => {
+    const user = await signInWithGoogle();
+    const profile = {
+      id: user.uid,
+      name: user.displayName || "Google Red Listener",
+      email: user.email,
+      avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`,
+      tier: "VIP Google Member"
+    };
+    setCurrentUser(profile);
+    setAuthToken(user.uid);
+    return profile;
+  };
+
   const login = async (email, password) => {
-    const res = await fetch(`${API_BASE}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || 'Login failed');
+    try {
+      const user = await fbLogin(email, password);
+      const profile = {
+        id: user.uid,
+        name: user.displayName || email.split('@')[0],
+        email: user.email,
+        avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${email}`,
+        tier: "VIP Red Member"
+      };
+      setCurrentUser(profile);
+      setAuthToken(user.uid);
+      return profile;
+    } catch (fbErr) {
+      // Fallback to local FastAPI auth
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Login failed');
+      }
+      const data = await res.json();
+      setAuthToken(data.token);
+      setCurrentUser(data.user);
+      return data.user;
     }
-    const data = await res.json();
-    setAuthToken(data.token);
-    setCurrentUser(data.user);
-    if (data.user.likedTracks && data.user.likedTracks.length > 0) {
-      setLikedTrackIds(data.user.likedTracks);
-    }
-    return data.user;
   };
 
   const register = async (name, email, password) => {
-    const res = await fetch(`${API_BASE}/api/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password })
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || 'Registration failed');
+    try {
+      const user = await fbRegister(name, email, password);
+      const profile = {
+        id: user.uid,
+        name: name,
+        email: email,
+        avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${email}`,
+        tier: "VIP Red Member"
+      };
+      setCurrentUser(profile);
+      setAuthToken(user.uid);
+      return profile;
+    } catch (fbErr) {
+      // Fallback to local FastAPI auth
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Registration failed');
+      }
+      const data = await res.json();
+      setAuthToken(data.token);
+      setCurrentUser(data.user);
+      return data.user;
     }
-    const data = await res.json();
-    setAuthToken(data.token);
-    setCurrentUser(data.user);
-    return data.user;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await logoutFirebase();
     setAuthToken('');
     setCurrentUser(null);
   };
@@ -394,6 +465,7 @@ export function AudioProvider({ children }) {
         toggleLike,
         login,
         register,
+        loginGoogle,
         logout,
         setIsAuthModalOpen,
         setEqualizerBand,

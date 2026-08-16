@@ -3,7 +3,7 @@ import { X, Lock, Mail, User, Flame, ArrowRight, ShieldCheck, Sparkles } from 'l
 import { useAudio } from '../context/AudioContext';
 
 export default function AuthModal() {
-  const { isAuthModalOpen, setIsAuthModalOpen, login, register, currentUser } = useAudio();
+  const { isAuthModalOpen, setIsAuthModalOpen, login, register, loginGoogle } = useAudio();
   const [mode, setMode] = useState('login'); // 'login' or 'register'
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -37,6 +37,19 @@ export default function AuthModal() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      await loginGoogle();
+      setIsAuthModalOpen(false);
+    } catch (err) {
+      setError(err.message || 'Google sign-in failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDemoLogin = async () => {
     setError('');
     setLoading(true);
@@ -44,7 +57,6 @@ export default function AuthModal() {
       await login('demo@musick.stream', 'redvip2026');
       setIsAuthModalOpen(false);
     } catch (err) {
-      // Auto-register demo if doesn't exist
       try {
         await register('VIP Red Listener', 'demo@musick.stream', 'redvip2026');
         setIsAuthModalOpen(false);
@@ -94,8 +106,49 @@ export default function AuthModal() {
           </p>
         </div>
 
+        {/* 1-Click Google Sign-In Button */}
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          disabled={loading}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px',
+            background: '#ffffff',
+            color: '#1a1a1a',
+            fontWeight: 700,
+            padding: '12px',
+            borderRadius: '8px',
+            border: 'none',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            width: '100%',
+            marginBottom: '18px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            transition: 'transform 0.15s ease'
+          }}
+        >
+          <img 
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
+            width="18" 
+            height="18" 
+            alt="Google logo" 
+          />
+          <span style={{ fontSize: '0.92rem' }}>Continue with Google</span>
+        </button>
+
+        {/* Divider */}
+        <div style={{ display: 'flex', alignItems: 'center', margin: '0 0 18px 0', gap: '10px' }}>
+          <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            or with email
+          </span>
+          <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+        </div>
+
         {/* Mode Switcher Tabs */}
-        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: '8px', padding: '4px', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: '8px', padding: '4px', marginBottom: '18px' }}>
           <button
             type="button"
             onClick={() => { setMode('login'); setError(''); }}
