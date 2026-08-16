@@ -1,7 +1,7 @@
 import React from 'react';
 import { Play, Pause, Heart, Clock, Music } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
-import { LOCAL_TRACKS } from '../services/api';
+import { ONLINE_CHARTS } from '../services/api';
 
 function formatDuration(sec) {
   const m = Math.floor(sec / 60);
@@ -12,7 +12,7 @@ function formatDuration(sec) {
 export default function LikedSongsView() {
   const { currentTrack, isPlaying, playTrack, togglePlay, likedTrackIds, toggleLike } = useAudio();
 
-  const likedTracks = LOCAL_TRACKS.filter(t => likedTrackIds.includes(t.id));
+  const likedTracks = ONLINE_CHARTS.filter(t => likedTrackIds.includes(t.id));
   const isCurrentPlaying = likedTracks.some(t => currentTrack && t.id === currentTrack.id);
 
   const handlePlayAll = () => {

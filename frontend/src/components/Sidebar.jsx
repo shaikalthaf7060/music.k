@@ -9,10 +9,11 @@ import {
   Flame, 
   Radio, 
   Sparkles,
-  Music
+  Music,
+  Globe
 } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
-import { LOCAL_PLAYLISTS } from '../services/api';
+import { ONLINE_PLAYLISTS } from '../services/api';
 
 export default function Sidebar() {
   const { 
@@ -36,7 +37,7 @@ export default function Sidebar() {
           <div className="brand-title">
             music<span className="red-dot">.k</span>
           </div>
-          <span className="brand-badge">RED</span>
+          <span className="brand-badge">ONLINE</span>
         </div>
 
         {/* Primary Navigation */}
@@ -101,7 +102,7 @@ export default function Sidebar() {
           </div>
           <div className="playlist-row-info">
             <span className="playlist-row-title">Liked Songs</span>
-            <span className="playlist-row-subtitle">{likedTrackIds.length} tracks • Auto-curated</span>
+            <span className="playlist-row-subtitle">{likedTrackIds.length} tracks • Saved</span>
           </div>
         </div>
 
@@ -122,8 +123,8 @@ export default function Sidebar() {
             </div>
           ))}
 
-          {/* Featured Red Playlists */}
-          {LOCAL_PLAYLISTS.map(pl => (
+          {/* Online Red Playlists */}
+          {ONLINE_PLAYLISTS.map(pl => (
             <div 
               key={pl.id}
               className={`playlist-item-row ${currentView === 'playlist' && viewParam === pl.id ? 'active' : ''}`}
@@ -132,7 +133,7 @@ export default function Sidebar() {
               <img src={pl.coverUrl} alt={pl.title} className="playlist-row-img" />
               <div className="playlist-row-info">
                 <span className="playlist-row-title">{pl.title}</span>
-                <span className="playlist-row-subtitle">music.k Original</span>
+                <span className="playlist-row-subtitle">music.k Stream</span>
               </div>
             </div>
           ))}

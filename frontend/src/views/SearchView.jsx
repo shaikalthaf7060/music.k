@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, Heart, Plus, Clock, Search as SearchIcon, Music } from 'lucide-react';
+import { Play, Pause, Heart, Plus, Clock, Search as SearchIcon, Music, Globe, Sparkles } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
-import { searchMusic, LOCAL_GENRES, LOCAL_TRACKS } from '../services/api';
+import { searchMusicOnline, ONLINE_GENRES, ONLINE_CHARTS } from '../services/api';
 
 function formatDuration(sec) {
   const m = Math.floor(sec / 60);
@@ -10,19 +10,24 @@ function formatDuration(sec) {
 }
 
 export default function SearchView({ searchQuery }) {
-  const { currentTrack, isPlaying, playTrack, togglePlay, likedTrackIds, toggleLike, navigateTo, setQueue } = useAudio();
+  const { currentTrack, isPlaying, playTrack, togglePlay, likedTrackIds, toggleLike, navigateTo } = useAudio();
   const [results, setResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     if (searchQuery.trim().length > 0) {
       setIsSearching(true);
-      searchMusic(searchQuery).then(res => {
-        setResults(res);
-        setIsSearching(false);
-      });
+      const timer = setTimeout(() => {
+        searchMusicOnline(searchQuery).then(res => {
+          setResults(res);
+          setIsSearching(false);
+        });
+      }, 250);
+
+      return () => clearTimeout(timer);
     } else {
       setResults(null);
+      setIsSearching(false);
     }
   }, [searchQuery]);
 
@@ -39,11 +44,18 @@ export default function SearchView({ searchQuery }) {
       {/* If Search Query is active */}
       {searchQuery.trim().length > 0 ? (
         <div>
-          {results && results.tracks.length === 0 && results.artists.length === 0 ? (
+          {isSearching && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--red-bright)', marginBottom: '16px', fontSize: '0.9rem' }}>
+              <Sparkles size={16} className="spin-anim" />
+              <span>Searching online music catalog...</span>
+            </div>
+          )}
+
+          {results && results.tracks.length === 0 && results.artists.length === 0 && !isSearching ? (
             <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
               <Music size={48} color="#FF2A3A" style={{ marginBottom: '16px' }} />
               <h2>No results found for "{searchQuery}"</h2>
-              <p>Try searching for artists, song titles, or genres like "Synthwave" or "Phonk".</p>
+              <p>Search for any song, artist (e.g. "The Weeknd", "Drake", "Eminem", "Taylor Swift", "Arijit Singh"), or genre.</p>
             </div>
           ) : (
             <div>
@@ -69,8 +81,8 @@ export default function SearchView({ searchQuery }) {
                           src={results.topResult.data.coverUrl || results.topResult.data.image} 
                           alt="Top Result" 
                           style={{ 
-                            width: '92px', 
-                            height: '92px', 
+                            width: '100px', 
+                            height: '100px', 
                             borderRadius: results.topResult.type === 'artist' ? '50%' : '8px', 
                             objectFit: 'cover',
                             marginBottom: '16px',
@@ -83,7 +95,7 @@ export default function SearchView({ searchQuery }) {
                         <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>
                           <span style={{ color: 'var(--red-bright)', fontWeight: 700 }}>
                             {results.topResult.type.toUpperCase()}
-                          </span> • {results.topResult.data.artist || results.topResult.data.genre || "music.k"}
+                          </span> • {results.topResult.data.artist || results.topResult.data.genre || "Online Stream"}
                         </p>
                       </div>
 
@@ -110,9 +122,11 @@ export default function SearchView({ searchQuery }) {
 
                 {/* Matching Songs List */}
                 <div>
-                  <h2 className="section-title" style={{ marginBottom: '16px' }}>Songs</h2>
+                  <h2 className="section-title" style={{ marginBottom: '16px' }}>
+                    Songs ({results?.tracks.length || 0})
+                  </h2>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    {results?.tracks.slice(0, 4).map(track => {
+                    {results?.tracks.slice(0, 6).map(track => {
                       const isCurrent = currentTrack && currentTrack.id === track.id;
                       const isLiked = likedTrackIds.includes(track.id);
 
@@ -124,7 +138,7 @@ export default function SearchView({ searchQuery }) {
                           onClick={() => handleTrackClick(track, results.tracks)}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden' }}>
-                            <img src={track.coverUrl} alt={track.title} style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover' }} />
+                            <img src={track.coverUrl} alt={track.title} style={{ width: '42px', height: '42px', borderRadius: '4px', objectFit: 'cover' }} />
                             <div className="playlist-row-info">
                               <span className="playlist-row-title" style={{ color: isCurrent ? 'var(--red-bright)' : 'white' }}>
                                 {track.title}
@@ -154,7 +168,7 @@ export default function SearchView({ searchQuery }) {
                 </div>
               </div>
 
-              {/* Matching Playlists & Albums */}
+              {/* Matching Playlists */}
               {results?.playlists.length > 0 && (
                 <section style={{ marginTop: '32px' }}>
                   <h2 className="section-title" style={{ marginBottom: '16px' }}>Playlists</h2>
@@ -182,23 +196,27 @@ export default function SearchView({ searchQuery }) {
           )}
         </div>
       ) : (
-        /* Genre Browse All Grids */
+        /* Browse All Genres & Moods Grid */
         <div>
-          <h1 className="greeting-text" style={{ fontSize: '1.8rem', marginBottom: '20px' }}>
-            Browse All Genres & Moods
-          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+            <Globe size={24} color="#FF2A3A" />
+            <h1 className="greeting-text" style={{ fontSize: '1.8rem' }}>
+              Explore Live Online Streaming
+            </h1>
+          </div>
 
           <div className="genre-grid">
-            {LOCAL_GENRES.map(genre => (
+            {ONLINE_GENRES.map(genre => (
               <div 
                 key={genre.id}
                 className="genre-tile"
                 style={{ background: genre.color }}
                 onClick={() => {
-                  const genreTracks = LOCAL_TRACKS.filter(t => t.genre.toLowerCase().includes(genre.name.toLowerCase().split(' ')[0]));
-                  if (genreTracks.length > 0) {
-                    playTrack(genreTracks[0], genreTracks);
-                  }
+                  searchMusicOnline(genre.query).then(res => {
+                    if (res.tracks.length > 0) {
+                      playTrack(res.tracks[0], res.tracks);
+                    }
+                  });
                 }}
               >
                 <h3 className="genre-name">{genre.name}</h3>

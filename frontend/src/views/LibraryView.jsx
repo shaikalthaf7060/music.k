@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Heart, Disc, User, Music, Sparkles } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
-import { LOCAL_PLAYLISTS, LOCAL_ARTISTS } from '../services/api';
+import { ONLINE_PLAYLISTS, ONLINE_ARTISTS } from '../services/api';
 
 export default function LibraryView() {
   const { 
@@ -80,8 +80,8 @@ export default function LibraryView() {
           </div>
         ))}
 
-        {/* Featured Music.k Playlists */}
-        {(activeTab === 'all' || activeTab === 'playlists') && LOCAL_PLAYLISTS.map(pl => (
+        {/* Featured Online Playlists */}
+        {(activeTab === 'all' || activeTab === 'playlists') && ONLINE_PLAYLISTS.map(pl => (
           <div 
             key={pl.id}
             className="media-card"
@@ -96,7 +96,7 @@ export default function LibraryView() {
         ))}
 
         {/* Artists */}
-        {(activeTab === 'all' || activeTab === 'artists') && LOCAL_ARTISTS.map(art => (
+        {(activeTab === 'all' || activeTab === 'artists') && ONLINE_ARTISTS.map(art => (
           <div 
             key={art.id}
             className="media-card"

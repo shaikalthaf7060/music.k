@@ -15,7 +15,7 @@ import {
   ListMusic, 
   Activity, 
   Sliders,
-  Maximize2
+  Tv
 } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 
@@ -41,6 +41,7 @@ export default function PlayerBar() {
     isQueueOpen,
     isVisualizerOpen,
     isEqualizerOpen,
+    isVideoModalOpen,
     togglePlay,
     seek,
     setVolume,
@@ -54,6 +55,7 @@ export default function PlayerBar() {
     setIsQueueOpen,
     setIsVisualizerOpen,
     setIsEqualizerOpen,
+    setIsVideoModalOpen,
     navigateTo
   } = useAudio();
 
@@ -187,8 +189,17 @@ export default function PlayerBar() {
         </div>
       </div>
 
-      {/* Right: Audio FX, Lyrics, Queue, Volume */}
+      {/* Right: Tools & Volume */}
       <div className="player-right">
+        {/* Video Mode Toggle */}
+        <button 
+          className={`tool-icon-btn ${isVideoModalOpen ? 'active' : ''}`}
+          onClick={() => setIsVideoModalOpen(prev => !prev)}
+          title="Watch YouTube Video"
+        >
+          <Tv size={18} />
+        </button>
+
         {/* Synced Lyrics Toggle */}
         <button 
           className={`tool-icon-btn ${isLyricsOpen ? 'active' : ''}`}

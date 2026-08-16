@@ -1,7 +1,7 @@
 import React from 'react';
-import { Play, Pause, Flame, Sparkles, TrendingUp, Radio } from 'lucide-react';
+import { Play, Pause, Flame, Sparkles, TrendingUp, Radio, Globe } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
-import { LOCAL_TRACKS, LOCAL_PLAYLISTS, LOCAL_ARTISTS } from '../services/api';
+import { ONLINE_CHARTS, ONLINE_PLAYLISTS, ONLINE_ARTISTS } from '../services/api';
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -21,15 +21,20 @@ export default function HomeView() {
     }
   };
 
-  const quickPicks = LOCAL_TRACKS.slice(0, 6);
-  const synthwaveTracks = LOCAL_TRACKS.filter(t => t.genre.includes('Synth') || t.genre.includes('Cyber'));
-  const chillTracks = LOCAL_TRACKS.filter(t => t.genre.includes('Lo-Fi') || t.genre.includes('Acoustic') || t.genre.includes('Funk'));
+  const quickPicks = ONLINE_CHARTS.slice(0, 6);
+  const hiphopTracks = ONLINE_CHARTS.filter(t => t.genre.includes('Hip-Hop') || t.genre.includes('Trap') || t.genre.includes('Rage'));
+  const electronicTracks = ONLINE_CHARTS.filter(t => t.genre.includes('Synth') || t.genre.includes('Pop') || t.genre.includes('EDM') || t.genre.includes('Electronic'));
 
   return (
     <div className="home-view">
       {/* Dynamic Greeting Hero Banner */}
       <div className="hero-banner">
-        <h1 className="greeting-text">{getGreeting()}</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1 className="greeting-text">{getGreeting()}</h1>
+          <span className="brand-badge" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Globe size={12} /> YOUTIFY ONLINE STREAMING
+          </span>
+        </div>
 
         {/* Quick Access 6-Grid */}
         <div className="quick-grid">
@@ -68,14 +73,14 @@ export default function HomeView() {
       <section className="section-wrapper">
         <div className="section-header">
           <div>
-            <h2 className="section-title">Trending in Crimson</h2>
-            <p className="section-subtitle">Top global hits and adrenaline beats on music.k</p>
+            <h2 className="section-title">Global Red Top Charts 🔴</h2>
+            <p className="section-subtitle">The biggest streamed hits on YouTube & Spotify worldwide</p>
           </div>
           <button className="see-all-btn" onClick={() => navigateTo('library')}>See All</button>
         </div>
 
         <div className="cards-grid">
-          {LOCAL_PLAYLISTS.map(pl => (
+          {ONLINE_PLAYLISTS.map(pl => (
             <div 
               key={pl.id}
               className="media-card"
@@ -87,7 +92,7 @@ export default function HomeView() {
                   className="media-play-overlay-btn"
                   onClick={(e) => {
                     e.stopPropagation();
-                    const firstTrack = LOCAL_TRACKS.find(t => t.id === pl.tracks[0]) || LOCAL_TRACKS[0];
+                    const firstTrack = ONLINE_CHARTS.find(t => t.id === pl.tracks[0]) || ONLINE_CHARTS[0];
                     playTrack(firstTrack);
                   }}
                   title="Play Playlist"
@@ -102,23 +107,23 @@ export default function HomeView() {
         </div>
       </section>
 
-      {/* Section: Heavy Beats & High Energy */}
+      {/* Section: Hip-Hop, Phonk & Bass */}
       <section className="section-wrapper">
         <div className="section-header">
           <div>
-            <h2 className="section-title">Synthwave & Cyberpunk Velocity</h2>
-            <p className="section-subtitle">Analog resonance, dark electro, and retro pulse</p>
+            <h2 className="section-title">Hip-Hop & Heavy 808s</h2>
+            <p className="section-subtitle">West Coast anthems, rage beats, and legendary verses</p>
           </div>
         </div>
 
         <div className="cards-grid">
-          {synthwaveTracks.map(track => {
+          {hiphopTracks.map(track => {
             const isCurrent = currentTrack && currentTrack.id === track.id;
             return (
               <div 
                 key={track.id}
                 className="media-card"
-                onClick={() => handlePlayCard(track, synthwaveTracks)}
+                onClick={() => handlePlayCard(track, hiphopTracks)}
               >
                 <div className="media-card-img-wrapper">
                   <img src={track.coverUrl} alt={track.title} className="media-card-img" />
@@ -126,7 +131,7 @@ export default function HomeView() {
                     className="media-play-overlay-btn"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handlePlayCard(track, synthwaveTracks);
+                      handlePlayCard(track, hiphopTracks);
                     }}
                     title={isCurrent && isPlaying ? "Pause" : "Play"}
                   >
@@ -145,22 +150,22 @@ export default function HomeView() {
         </div>
       </section>
 
-      {/* Section: Featured Artists */}
+      {/* Section: Featured Global Artists */}
       <section className="section-wrapper">
         <div className="section-header">
           <div>
-            <h2 className="section-title">Featured Artists</h2>
-            <p className="section-subtitle">Producers shaping the sound of the Red platform</p>
+            <h2 className="section-title">Global Icons</h2>
+            <p className="section-subtitle">Top stream chart dominators on the red platform</p>
           </div>
         </div>
 
         <div className="cards-grid">
-          {LOCAL_ARTISTS.map(artist => (
+          {ONLINE_ARTISTS.map(artist => (
             <div 
               key={artist.id}
               className="media-card"
               onClick={() => {
-                const artistTrack = LOCAL_TRACKS.find(t => t.artist === artist.name) || LOCAL_TRACKS[0];
+                const artistTrack = ONLINE_CHARTS.find(t => t.artist.includes(artist.name)) || ONLINE_CHARTS[0];
                 playTrack(artistTrack);
               }}
             >
@@ -170,7 +175,7 @@ export default function HomeView() {
                   className="media-play-overlay-btn"
                   onClick={(e) => {
                     e.stopPropagation();
-                    const artistTrack = LOCAL_TRACKS.find(t => t.artist === artist.name) || LOCAL_TRACKS[0];
+                    const artistTrack = ONLINE_CHARTS.find(t => t.artist.includes(artist.name)) || ONLINE_CHARTS[0];
                     playTrack(artistTrack);
                   }}
                   title={`Play ${artist.name}`}
@@ -185,23 +190,23 @@ export default function HomeView() {
         </div>
       </section>
 
-      {/* Section: Midnight Lo-Fi & Chill */}
+      {/* Section: Electronic, Synthwave & Pop */}
       <section className="section-wrapper">
         <div className="section-header">
           <div>
-            <h2 className="section-title">Midnight Beats & Lo-Fi Tapeloops</h2>
-            <p className="section-subtitle">Cozy rain vibes, warm jazz chords, and subtle rhythms</p>
+            <h2 className="section-title">Synthwave, Nu-Disco & Euphoric EDM</h2>
+            <p className="section-subtitle">High-speed melodies, vocoders, and festival drops</p>
           </div>
         </div>
 
         <div className="cards-grid">
-          {chillTracks.map(track => {
+          {electronicTracks.map(track => {
             const isCurrent = currentTrack && currentTrack.id === track.id;
             return (
               <div 
                 key={track.id}
                 className="media-card"
-                onClick={() => handlePlayCard(track, chillTracks)}
+                onClick={() => handlePlayCard(track, electronicTracks)}
               >
                 <div className="media-card-img-wrapper">
                   <img src={track.coverUrl} alt={track.title} className="media-card-img" />
@@ -209,7 +214,7 @@ export default function HomeView() {
                     className="media-play-overlay-btn"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handlePlayCard(track, chillTracks);
+                      handlePlayCard(track, electronicTracks);
                     }}
                     title={isCurrent && isPlaying ? "Pause" : "Play"}
                   >

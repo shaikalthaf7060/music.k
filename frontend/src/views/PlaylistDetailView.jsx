@@ -1,7 +1,7 @@
 import React from 'react';
 import { Play, Pause, Shuffle, Heart, Clock, Music, Trash2, Plus } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
-import { LOCAL_PLAYLISTS, LOCAL_TRACKS } from '../services/api';
+import { ONLINE_PLAYLISTS, ONLINE_CHARTS } from '../services/api';
 
 function formatDuration(sec) {
   const m = Math.floor(sec / 60);
@@ -18,7 +18,6 @@ export default function PlaylistDetailView({ playlistId }) {
     likedTrackIds, 
     toggleLike, 
     customPlaylists,
-    removeTrackFromPlaylist,
     toggleShuffle,
     isShuffle
   } = useAudio();
@@ -26,7 +25,7 @@ export default function PlaylistDetailView({ playlistId }) {
   // Look in custom playlists or featured playlists
   let playlist = customPlaylists.find(p => p.id === playlistId);
   if (!playlist) {
-    playlist = LOCAL_PLAYLISTS.find(p => p.id === playlistId);
+    playlist = ONLINE_PLAYLISTS.find(p => p.id === playlistId);
   }
 
   if (!playlist) {
@@ -40,10 +39,10 @@ export default function PlaylistDetailView({ playlistId }) {
   // Resolve track objects
   const tracks = playlist.tracks.map(tId => {
     if (typeof tId === 'object') return tId;
-    return LOCAL_TRACKS.find(t => t.id === tId);
+    return ONLINE_CHARTS.find(t => t.id === tId);
   }).filter(Boolean);
 
-  const totalDurationSec = tracks.reduce((acc, t) => acc + (t.duration || 180), 0);
+  const totalDurationSec = tracks.reduce((acc, t) => acc + (t.duration || 200), 0);
   const totalMins = Math.floor(totalDurationSec / 60);
 
   const isCurrentPlaylistPlaying = tracks.some(t => currentTrack && t.id === currentTrack.id);
@@ -83,7 +82,7 @@ export default function PlaylistDetailView({ playlistId }) {
 
         <div>
           <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--red-bright)' }}>
-            Playlist
+            Playlist • Online Stream
           </span>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '2.8rem', fontWeight: 800, margin: '8px 0 12px', letterSpacing: '-1px' }}>
             {playlist.title}
