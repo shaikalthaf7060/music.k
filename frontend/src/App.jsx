@@ -13,6 +13,7 @@ import VisualizerModal from './components/VisualizerModal';
 import EqualizerModal from './components/EqualizerModal';
 import QueueDrawer from './components/QueueDrawer';
 import CreatePlaylistModal from './components/CreatePlaylistModal';
+import AuthModal from './components/AuthModal';
 
 function MainAppContent() {
   const { currentView, viewParam } = useAudio();
@@ -37,12 +38,12 @@ function MainAppContent() {
 
   return (
     <div className="app-container">
-      {/* Left Fixed Minimalist Navigation Sidebar (Home & Library only) */}
+      {/* Left Fixed Minimalist Navigation Sidebar */}
       <Sidebar />
 
       {/* Main Dynamic Viewport */}
       <main className="main-viewport">
-        {/* Top Header Bar */}
+        {/* Top Header Bar with Live Search & User Auth */}
         <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
         {/* Scrollable View Content */}
@@ -55,6 +56,7 @@ function MainAppContent() {
       <PlayerBar />
 
       {/* Dynamic Overlays & Modals */}
+      <AuthModal />
       <LyricsModal />
       <VisualizerModal />
       <EqualizerModal />

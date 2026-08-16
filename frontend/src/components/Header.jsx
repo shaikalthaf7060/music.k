@@ -1,28 +1,10 @@
 import React, { useState } from 'react';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Search, 
-  X, 
-  Sliders, 
-  Activity, 
-  Radio, 
-  Sparkles,
-  User
-} from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, User as UserIcon, LogOut, ShieldCheck, LogIn } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 
 export default function Header({ searchQuery, setSearchQuery }) {
-  const { 
-    currentView, 
-    navigateTo, 
-    setIsEqualizerOpen, 
-    setIsVisualizerOpen, 
-    isVisualizerOpen,
-    isEqualizerOpen 
-  } = useAudio();
-
-  const [activeFilter, setActiveFilter] = useState('All');
+  const { currentView, navigateTo, currentUser, authToken, logout, setIsAuthModalOpen } = useAudio();
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
@@ -34,92 +16,130 @@ export default function Header({ searchQuery, setSearchQuery }) {
 
   return (
     <header className="top-header">
+      {/* Left: Navigation history arrows */}
       <div className="header-left">
-        {/* Navigation History Arrows */}
-        <div className="history-btns">
-          <button 
-            className="circle-nav-btn" 
-            title="Go Back"
-            onClick={() => window.history.back()}
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <button 
-            className="circle-nav-btn" 
-            title="Go Forward"
-            onClick={() => window.history.forward()}
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
-
-        {/* Global Search Bar */}
-        <div className="search-bar-wrapper">
-          <Search size={18} className="search-icon-left" />
-          <input 
-            type="text"
-            className="search-input"
-            placeholder="Search tracks, artists, or genres..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            onFocus={() => {
-              if (currentView !== 'search') navigateTo('search');
-            }}
-          />
-          {searchQuery && (
-            <button 
-              className="search-clear-btn"
-              onClick={() => setSearchQuery('')}
-            >
-              <X size={16} />
-            </button>
-          )}
-        </div>
-
-        {/* Filter Pills */}
-        <div style={{ display: 'flex', gap: '8px', marginLeft: '12px' }}>
-          {['All', 'Music', 'Phonk & Bass', 'Lo-Fi Chill'].map(filter => (
-            <button
-              key={filter}
-              className={`badge-pill-btn ${activeFilter === filter ? 'active-red' : ''}`}
-              onClick={() => setActiveFilter(filter)}
-            >
-              {filter}
-            </button>
-          ))}
-        </div>
+        <button 
+          className="history-arrow-btn" 
+          onClick={() => navigateTo('home')}
+          title="Back to Home"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        <button 
+          className="history-arrow-btn" 
+          onClick={() => navigateTo('library')}
+          title="Go to Library"
+        >
+          <ChevronRight size={20} />
+        </button>
       </div>
 
-      <div className="header-right">
-        {/* Audio Equalizer Quick Trigger */}
-        <button 
-          className={`badge-pill-btn ${isEqualizerOpen ? 'active-red' : ''}`}
-          onClick={() => setIsEqualizerOpen(prev => !prev)}
-          title="Audio Equalizer & FX"
-        >
-          <Sliders size={16} color="#FF2A3A" />
-          <span>EQ</span>
-        </button>
+      {/* Center: Live Music Search Bar */}
+      <div className="search-bar-wrapper">
+        <Search size={18} className="search-icon-inside" />
+        <input 
+          type="text" 
+          placeholder="Search any song, artist, or album worldwide..." 
+          className="search-input"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          onFocus={() => {
+            if (currentView !== 'search') navigateTo('search');
+          }}
+        />
+      </div>
 
-        {/* Visualizer Quick Trigger */}
-        <button 
-          className={`badge-pill-btn ${isVisualizerOpen ? 'active-red' : ''}`}
-          onClick={() => setIsVisualizerOpen(prev => !prev)}
-          title="Real-time Sound Visualizer"
-        >
-          <Activity size={16} color="#FF2A3A" />
-          <span>Visualizer</span>
-        </button>
+      {/* Right: User Authentication & Profile */}
+      <div className="header-right" style={{ position: 'relative' }}>
+        {authToken ? (
+          <div style={{ position: 'relative' }}>
+            <button 
+              className="user-profile-badge" 
+              onClick={() => setShowDropdown(prev => !prev)}
+              style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.08)', padding: '4px 12px 4px 6px', borderRadius: '30px', border: '1px solid rgba(229, 9, 20, 0.4)', cursor: 'pointer' }}
+            >
+              <img 
+                src={currentUser?.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=musickvip"} 
+                alt="Avatar" 
+                style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#1e1e24' }} 
+              />
+              <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'white' }}>
+                {currentUser?.name || "VIP Red Member"}
+              </span>
+            </button>
 
-        {/* User Profile Pill */}
-        <div className="user-avatar-btn" title="music.k VIP Red Account">
-          <img 
-            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" 
-            alt="Profile" 
-            className="user-avatar-img" 
-          />
-          <span className="user-name">Shaik</span>
-        </div>
+            {/* User Dropdown Menu */}
+            {showDropdown && (
+              <div 
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '115%',
+                  background: '#18181c',
+                  border: '1px solid rgba(229, 9, 20, 0.3)',
+                  borderRadius: '10px',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.8)',
+                  padding: '8px',
+                  minWidth: '200px',
+                  zIndex: 999
+                }}
+              >
+                <div style={{ padding: '8px 12px', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '6px' }}>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 800, color: 'white' }}>{currentUser?.name}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{currentUser?.email}</div>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', marginTop: '4px', fontSize: '0.72rem', color: '#FF2A3A', fontWeight: 800 }}>
+                    <ShieldCheck size={12} />
+                    <span>{currentUser?.tier || "VIP Red Premium"}</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    logout();
+                    setShowDropdown(false);
+                  }}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#ff6b6b',
+                    fontWeight: 600,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    textAlign: 'left'
+                  }}
+                >
+                  <LogOut size={16} />
+                  <span>Log Out</span>
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <button 
+            className="main-play-btn" 
+            onClick={() => setIsAuthModalOpen(true)}
+            style={{ 
+              borderRadius: '24px', 
+              padding: '8px 18px', 
+              width: 'auto', 
+              height: 'auto', 
+              fontSize: '0.88rem', 
+              fontWeight: 800,
+              gap: '6px',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            <LogIn size={16} />
+            <span>Sign In</span>
+          </button>
+        )}
       </div>
     </header>
   );

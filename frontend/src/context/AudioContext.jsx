@@ -4,6 +4,8 @@ import confetti from 'canvas-confetti';
 
 const AudioContext = createContext();
 
+const API_BASE = "http://localhost:8000";
+
 export const EQ_PRESETS = {
   "Bass Boost": [8, 5, 1, -1, -2],
   "EDM Crimson": [6, 4, 0, 3, 5],
@@ -25,34 +27,32 @@ export function AudioProvider({ children }) {
   const [history, setHistory] = useState([]);
   const [isShuffle, setIsShuffle] = useState(false);
   const [repeatMode, setRepeatMode] = useState('off');
+  
+  // Auth state
+  const [authToken, setAuthToken] = useState(() => localStorage.getItem('musick_auth_token') || '');
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem('musick_user_profile');
+    return saved ? JSON.parse(saved) : {
+      id: "guest_01",
+      name: "VIP Red Member",
+      email: "listener@musick.stream",
+      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=musickvip",
+      tier: "VIP Red Premium"
+    };
+  });
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
   const [likedTrackIds, setLikedTrackIds] = useState(() => {
     const saved = localStorage.getItem('musick_liked_tracks');
-    return saved ? JSON.parse(saved) : ['track-01', 'track-02', 'track-04'];
+    return saved ? JSON.parse(saved) : ['chart-01', 'chart-02', 'chart-04'];
   });
   
-  const [customPlaylists, setCustomPlaylists] = useState(() => {
-    const saved = localStorage.getItem('musick_custom_playlists');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
-    }
-    return [
-      {
-        id: "custom-01",
-        title: "Crimson Adrenaline Mix 🔴",
-        description: "Pure energy hits streamed live online with zero ads",
-        coverUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80",
-        tracks: ["track-01", "track-02", "track-05"]
-      }
-    ];
-  });
-
   const [currentView, setCurrentView] = useState('home');
   const [viewParam, setViewParam] = useState(null);
   const [isLyricsOpen, setIsLyricsOpen] = useState(false);
   const [isVisualizerOpen, setIsVisualizerOpen] = useState(false);
   const [isEqualizerOpen, setIsEqualizerOpen] = useState(false);
   const [isQueueOpen, setIsQueueOpen] = useState(false);
-  const [isCreatePlaylistOpen, setIsCreatePlaylistOpen] = useState(false);
 
   const [activeLyrics, setActiveLyrics] = useState([]);
   const [currentLyricIndex, setCurrentLyricIndex] = useState(-1);
@@ -60,22 +60,39 @@ export function AudioProvider({ children }) {
   const [activeEqPreset, setActiveEqPreset] = useState("EDM Crimson");
   const [eqBands, setEqBands] = useState(EQ_PRESETS["EDM Crimson"]);
 
-  // Bulletproof HTML5 Audio instance
   const audioRef = useRef(new Audio());
-  const audioInitializedRef = useRef(false);
 
   useEffect(() => {
     localStorage.setItem('musick_liked_tracks', JSON.stringify(likedTrackIds));
-  }, [likedTrackIds]);
+    if (authToken) {
+      fetch(`${API_BASE}/api/user/sync-likes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify(likedTrackIds)
+      }).catch(() => {});
+    }
+  }, [likedTrackIds, authToken]);
 
   useEffect(() => {
-    localStorage.setItem('musick_custom_playlists', JSON.stringify(customPlaylists));
-  }, [customPlaylists]);
+    if (authToken) {
+      localStorage.setItem('musick_auth_token', authToken);
+    } else {
+      localStorage.removeItem('musick_auth_token');
+    }
+  }, [authToken]);
+
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('musick_user_profile', JSON.stringify(currentUser));
+    }
+  }, [currentUser]);
 
   // Setup Audio element event listeners
   useEffect(() => {
     const audio = audioRef.current;
-    audio.crossOrigin = "anonymous";
     audio.volume = volume;
 
     const handleTimeUpdate = () => {
@@ -97,25 +114,14 @@ export function AudioProvider({ children }) {
       }
     };
 
-    const handleError = (e) => {
-      console.warn("Audio source fallback triggered", e);
-      // Fallback from local file to remote CDN or vice versa
-      if (currentTrack && currentTrack.audioUrl && audio.src !== currentTrack.audioUrl) {
-        audio.src = currentTrack.audioUrl;
-        audio.play().catch(() => {});
-      }
-    };
-
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('ended', handleEnded);
-    audio.addEventListener('error', handleError);
 
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('ended', handleEnded);
-      audio.removeEventListener('error', handleError);
     };
   }, [repeatMode, currentTrack, volume]);
 
@@ -145,8 +151,8 @@ export function AudioProvider({ children }) {
     }
   }, [currentTrack]);
 
-  // Play a specific track (Instant, Guaranteed Audio Playback)
-  const playTrack = useCallback((track, playlistContext = null) => {
+  // 100% Ad-Free YouTube Music Full Song Playback
+  const playTrack = useCallback(async (track, playlistContext = null) => {
     if (playlistContext) {
       const nextInList = playlistContext.filter(t => t.id !== track.id);
       setQueue(nextInList);
@@ -161,23 +167,32 @@ export function AudioProvider({ children }) {
     setDuration(track.duration || 200);
 
     const audio = audioRef.current;
-    // Prefer local audio if downloaded, fallback to remote streaming URL
-    audio.src = track.localAudio || track.audioUrl;
-    audio.load();
+    audio.pause();
 
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch(err => {
-          console.warn("Primary source playback failed, trying remote url", err);
-          if (track.audioUrl && audio.src !== track.audioUrl) {
-            audio.src = track.audioUrl;
-            audio.play().then(() => setIsPlaying(true)).catch(() => {});
+    // 1. Fetch full-length ad-free stream from YouTube Music backend
+    try {
+      const q = `${track.artist} ${track.title}`;
+      const res = await fetch(`${API_BASE}/api/stream?q=${encodeURIComponent(q)}`);
+      if (res.ok) {
+        const streamData = await res.json();
+        if (streamData.streamUrl) {
+          audio.src = streamData.streamUrl;
+          if (streamData.duration) {
+            setDuration(streamData.duration);
           }
-        });
+          await audio.play();
+          setIsPlaying(true);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("Backend stream fetch fallback:", err);
+    }
+
+    // 2. Fallback to direct audioUrl
+    if (track.audioUrl) {
+      audio.src = track.audioUrl;
+      audio.play().then(() => setIsPlaying(true)).catch(() => {});
     }
   }, [currentTrack]);
 
@@ -188,11 +203,12 @@ export function AudioProvider({ children }) {
       setIsPlaying(false);
     } else {
       if (!audio.src && currentTrack) {
-        audio.src = currentTrack.localAudio || currentTrack.audioUrl;
+        playTrack(currentTrack);
+        return;
       }
       audio.play().then(() => setIsPlaying(true)).catch(() => {});
     }
-  }, [isPlaying, currentTrack]);
+  }, [isPlaying, currentTrack, playTrack]);
 
   const nextTrack = useCallback(() => {
     if (queue.length > 0) {
@@ -293,46 +309,52 @@ export function AudioProvider({ children }) {
     });
   }, []);
 
-  const createPlaylist = useCallback((title, description = "") => {
-    const newId = `custom-${Date.now()}`;
-    const newPl = {
-      id: newId,
-      title: title || "My Red Playlist",
-      description: description || "Curated in music.k",
-      coverUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80",
-      tracks: [currentTrack ? currentTrack.id : 'track-01']
-    };
-    setCustomPlaylists(prev => [newPl, ...prev]);
-    try {
-      confetti({
-        particleCount: 50,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#FF2A3A', '#E50914', '#FFD700']
-      });
-    } catch (e) {}
-    return newPl;
-  }, [currentTrack]);
+  // Authentication Handlers
+  const login = async (email, password) => {
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Login failed');
+    }
+    const data = await res.json();
+    setAuthToken(data.token);
+    setCurrentUser(data.user);
+    if (data.user.likedTracks && data.user.likedTracks.length > 0) {
+      setLikedTrackIds(data.user.likedTracks);
+    }
+    return data.user;
+  };
 
-  const addTrackToPlaylist = useCallback((playlistId, trackId) => {
-    setCustomPlaylists(prev => prev.map(pl => {
-      if (pl.id === playlistId) {
-        if (!pl.tracks.includes(trackId)) {
-          return { ...pl, tracks: [...pl.tracks, trackId] };
-        }
-      }
-      return pl;
-    }));
-  }, []);
+  const register = async (name, email, password) => {
+    const res = await fetch(`${API_BASE}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Registration failed');
+    }
+    const data = await res.json();
+    setAuthToken(data.token);
+    setCurrentUser(data.user);
+    return data.user;
+  };
 
-  const removeTrackFromPlaylist = useCallback((playlistId, trackId) => {
-    setCustomPlaylists(prev => prev.map(pl => {
-      if (pl.id === playlistId) {
-        return { ...pl, tracks: pl.tracks.filter(id => id !== trackId) };
-      }
-      return pl;
-    }));
-  }, []);
+  const logout = () => {
+    setAuthToken('');
+    setCurrentUser({
+      id: "guest_01",
+      name: "Guest Listener",
+      email: "guest@musick.stream",
+      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=guest",
+      tier: "Free Listener"
+    });
+  };
 
   const setEqualizerBand = useCallback((index, valueDb) => {
     setEqBands(prev => {
@@ -370,14 +392,15 @@ export function AudioProvider({ children }) {
         isShuffle,
         repeatMode,
         likedTrackIds,
-        customPlaylists,
+        currentUser,
+        authToken,
+        isAuthModalOpen,
         currentView,
         viewParam,
         isLyricsOpen,
         isVisualizerOpen,
         isEqualizerOpen,
         isQueueOpen,
-        isCreatePlaylistOpen,
         activeLyrics,
         currentLyricIndex,
         activeEqPreset,
@@ -392,9 +415,10 @@ export function AudioProvider({ children }) {
         toggleShuffle,
         toggleRepeat,
         toggleLike,
-        createPlaylist,
-        addTrackToPlaylist,
-        removeTrackFromPlaylist,
+        login,
+        register,
+        logout,
+        setIsAuthModalOpen,
         setEqualizerBand,
         applyEqPreset,
         navigateTo,
@@ -402,7 +426,6 @@ export function AudioProvider({ children }) {
         setIsVisualizerOpen,
         setIsEqualizerOpen,
         setIsQueueOpen,
-        setIsCreatePlaylistOpen,
         setQueue
       }}
     >
