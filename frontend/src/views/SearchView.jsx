@@ -1,28 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, Heart, Plus, Clock, Search as SearchIcon, Music, Globe, Sparkles } from 'lucide-react';
+import { Play, Pause, Heart, Clock, Search as SearchIcon, Music, Sparkles } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
-import { searchMusicOnline, ONLINE_GENRES, ONLINE_CHARTS } from '../services/api';
+import { searchMusicOnline, ONLINE_CHARTS } from '../services/api';
 
 function formatDuration(sec) {
+  if (!sec || isNaN(sec)) return "3:00";
   const m = Math.floor(sec / 60);
   const s = Math.floor(sec % 60);
   return `${m}:${s < 10 ? '0' : ''}${s}`;
 }
 
 export default function SearchView({ searchQuery }) {
-  const { currentTrack, isPlaying, playTrack, togglePlay, likedTrackIds, toggleLike, navigateTo } = useAudio();
+  const { currentTrack, isPlaying, playTrack, togglePlay, likedTrackIds, toggleLike } = useAudio();
   const [results, setResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    if (searchQuery.trim().length > 0) {
+    if (searchQuery && searchQuery.trim().length > 0) {
       setIsSearching(true);
       const timer = setTimeout(() => {
         searchMusicOnline(searchQuery).then(res => {
           setResults(res);
           setIsSearching(false);
         });
-      }, 250);
+      }, 200);
 
       return () => clearTimeout(timer);
     } else {
@@ -35,193 +36,135 @@ export default function SearchView({ searchQuery }) {
     if (currentTrack && currentTrack.id === track.id) {
       togglePlay();
     } else {
-      playTrack(track, trackList);
+      playTrack(track, trackList || results?.tracks || ONLINE_CHARTS);
     }
   };
 
   return (
-    <div className="search-view" style={{ padding: '24px 28px' }}>
+    <div className="search-view" style={{ padding: '24px 32px' }}>
       {/* If Search Query is active */}
-      {searchQuery.trim().length > 0 ? (
+      {searchQuery && searchQuery.trim().length > 0 ? (
         <div>
           {isSearching && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--red-bright)', marginBottom: '16px', fontSize: '0.9rem' }}>
-              <Sparkles size={16} className="spin-anim" />
-              <span>Searching online music catalog...</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--red-bright)', marginBottom: '20px', fontSize: '0.95rem', fontWeight: 600 }}>
+              <Sparkles size={18} />
+              <span>Searching live music catalog...</span>
             </div>
           )}
 
-          {results && results.tracks.length === 0 && results.artists.length === 0 && !isSearching ? (
+          {results && results.tracks.length === 0 && !isSearching ? (
             <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
-              <Music size={48} color="#FF2A3A" style={{ marginBottom: '16px' }} />
-              <h2>No results found for "{searchQuery}"</h2>
-              <p>Search for any song, artist (e.g. "The Weeknd", "Drake", "Eminem", "Taylor Swift", "Arijit Singh"), or genre.</p>
+              <Music size={48} color="#FF2A3A" style={{ marginBottom: '16px', opacity: 0.7 }} />
+              <h2 style={{ fontSize: '1.5rem', marginBottom: '8px', color: 'white' }}>No results found for "{searchQuery}"</h2>
+              <p>Try searching for popular artists (e.g. "Coldplay", "Eminem", "The Weeknd", "Taylor Swift", "Arijit Singh") or track titles.</p>
             </div>
           ) : (
             <div>
-              {/* Top Result + Songs Split */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 380px) 1fr', gap: '24px', marginBottom: '32px' }}>
-                {/* Top Result Card */}
-                {results?.topResult && (
-                  <div>
-                    <h2 className="section-title" style={{ marginBottom: '16px' }}>Top Result</h2>
-                    <div 
-                      className="media-card" 
-                      style={{ padding: '20px', height: 'calc(100% - 44px)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
-                      onClick={() => {
-                        if (results.topResult.type === 'track') {
-                          handleTrackClick(results.topResult.data, results.tracks);
-                        } else if (results.topResult.type === 'playlist') {
-                          navigateTo('playlist', results.topResult.data.id);
-                        }
-                      }}
-                    >
-                      <div>
-                        <img 
-                          src={results.topResult.data.coverUrl || results.topResult.data.image} 
-                          alt="Top Result" 
-                          style={{ 
-                            width: '100px', 
-                            height: '100px', 
-                            borderRadius: results.topResult.type === 'artist' ? '50%' : '8px', 
-                            objectFit: 'cover',
-                            marginBottom: '16px',
-                            boxShadow: 'var(--shadow-md)'
-                          }} 
-                        />
-                        <h1 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '6px' }}>
-                          {results.topResult.data.title || results.topResult.data.name}
-                        </h1>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>
-                          <span style={{ color: 'var(--red-bright)', fontWeight: 700 }}>
-                            {results.topResult.type.toUpperCase()}
-                          </span> • {results.topResult.data.artist || results.topResult.data.genre || "Online Stream"}
-                        </p>
-                      </div>
+              <h2 className="section-title" style={{ fontSize: '1.4rem', marginBottom: '18px' }}>
+                Search Results ({results?.tracks.length || 0})
+              </h2>
 
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-                        <button 
-                          className="main-play-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (results.topResult.type === 'track') {
-                              handleTrackClick(results.topResult.data, results.tracks);
-                            }
-                          }}
-                        >
-                          {currentTrack?.id === results.topResult.data?.id && isPlaying ? (
-                            <Pause size={20} fill="#ffffff" />
+              <table className="tracks-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '44px', textAlign: 'center' }}>#</th>
+                    <th>Title</th>
+                    <th>Album</th>
+                    <th>Year</th>
+                    <th style={{ width: '80px', textAlign: 'right' }}>
+                      <Clock size={16} style={{ verticalAlign: 'middle' }} />
+                    </th>
+                    <th style={{ width: '50px' }}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {results?.tracks.map((track, idx) => {
+                    const isCurrent = currentTrack && currentTrack.id === track.id;
+                    const isLiked = likedTrackIds.includes(track.id);
+
+                    return (
+                      <tr 
+                        key={track.id || idx}
+                        className={`track-row ${isCurrent ? 'playing' : ''}`}
+                        onClick={() => handleTrackClick(track, results.tracks)}
+                      >
+                        <td className="track-cell track-num-cell">
+                          {isCurrent && isPlaying ? (
+                            <div className="sound-wave" style={{ justifyContent: 'center' }}>
+                              <span /><span /><span /><span />
+                            </div>
                           ) : (
-                            <Play size={20} fill="#ffffff" style={{ marginLeft: '2px' }} />
+                            idx + 1
                           )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                        </td>
 
-                {/* Matching Songs List */}
-                <div>
-                  <h2 className="section-title" style={{ marginBottom: '16px' }}>
-                    Songs ({results?.tracks.length || 0})
-                  </h2>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    {results?.tracks.slice(0, 6).map(track => {
-                      const isCurrent = currentTrack && currentTrack.id === track.id;
-                      const isLiked = likedTrackIds.includes(track.id);
-
-                      return (
-                        <div 
-                          key={track.id}
-                          className={`playlist-item-row ${isCurrent ? 'active' : ''}`}
-                          style={{ justifyContent: 'space-between', padding: '8px 12px' }}
-                          onClick={() => handleTrackClick(track, results.tracks)}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden' }}>
-                            <img src={track.coverUrl} alt={track.title} style={{ width: '42px', height: '42px', borderRadius: '4px', objectFit: 'cover' }} />
-                            <div className="playlist-row-info">
-                              <span className="playlist-row-title" style={{ color: isCurrent ? 'var(--red-bright)' : 'white' }}>
-                                {track.title}
-                              </span>
-                              <span className="playlist-row-subtitle">{track.artist}</span>
+                        <td className="track-cell">
+                          <div className="track-info-cell">
+                            <img src={track.coverUrl} alt={track.title} className="track-row-thumb" />
+                            <div className="track-titles">
+                              <span className="track-title-text">{track.title}</span>
+                              <span className="track-artist-text">{track.artist}</span>
                             </div>
                           </div>
+                        </td>
 
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                            <button 
-                              className={`like-heart-btn ${isLiked ? 'liked' : ''}`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleLike(track.id);
-                              }}
-                            >
-                              <Heart size={16} fill={isLiked ? "#FF2A3A" : "none"} />
-                            </button>
-                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', minWidth: '35px' }}>
-                              {formatDuration(track.duration)}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
+                        <td className="track-cell" style={{ color: 'var(--text-muted)' }}>
+                          {track.album}
+                        </td>
 
-              {/* Matching Playlists */}
-              {results?.playlists.length > 0 && (
-                <section style={{ marginTop: '32px' }}>
-                  <h2 className="section-title" style={{ marginBottom: '16px' }}>Playlists</h2>
-                  <div className="cards-grid">
-                    {results.playlists.map(pl => (
-                      <div 
-                        key={pl.id}
-                        className="media-card"
-                        onClick={() => navigateTo('playlist', pl.id)}
-                      >
-                        <div className="media-card-img-wrapper">
-                          <img src={pl.coverUrl} alt={pl.title} className="media-card-img" />
-                          <button className="media-play-overlay-btn">
-                            <Play size={20} fill="#ffffff" style={{ marginLeft: '3px' }} />
+                        <td className="track-cell" style={{ color: 'var(--text-muted)' }}>
+                          {track.year || '2026'}
+                        </td>
+
+                        <td className="track-cell" style={{ textAlign: 'right', color: 'var(--text-muted)' }}>
+                          {formatDuration(track.duration)}
+                        </td>
+
+                        <td className="track-cell" style={{ textAlign: 'center' }}>
+                          <button 
+                            className={`like-heart-btn ${isLiked ? 'liked' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleLike(track.id);
+                            }}
+                            title={isLiked ? "Unlike" : "Like"}
+                          >
+                            <Heart size={16} fill={isLiked ? "#FF2A3A" : "none"} />
                           </button>
-                        </div>
-                        <h3 className="media-card-title">{pl.title}</h3>
-                        <p className="media-card-desc">{pl.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
       ) : (
-        /* Browse All Genres & Moods Grid */
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-            <Globe size={24} color="#FF2A3A" />
-            <h1 className="greeting-text" style={{ fontSize: '1.8rem' }}>
-              Explore Live Online Streaming
-            </h1>
-          </div>
+        /* Empty Search Prompt with quick suggestions */
+        <div style={{ textAlign: 'center', padding: '60px 0' }}>
+          <SearchIcon size={52} color="#FF2A3A" style={{ marginBottom: '16px', opacity: 0.8 }} />
+          <h1 className="greeting-text" style={{ fontSize: '2rem', marginBottom: '8px' }}>
+            Search Millions of Songs
+          </h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1rem', maxWidth: '480px', margin: '0 auto 24px' }}>
+            Type any song, artist, or album in the top search bar to stream live online.
+          </p>
 
-          <div className="genre-grid">
-            {ONLINE_GENRES.map(genre => (
-              <div 
-                key={genre.id}
-                className="genre-tile"
-                style={{ background: genre.color }}
+          <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '8px' }}>
+            {['The Weeknd', 'Coldplay', 'Eminem', 'Taylor Swift', 'Billie Eilish', 'Kendrick Lamar', 'Arijit Singh', 'Dua Lipa', 'Drake', 'Alan Walker'].map(tag => (
+              <button
+                key={tag}
+                className="badge-pill-btn"
                 onClick={() => {
-                  searchMusicOnline(genre.query).then(res => {
-                    if (res.tracks.length > 0) {
-                      playTrack(res.tracks[0], res.tracks);
-                    }
+                  searchMusicOnline(tag).then(res => {
+                    setResults(res);
                   });
                 }}
+                style={{ padding: '8px 16px', fontSize: '0.88rem' }}
               >
-                <h3 className="genre-name">{genre.name}</h3>
-                <img src={genre.image} alt={genre.name} className="genre-img" />
-              </div>
+                {tag}
+              </button>
             ))}
           </div>
         </div>
