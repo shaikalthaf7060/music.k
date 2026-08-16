@@ -3,10 +3,11 @@ import json
 import time
 import hashlib
 from typing import Optional, List
-from fastapi import FastAPI, HTTPException, Depends, Header, Query
+from fastapi import FastAPI, HTTPException, Depends, Header, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, StreamingResponse, Response
 from pydantic import BaseModel
+import requests
 
 app = FastAPI(title="music.k Audio & Auth API", version="2.0.0")
 
@@ -39,7 +40,6 @@ def save_json(filepath, data):
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
-# In-memory stream cache
 stream_cache = load_json(STREAM_CACHE_FILE, {})
 
 class UserRegister(BaseModel):
@@ -50,9 +50,6 @@ class UserRegister(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
-
-class LikeTrackRequest(BaseModel):
-    trackId: str
 
 @app.get("/")
 def root():
@@ -124,7 +121,6 @@ def login(creds: UserLogin):
 @app.get("/api/auth/me")
 def get_current_user(authorization: Optional[str] = Header(None)):
     if not authorization:
-        # Default guest user
         return {
             "user": {
                 "id": "guest_01",
@@ -170,65 +166,107 @@ def sync_likes(likes: List[str], authorization: Optional[str] = Header(None)):
     
     return {"status": "ok", "synced": len(likes)}
 
-# ----------------- AD-FREE YOUTUBE MUSIC STREAM ENGINE -----------------
+# ----------------- YOUTUBE MUSIC AD-FREE STREAM EXTRACTION -----------------
 
-@app.get("/api/stream")
-def get_stream_audio(q: str = Query(..., description="Song name or artist"), video_id: Optional[str] = None):
-    """
-    Extracts 100% ad-free, full-length audio stream directly from YouTube Music.
-    """
-    cache_key = (video_id or q).strip().lower()
+def extract_stream_info(query_or_id: str):
+    clean_key = query_or_id.strip().lower()
     
-    if cache_key in stream_cache:
-        cached = stream_cache[cache_key]
-        if time.time() - cached.get("timestamp", 0) < 18000: # 5 hour cache
+    if clean_key in stream_cache:
+        cached = stream_cache[clean_key]
+        if time.time() - cached.get("timestamp", 0) < 18000:
             return cached
 
-    # 1. Try yt-dlp to extract highest quality direct ad-free audio stream
-    try:
-        import yt_dlp
-        query = f"https://www.youtube.com/watch?v={video_id}" if video_id else f"ytsearch1:{q} audio"
+    import yt_dlp
+    query = f"https://www.youtube.com/watch?v={query_or_id}" if len(query_or_id) == 11 and not " " in query_or_id else f"ytsearch1:{query_or_id} audio"
+    
+    ydl_opts = {
+        'format': 'bestaudio[ext=m4a]/bestaudio/best',
+        'quiet': True,
+        'no_warnings': True,
+        'noplaylist': True,
+        'extract_flat': False
+    }
+    
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(query, download=False)
+        if 'entries' in info and info['entries']:
+            info = info['entries'][0]
         
-        ydl_opts = {
-            'format': 'bestaudio[ext=m4a]/bestaudio/best',
-            'quiet': True,
-            'no_warnings': True,
-            'noplaylist': True,
-            'extract_flat': False
-        }
-        
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(query, download=False)
-            if 'entries' in info and info['entries']:
-                info = info['entries'][0]
+        audio_url = info.get('url')
+        if audio_url:
+            result = {
+                "status": "success",
+                "streamUrl": audio_url,
+                "title": info.get('title'),
+                "artist": info.get('uploader') or info.get('channel') or "Artist",
+                "duration": info.get('duration') or 210,
+                "coverUrl": info.get('thumbnail') or "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600",
+                "timestamp": int(time.time())
+            }
+            stream_cache[clean_key] = result
+            save_json(STREAM_CACHE_FILE, stream_cache)
+            return result
             
-            audio_url = info.get('url')
-            if audio_url:
-                result = {
-                    "status": "success",
-                    "streamUrl": audio_url,
-                    "title": info.get('title'),
-                    "artist": info.get('uploader') or info.get('channel') or "Artist",
-                    "duration": info.get('duration') or 210,
-                    "coverUrl": info.get('thumbnail') or "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600",
-                    "timestamp": int(time.time())
-                }
-                stream_cache[cache_key] = result
-                save_json(STREAM_CACHE_FILE, stream_cache)
-                return result
-    except Exception as e:
-        print("yt-dlp extract error:", e)
+    return None
 
-    # 2. Invidious / Piped audio fallback
+@app.get("/api/stream")
+def get_stream_meta(q: str = Query(..., description="Song name or artist"), video_id: Optional[str] = None):
+    target = video_id or q
+    res = extract_stream_info(target)
+    if res:
+        return res
     return {
         "status": "fallback",
         "streamUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-        "title": q,
-        "artist": "music.k",
-        "duration": 220,
-        "coverUrl": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600",
-        "timestamp": int(time.time())
+        "duration": 210
     }
+
+@app.get("/api/stream-audio")
+def stream_audio_proxy(request: Request, q: str = Query(..., description="Song title and artist")):
+    """
+    Direct proxy audio streaming from YouTube Music with full length and range headers.
+    """
+    info = extract_stream_info(q)
+    if not info or not info.get("streamUrl"):
+        raise HTTPException(status_code=404, detail="Audio stream not found")
+
+    target_url = info["streamUrl"]
+    
+    # Forward range header if browser sends it for scrub seeking
+    range_header = request.headers.get("range")
+    req_headers = {"User-Agent": "Mozilla/5.0"}
+    if range_header:
+        req_headers["Range"] = range_header
+
+    try:
+        upstream = requests.get(target_url, headers=req_headers, stream=True, timeout=10)
+        
+        resp_headers = {
+            "Accept-Ranges": "bytes",
+            "Content-Type": upstream.headers.get("Content-Type", "audio/mp4"),
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Range, Content-Type",
+            "Access-Control-Expose-Headers": "Content-Range, Content-Length, Accept-Ranges"
+        }
+        
+        if "Content-Range" in upstream.headers:
+            resp_headers["Content-Range"] = upstream.headers["Content-Range"]
+        if "Content-Length" in upstream.headers:
+            resp_headers["Content-Length"] = upstream.headers["Content-Length"]
+
+        def iterfile():
+            for chunk in upstream.iter_content(chunk_size=65536):
+                if chunk:
+                    yield chunk
+
+        return StreamingResponse(
+            iterfile(),
+            status_code=upstream.status_code,
+            headers=resp_headers
+        )
+    except Exception as e:
+        print("Proxy stream error:", e)
+        raise HTTPException(status_code=500, detail="Failed to stream audio")
 
 if __name__ == "__main__":
     import uvicorn

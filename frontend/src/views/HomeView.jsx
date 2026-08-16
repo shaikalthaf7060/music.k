@@ -1,7 +1,9 @@
 import React from 'react';
-import { Play, Pause, Heart, Clock, Flame, Sparkles } from 'lucide-react';
+import { Play, Pause, Heart, Clock, Flame } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 import { ONLINE_CHARTS } from '../services/api';
+
+const DEFAULT_COVER = "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a6/6e/bf/a66ebf79-5008-8948-b352-a790fc87446b/19UM1IM04638.rgb.jpg/600x600bb.jpg";
 
 function formatDuration(sec) {
   const m = Math.floor(sec / 60);
@@ -12,7 +14,7 @@ function formatDuration(sec) {
 export default function HomeView() {
   const { currentTrack, isPlaying, playTrack, togglePlay, likedTrackIds, toggleLike } = useAudio();
 
-  const featured = ONLINE_CHARTS[0]; // The Weeknd - Blinding Lights
+  const featured = ONLINE_CHARTS[0];
   const isFeaturedCurrent = currentTrack && currentTrack.id === featured.id;
 
   const handlePlayFeatured = () => {
@@ -37,9 +39,9 @@ export default function HomeView() {
       <div 
         style={{
           display: 'grid',
-          gridTemplateColumns: 'minmax(200px, 260px) 1fr',
+          gridTemplateColumns: 'minmax(200px, 240px) 1fr',
           gap: '28px',
-          padding: '28px',
+          padding: '24px',
           background: 'linear-gradient(135deg, rgba(229, 9, 20, 0.25) 0%, rgba(20, 20, 24, 0.85) 100%)',
           borderRadius: '16px',
           border: '1px solid rgba(229, 9, 20, 0.3)',
@@ -48,10 +50,11 @@ export default function HomeView() {
           alignItems: 'center'
         }}
       >
-        <div style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.8)' }}>
+        <div style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.8)', background: '#121216' }}>
           <img 
             src={featured.coverUrl} 
             alt={featured.title} 
+            onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER; }}
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} 
           />
         </div>
@@ -60,7 +63,7 @@ export default function HomeView() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
             <Flame size={16} color="#FF2A3A" />
             <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', color: '#FF2A3A' }}>
-              SPOTLIGHT • ONLINE STREAM
+              SPOTLIGHT • YOUTUBE MUSIC STREAM
             </span>
           </div>
 
@@ -100,7 +103,7 @@ export default function HomeView() {
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h2 className="section-title" style={{ fontSize: '1.4rem' }}>Trending Hits</h2>
-          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Full-length online audio</span>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>100% Ad-Free • Full-Length Stream</span>
         </div>
 
         <table className="tracks-table">
@@ -139,7 +142,12 @@ export default function HomeView() {
 
                   <td className="track-cell">
                     <div className="track-info-cell">
-                      <img src={track.coverUrl} alt={track.title} className="track-row-thumb" />
+                      <img 
+                        src={track.coverUrl} 
+                        alt={track.title} 
+                        className="track-row-thumb" 
+                        onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER; }}
+                      />
                       <div className="track-titles">
                         <span className="track-title-text">{track.title}</span>
                         <span className="track-artist-text">{track.artist}</span>

@@ -32,13 +32,7 @@ export function AudioProvider({ children }) {
   const [authToken, setAuthToken] = useState(() => localStorage.getItem('musick_auth_token') || '');
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('musick_user_profile');
-    return saved ? JSON.parse(saved) : {
-      id: "guest_01",
-      name: "VIP Red Member",
-      email: "listener@musick.stream",
-      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=musickvip",
-      tier: "VIP Red Premium"
-    };
+    return saved ? JSON.parse(saved) : null;
   });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
@@ -87,6 +81,8 @@ export function AudioProvider({ children }) {
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem('musick_user_profile', JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem('musick_user_profile');
     }
   }, [currentUser]);
 
@@ -151,8 +147,8 @@ export function AudioProvider({ children }) {
     }
   }, [currentTrack]);
 
-  // 100% Ad-Free YouTube Music Full Song Playback
-  const playTrack = useCallback(async (track, playlistContext = null) => {
+  // Stream full-length ad-free audio via YouTube Music stream proxy
+  const playTrack = useCallback((track, playlistContext = null) => {
     if (playlistContext) {
       const nextInList = playlistContext.filter(t => t.id !== track.id);
       setQueue(nextInList);
@@ -164,36 +160,23 @@ export function AudioProvider({ children }) {
 
     setCurrentTrack(track);
     setCurrentTime(0);
-    setDuration(track.duration || 200);
+    setDuration(track.duration || 210);
 
     const audio = audioRef.current;
     audio.pause();
 
-    // 1. Fetch full-length ad-free stream from YouTube Music backend
-    try {
-      const q = `${track.artist} ${track.title}`;
-      const res = await fetch(`${API_BASE}/api/stream?q=${encodeURIComponent(q)}`);
-      if (res.ok) {
-        const streamData = await res.json();
-        if (streamData.streamUrl) {
-          audio.src = streamData.streamUrl;
-          if (streamData.duration) {
-            setDuration(streamData.duration);
-          }
-          await audio.play();
-          setIsPlaying(true);
-          return;
-        }
-      }
-    } catch (err) {
-      console.warn("Backend stream fetch fallback:", err);
-    }
+    // Stream full-length ad-free audio directly from YouTube Music backend proxy
+    const streamUrl = `${API_BASE}/api/stream-audio?q=${encodeURIComponent(`${track.artist} ${track.title}`)}`;
+    audio.src = streamUrl;
+    audio.load();
 
-    // 2. Fallback to direct audioUrl
-    if (track.audioUrl) {
-      audio.src = track.audioUrl;
-      audio.play().then(() => setIsPlaying(true)).catch(() => {});
-    }
+    audio.play()
+      .then(() => {
+        setIsPlaying(true);
+      })
+      .catch(err => {
+        console.warn("Direct stream play notice:", err);
+      });
   }, [currentTrack]);
 
   const togglePlay = useCallback(() => {
@@ -347,13 +330,7 @@ export function AudioProvider({ children }) {
 
   const logout = () => {
     setAuthToken('');
-    setCurrentUser({
-      id: "guest_01",
-      name: "Guest Listener",
-      email: "guest@musick.stream",
-      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=guest",
-      tier: "Free Listener"
-    });
+    setCurrentUser(null);
   };
 
   const setEqualizerBand = useCallback((index, valueDb) => {

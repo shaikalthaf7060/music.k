@@ -3,8 +3,10 @@ import { Play, Pause, Heart, Clock, Search as SearchIcon, Music, Sparkles } from
 import { useAudio } from '../context/AudioContext';
 import { searchMusicOnline, ONLINE_CHARTS } from '../services/api';
 
+const DEFAULT_COVER = "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a6/6e/bf/a66ebf79-5008-8948-b352-a790fc87446b/19UM1IM04638.rgb.jpg/600x600bb.jpg";
+
 function formatDuration(sec) {
-  if (!sec || isNaN(sec)) return "3:00";
+  if (!sec || isNaN(sec)) return "3:30";
   const m = Math.floor(sec / 60);
   const s = Math.floor(sec % 60);
   return `${m}:${s < 10 ? '0' : ''}${s}`;
@@ -100,7 +102,12 @@ export default function SearchView({ searchQuery }) {
 
                         <td className="track-cell">
                           <div className="track-info-cell">
-                            <img src={track.coverUrl} alt={track.title} className="track-row-thumb" />
+                            <img 
+                              src={track.coverUrl} 
+                              alt={track.title} 
+                              className="track-row-thumb"
+                              onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER; }}
+                            />
                             <div className="track-titles">
                               <span className="track-title-text">{track.title}</span>
                               <span className="track-artist-text">{track.artist}</span>

@@ -1,13 +1,12 @@
 /**
  * music.k Live Music Search & Online Catalog
- * Live online search across millions of songs via public music APIs.
+ * Full-length ad-free audio powered by YouTube Music stream extractor.
  */
 
-// Curated top global tracks that are immediately available
+// Curated top global tracks with verified high-res 600x600 album artwork
 export const ONLINE_CHARTS = [
   {
     id: "chart-01",
-    audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/a5/d8/4e/a5d84edc-15a0-5cb3-bc53-a5c9df68903c/mzaf_11306354670005706240.plus.aac.p.m4a",
     title: "Blinding Lights",
     artist: "The Weeknd",
     album: "After Hours",
@@ -15,7 +14,7 @@ export const ONLINE_CHARTS = [
     genre: "Synthwave / Pop",
     year: 2020,
     plays: "4.2B",
-    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/00/a3/96/00a39649-6291-7683-11ef-dd13289ca114/20UMGIM08249.rgb.jpg/600x600bb.jpg",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a6/6e/bf/a66ebf79-5008-8948-b352-a790fc87446b/19UM1IM04638.rgb.jpg/600x600bb.jpg",
     lyrics: [
       { time: 0, text: "[Intro - 80s Synth Bass Riff]" },
       { time: 14, text: "I've been on my own for long enough" },
@@ -34,7 +33,6 @@ export const ONLINE_CHARTS = [
   },
   {
     id: "chart-02",
-    audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/95/92/ff/9592ff90-9516-fc59-dc63-380d0d5d086a/mzaf_16393527263595507746.plus.aac.p.m4a",
     title: "Starboy",
     artist: "The Weeknd ft. Daft Punk",
     album: "Starboy",
@@ -42,7 +40,7 @@ export const ONLINE_CHARTS = [
     genre: "Electronic / R&B",
     year: 2016,
     plays: "3.1B",
-    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/ef/07/70/ef077063-2287-c1f0-0e9e-cf795c378d38/16UMGIM69458.rgb.jpg/600x600bb.jpg",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/b5/92/bb/b592bb72-52e3-e756-9b26-9f56d08f47ab/16UMGIM67864.rgb.jpg/600x600bb.jpg",
     lyrics: [
       { time: 0, text: "[Daft Punk Vocoder & Electronic Kick]" },
       { time: 10, text: "I'm tryna put you in the worst mood, ah" },
@@ -54,7 +52,6 @@ export const ONLINE_CHARTS = [
   },
   {
     id: "chart-03",
-    audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/10/4b/81/104b8156-f6ec-f233-a612-42171120f269/mzaf_10526756620959063529.plus.aac.p.m4a",
     title: "BIRDS OF A FEATHER",
     artist: "Billie Eilish",
     album: "HIT ME HARD AND SOFT",
@@ -62,7 +59,7 @@ export const ONLINE_CHARTS = [
     genre: "Indie Pop",
     year: 2024,
     plays: "1.8B",
-    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/e5/28/7f/e5287f34-3151-512c-47fc-629215ba0ea5/24UMGIM36515.rgb.jpg/600x600bb.jpg",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/92/9f/69/929f69f1-9977-3a44-d674-11f70c852d1b/24UMGIM36186.rgb.jpg/600x600bb.jpg",
     lyrics: [
       { time: 0, text: "[Guitar Strumming & Soft Vocals]" },
       { time: 8, text: "I want you to stay" },
@@ -73,7 +70,6 @@ export const ONLINE_CHARTS = [
   },
   {
     id: "chart-04",
-    audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/58/b0/a2/58b0a2fe-43fb-075f-ee6b-c744be6c1411/mzaf_11306786803875323455.plus.aac.p.m4a",
     title: "Not Like Us",
     artist: "Kendrick Lamar",
     album: "Single",
@@ -81,7 +77,7 @@ export const ONLINE_CHARTS = [
     genre: "Hip-Hop",
     year: 2024,
     plays: "950M",
-    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/28/ab/51/28ab51ce-0b73-0498-8422-a72382f63f53/24UMGIM52378.rgb.jpg/600x600bb.jpg",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/31/3a/3f/313a3fbc-bb8f-80c7-b5a2-e226869a38cd/24UMGIM51924.rgb.jpg/600x600bb.jpg",
     lyrics: [
       { time: 0, text: "[Mustard on the beat, ho]" },
       { time: 8, text: "Psst, I see dead people" },
@@ -91,7 +87,6 @@ export const ONLINE_CHARTS = [
   },
   {
     id: "chart-05",
-    audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/0d/bb/22/0dbb2289-53e7-3f30-8015-c266854ce45c/mzaf_12411999201509172153.plus.aac.p.m4a",
     title: "Lose Yourself",
     artist: "Eminem",
     album: "Curtain Call: The Hits",
@@ -99,7 +94,7 @@ export const ONLINE_CHARTS = [
     genre: "Hip-Hop",
     year: 2002,
     plays: "2.4B",
-    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/03/49/71/034971c2-3e2f-5d07-2d4e-b5f7b49e1e7f/00602498878934.rgb.jpg/600x600bb.jpg",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/08/23/fc/0823fcd9-cb44-695b-32bf-b3bf51d9f800/00606949351229.rgb.jpg/600x600bb.jpg",
     lyrics: [
       { time: 0, text: "[Iconic Piano & Electric Guitar Intro]" },
       { time: 12, text: "Look, if you had one shot, or one opportunity" },
@@ -109,7 +104,6 @@ export const ONLINE_CHARTS = [
   },
   {
     id: "chart-06",
-    audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/1b/c2/f7/1bc2f7f9-cbca-ee2e-f49a-e5fa4189e47c/mzaf_8497672223846665792.plus.aac.p.m4a",
     title: "Levitating",
     artist: "Dua Lipa",
     album: "Future Nostalgia",
@@ -117,7 +111,7 @@ export const ONLINE_CHARTS = [
     genre: "Nu-Disco / Pop",
     year: 2020,
     plays: "2.2B",
-    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/5c/48/4f/5c484f2e-4b47-ef99-87fb-6a6c4bbfba42/190295286101.jpg/600x600bb.jpg",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/6c/11/d6/6c11d681-aa3a-d59e-4c2e-f77e181026ab/190295092665.jpg/600x600bb.jpg",
     lyrics: [
       { time: 0, text: "[Nu-Disco Funk Bass Intro]" },
       { time: 9, text: "If you wanna run away with me, I know a galaxy" },
@@ -127,7 +121,6 @@ export const ONLINE_CHARTS = [
   },
   {
     id: "chart-07",
-    audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/44/22/a3/4422a36b-a25e-ea77-c93d-4c312cb3bc89/mzaf_10793630656041697204.plus.aac.p.m4a",
     title: "Faded",
     artist: "Alan Walker",
     album: "Different World",
@@ -135,7 +128,7 @@ export const ONLINE_CHARTS = [
     genre: "EDM / Electronic",
     year: 2015,
     plays: "3.6B",
-    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/81/49/a2/8149a2bf-90bf-c533-87b3-8557b49da2ef/886445585097.jpg/600x600bb.jpg",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/0d/a3/1a/0da31af7-d0ff-9bee-c427-1b6d0336f6fc/886446321981.jpg/600x600bb.jpg",
     lyrics: [
       { time: 0, text: "[Atmospheric Piano Intro]" },
       { time: 15, text: "You were the shadow to my light" },
@@ -145,7 +138,6 @@ export const ONLINE_CHARTS = [
   },
   {
     id: "chart-08",
-    audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/10/d4/0e/10d40e94-fa06-69e6-f56f-2cb8d672ef91/mzaf_7820542385108044706.plus.aac.p.m4a",
     title: "FE!N",
     artist: "Travis Scott ft. Playboi Carti",
     album: "UTOPIA",
@@ -153,7 +145,7 @@ export const ONLINE_CHARTS = [
     genre: "Trap",
     year: 2023,
     plays: "1.2B",
-    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/74/d3/18/74d31846-95ff-fce3-2db5-8c76332ec13b/196589578644.jpg/600x600bb.jpg",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/98/b5/5e/98b55efe-7310-e3cb-0f9f-27abb1a2b182/20a1306b-6cf6-4194-a492-a402d3dee879.jpg/600x600bb.jpg",
     lyrics: [
       { time: 0, text: "[Synth Stabs & Siren Intro]" },
       { time: 14, text: "FE!N, FE!N, FE!N, FE!N, FE!N" }
@@ -161,7 +153,6 @@ export const ONLINE_CHARTS = [
   },
   {
     id: "chart-09",
-    audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/6c/fb/8e/6cfb8eec-4bf0-f215-60b6-98dc42f36f3c/mzaf_10574241772651475736.plus.aac.p.m4a",
     title: "Cruel Summer",
     artist: "Taylor Swift",
     album: "Lover",
@@ -169,7 +160,7 @@ export const ONLINE_CHARTS = [
     genre: "Pop",
     year: 2019,
     plays: "2.1B",
-    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/5a/81/4f/5a814f85-78e7-ff40-a35f-15c0e251a37c/19UMGIM68357.rgb.jpg/600x600bb.jpg",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/49/3d/ab/493dab54-f920-9043-6181-80993b8116c9/19UMGIM53909.rgb.jpg/600x600bb.jpg",
     lyrics: [
       { time: 0, text: "[Synth Intro]" },
       { time: 10, text: "Fever dream high in the quiet of the night" },
@@ -178,7 +169,6 @@ export const ONLINE_CHARTS = [
   },
   {
     id: "chart-10",
-    audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/37/e7/03/37e70395-5cb5-2fbb-d08b-9ce9ee8fa7f7/mzaf_12952899015949544976.plus.aac.p.m4a",
     title: "Circles",
     artist: "Post Malone",
     album: "Hollywood's Bleeding",
@@ -186,7 +176,7 @@ export const ONLINE_CHARTS = [
     genre: "Pop Rock",
     year: 2019,
     plays: "2.5B",
-    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/f4/13/46/f4134608-8f83-e18e-4f76-8dc9c02ff597/19UMGIM74597.rgb.jpg/600x600bb.jpg",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/7b/1b/1b/7b1b1b0b-7ce2-b223-f9e0-8e36abe51877/19UMGIM78325.rgb.jpg/600x600bb.jpg",
     lyrics: [
       { time: 0, text: "[Acoustic Bass Intro]" },
       { time: 12, text: "Seasons change and our love went cold" },
@@ -195,7 +185,6 @@ export const ONLINE_CHARTS = [
   },
   {
     id: "chart-11",
-    audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/61/cf/37/61cf37fb-a790-21a4-96fe-df32fb6b8fb6/mzaf_17208756910609315357.plus.aac.p.m4a",
     title: "God's Plan",
     artist: "Drake",
     album: "Scorpion",
@@ -203,7 +192,7 @@ export const ONLINE_CHARTS = [
     genre: "Hip-Hop",
     year: 2018,
     plays: "2.3B",
-    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/4a/c5/40/4ac540ad-a0cb-e478-f9e4-bb1744b8dc22/18UMGIM30925.rgb.jpg/600x600bb.jpg",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/bb/6d/8f/bb6d8f67-6d04-10b5-dd62-eb5809ac54fc/00602567879152.rgb.jpg/600x600bb.jpg",
     lyrics: [
       { time: 0, text: "[Drake Vocal Sample Intro]" },
       { time: 15, text: "Yeah, they wishin' and wishin' on me" },
@@ -212,7 +201,6 @@ export const ONLINE_CHARTS = [
   },
   {
     id: "chart-12",
-    audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview122/v4/0d/16/e2/0d16e257-22d7-fc06-69a4-1be69a844990/mzaf_11306354670005706240.plus.aac.p.m4a",
     title: "Kesariya",
     artist: "Arijit Singh",
     album: "Brahmastra",
@@ -220,7 +208,7 @@ export const ONLINE_CHARTS = [
     genre: "Bollywood",
     year: 2022,
     plays: "890M",
-    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/4b/c9/78/4bc97858-a5b6-79cf-93df-f4bf782f913d/8902894356499.jpg/600x600bb.jpg",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/9f/13/ca/9f13ca3b-e533-03e0-f19a-f0aaa774581d/196589311191.jpg/600x600bb.jpg",
     lyrics: [
       { time: 0, text: "[Flute & Acoustic Melody]" },
       { time: 18, text: "Mujhko itna bataye koi" },
@@ -229,9 +217,6 @@ export const ONLINE_CHARTS = [
   }
 ];
 
-/**
- * Live Global Search across millions of songs in real time
- */
 export async function searchMusicOnline(query) {
   if (!query || !query.trim()) {
     return { query: "", topResult: null, tracks: [], artists: [], playlists: [] };
@@ -239,7 +224,6 @@ export async function searchMusicOnline(query) {
 
   const q = query.trim().toLowerCase();
 
-  // 1. Check local preloaded chart tracks first
   const localMatches = ONLINE_CHARTS.filter(
     t => t.title.toLowerCase().includes(q) || 
          t.artist.toLowerCase().includes(q) || 
@@ -257,15 +241,14 @@ export async function searchMusicOnline(query) {
         onlineResults = data.results.map(item => {
           const highRes = item.artworkUrl100 
             ? item.artworkUrl100.replace('100x100bb', '600x600bb') 
-            : 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600';
+            : 'https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a6/6e/bf/a66ebf79-5008-8948-b352-a790fc87446b/19UM1IM04638.rgb.jpg/600x600bb.jpg';
 
           return {
             id: `online-${item.trackId}`,
-            audioUrl: item.previewUrl,
             title: item.trackName,
             artist: item.artistName,
             album: item.collectionName || "Single",
-            duration: Math.round((item.trackTimeMillis || 180000) / 1000),
+            duration: Math.round((item.trackTimeMillis || 210000) / 1000),
             genre: item.primaryGenreName || "Music",
             year: item.releaseDate ? new Date(item.releaseDate).getFullYear() : 2026,
             plays: "Popular",
@@ -278,7 +261,6 @@ export async function searchMusicOnline(query) {
     console.warn("Live online search error:", err);
   }
 
-  // Merge and deduplicate
   const allTracks = [...localMatches];
   onlineResults.forEach(track => {
     if (!allTracks.some(t => t.title.toLowerCase() === track.title.toLowerCase() && t.artist.toLowerCase() === track.artist.toLowerCase())) {
@@ -318,7 +300,7 @@ export async function fetchOnlineLyrics(track) {
 
   const generated = [
     { time: 0, text: `[Now Playing ${track.title} by ${track.artist}]` },
-    { time: 10, text: "Streaming live online in high fidelity" },
+    { time: 10, text: "Streaming full-length ad-free audio via YouTube Music engine" },
     { time: 25, text: `Enjoy the sound of ${track.album || 'music.k'}...` },
     { time: 50, text: "music.k • The Red Spotify" }
   ];

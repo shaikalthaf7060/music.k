@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 
+const DEFAULT_COVER = "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a6/6e/bf/a66ebf79-5008-8948-b352-a790fc87446b/19UM1IM04638.rgb.jpg/600x600bb.jpg";
+
 function formatTime(seconds) {
   if (isNaN(seconds) || seconds < 0) return "0:00";
   const mins = Math.floor(seconds / 60);
@@ -61,7 +63,7 @@ export default function PlayerBar() {
   if (!currentTrack) return null;
 
   const isLiked = likedTrackIds.includes(currentTrack.id);
-  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const progressPercent = duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0;
 
   const handleScrubClick = (e) => {
     if (!scrubBarRef.current) return;
@@ -79,6 +81,7 @@ export default function PlayerBar() {
           src={currentTrack.coverUrl} 
           alt={currentTrack.title} 
           className="player-cover" 
+          onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER; }}
           onClick={() => setIsLyricsOpen(true)}
           title="Open Synced Lyrics & Art"
         />

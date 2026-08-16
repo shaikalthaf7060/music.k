@@ -1,0 +1,16 @@
+{
+  "demo@musick.stream": {
+    "id": "user_1786905350395",
+    "name": "VIP Red Listener",
+    "email": "demo@musick.stream",
+    "password": "326c917622650e5889836bf040013b331aa5a22c1dc7d95f2ae1197bdd05d1f9",
+    "avatar": "https://api.dicebear.com/7.x/bottts/svg?seed=demo@musick.stream",
+    "tier": "VIP Red Premium",
+    "likedTracks": [
+      "yt-01",
+      "yt-02",
+      "yt-04"
+    ],
+    "createdAt": 1786905350
+  }
+}
