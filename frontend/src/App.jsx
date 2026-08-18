@@ -16,10 +16,12 @@ import EqualizerModal from './components/EqualizerModal';
 import QueueDrawer from './components/QueueDrawer';
 import CreatePlaylistModal from './components/CreatePlaylistModal';
 import AuthModal from './components/AuthModal';
+import { Tv, ChevronDown } from 'lucide-react';
 
 function MainAppContent() {
-  const { currentView, viewParam } = useAudio();
+  const { currentView, viewParam, isPlaying, currentTrack } = useAudio();
   const [searchQuery, setSearchQuery] = useState('');
+  const [showVideoDock, setShowVideoDock] = useState(false);
 
   // Mount YouTube IFrame API Controller
   useEffect(() => {
@@ -62,28 +64,58 @@ function MainAppContent() {
       {/* Persistent Bottom Player Bar */}
       <PlayerBar />
 
-      {/* YouTube Online Streaming Mount Frame */}
+      {/* YouTube Full-Length Streaming Dock (Youtify Style) */}
       <div 
         id="yt-player-dock"
         style={{ 
           position: 'fixed', 
-          bottom: '96px', 
-          right: '16px', 
-          width: '160px', 
-          height: '90px', 
-          borderRadius: '8px',
+          bottom: '98px', 
+          right: '18px', 
+          width: showVideoDock ? '240px' : '1px', 
+          height: showVideoDock ? '135px' : '1px', 
+          borderRadius: '12px',
           overflow: 'hidden',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.8)',
-          border: '1px solid rgba(229, 9, 20, 0.4)',
+          boxShadow: showVideoDock ? '0 12px 36px rgba(0,0,0,0.9), 0 0 20px rgba(229, 9, 20, 0.4)' : 'none',
+          border: showVideoDock ? '1px solid rgba(229, 9, 20, 0.4)' : 'none',
           background: '#000',
-          zIndex: 50,
-          opacity: 0.05,
-          pointerEvents: 'none',
-          transition: 'all 0.3s ease'
+          zIndex: 95,
+          opacity: showVideoDock ? 1 : 0.01,
+          pointerEvents: showVideoDock ? 'auto' : 'none',
+          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
         }}
       >
         <div id="yt-music-iframe" style={{ width: '100%', height: '100%' }} />
       </div>
+
+      {/* Mini Video Toggle Button */}
+      {currentTrack && (
+        <button
+          onClick={() => setShowVideoDock(prev => !prev)}
+          style={{
+            position: 'fixed',
+            bottom: '100px',
+            right: '20px',
+            background: showVideoDock ? 'var(--red-primary)' : 'rgba(20, 20, 26, 0.85)',
+            border: '1px solid rgba(229, 9, 20, 0.4)',
+            color: 'white',
+            padding: '6px 12px',
+            borderRadius: '20px',
+            fontSize: '0.74rem',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            boxShadow: '0 4px 14px rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(10px)',
+            zIndex: 96,
+            cursor: 'pointer'
+          }}
+          title={showVideoDock ? "Hide Video Dock" : "Show Live Video Dock"}
+        >
+          <Tv size={14} />
+          <span>{showVideoDock ? 'Hide Video' : 'Live Stream'}</span>
+        </button>
+      )}
 
       {/* Overlays & Modals */}
       <NowPlayingModal />
