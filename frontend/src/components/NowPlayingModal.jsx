@@ -64,15 +64,15 @@ export default function NowPlayingModal() {
 
   if (!isNowPlayingOpen || !currentTrack) return null;
 
-  const isLiked = likedTrackIds.includes(currentTrack.id);
-  const progressPercent = duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0;
+  const trackDuration = currentTrack?.duration || duration || 200;
+  const progressPercent = trackDuration > 0 ? Math.min(100, (currentTime / trackDuration) * 100) : 0;
 
   const handleScrubClick = (e) => {
     if (!scrubRef.current) return;
     const rect = scrubRef.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const percentage = Math.max(0, Math.min(1, clickX / rect.width));
-    seek(percentage * duration);
+    seek(percentage * trackDuration);
   };
 
   const activeLyricText = activeLyrics && currentLyricIndex >= 0 && activeLyrics[currentLyricIndex]
@@ -252,7 +252,7 @@ export default function NowPlayingModal() {
 
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
             <span className="time-stamp" style={{ fontSize: '0.74rem' }}>{formatTime(currentTime)}</span>
-            <span className="time-stamp" style={{ fontSize: '0.74rem' }}>{formatTime(duration)}</span>
+            <span className="time-stamp" style={{ fontSize: '0.74rem' }}>{formatTime(trackDuration)}</span>
           </div>
         </div>
 

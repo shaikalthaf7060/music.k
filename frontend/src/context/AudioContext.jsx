@@ -71,8 +71,6 @@ export function AudioProvider({ children }) {
       if (type === 'stateChange') {
         if (data === 1) { // PLAYING
           setIsPlaying(true);
-          const dur = ytController.getDuration();
-          if (dur > 0) setDuration(dur);
         } else if (data === 2) { // PAUSED
           setIsPlaying(false);
         } else if (data === 0) { // ENDED
@@ -81,9 +79,6 @@ export function AudioProvider({ children }) {
       } else if (type === 'timeUpdate') {
         if (data.currentTime !== undefined && !isNaN(data.currentTime)) {
           setCurrentTime(data.currentTime);
-        }
-        if (data.duration && !isNaN(data.duration) && data.duration > 0) {
-          setDuration(data.duration);
         }
       }
     });

@@ -63,15 +63,15 @@ export default function PlayerBar() {
 
   if (!currentTrack) return null;
 
-  const isLiked = likedTrackIds.includes(currentTrack.id);
-  const progressPercent = duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0;
+  const trackDuration = currentTrack?.duration || duration || 200;
+  const progressPercent = trackDuration > 0 ? Math.min(100, (currentTime / trackDuration) * 100) : 0;
 
   const handleScrubClick = (e) => {
     if (!scrubBarRef.current) return;
     const rect = scrubBarRef.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const percentage = Math.max(0, Math.min(1, clickX / rect.width));
-    seek(percentage * duration);
+    seek(percentage * trackDuration);
   };
 
   return (
@@ -196,7 +196,7 @@ export default function PlayerBar() {
             </div>
           </div>
 
-          <span className="time-stamp">{formatTime(duration)}</span>
+          <span className="time-stamp">{formatTime(trackDuration)}</span>
         </div>
       </div>
 
