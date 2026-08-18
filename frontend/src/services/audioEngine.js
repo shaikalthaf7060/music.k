@@ -5,39 +5,42 @@
 
 class AudioStreamEngine {
   constructor() {
-    this.audio = new Audio();
-    this.audio.preload = 'auto';
-    this.audio.crossOrigin = 'anonymous';
+    this.audio = typeof Audio !== 'undefined' ? new Audio() : null;
+    if (this.audio) {
+      this.audio.preload = 'auto';
+    }
     this.listeners = new Set();
     this.currentTrack = null;
     this.isPlaying = false;
 
-    // Attach native HTML5 audio events
-    this.audio.addEventListener('play', () => {
-      this.isPlaying = true;
-      this.notify('stateChange', 1);
-    });
-
-    this.audio.addEventListener('pause', () => {
-      this.isPlaying = false;
-      this.notify('stateChange', 2);
-    });
-
-    this.audio.addEventListener('ended', () => {
-      this.isPlaying = false;
-      this.notify('stateChange', 0);
-    });
-
-    this.audio.addEventListener('timeupdate', () => {
-      this.notify('timeUpdate', {
-        currentTime: this.audio.currentTime,
-        duration: this.currentTrack?.duration || this.audio.duration || 200
+    if (this.audio) {
+      // Attach native HTML5 audio events
+      this.audio.addEventListener('play', () => {
+        this.isPlaying = true;
+        this.notify('stateChange', 1);
       });
-    });
 
-    this.audio.addEventListener('error', (e) => {
-      console.warn('Audio playback event:', e);
-    });
+      this.audio.addEventListener('pause', () => {
+        this.isPlaying = false;
+        this.notify('stateChange', 2);
+      });
+
+      this.audio.addEventListener('ended', () => {
+        this.isPlaying = false;
+        this.notify('stateChange', 0);
+      });
+
+      this.audio.addEventListener('timeupdate', () => {
+        this.notify('timeUpdate', {
+          currentTime: this.audio.currentTime,
+          duration: this.currentTrack?.duration || this.audio.duration || 200
+        });
+      });
+
+      this.audio.addEventListener('error', (e) => {
+        console.warn('Audio playback event:', e);
+      });
+    }
   }
 
   init() {
@@ -56,7 +59,7 @@ class AudioStreamEngine {
   }
 
   playTrack(track) {
-    if (!track) return;
+    if (!track || !this.audio) return;
     this.currentTrack = track;
 
     // 1. If track already has direct audio URL
@@ -81,6 +84,7 @@ class AudioStreamEngine {
   }
 
   startAudio(url) {
+    if (!this.audio) return;
     try {
       this.audio.pause();
       this.audio.src = url;
@@ -102,29 +106,47 @@ class AudioStreamEngine {
   }
 
   play() {
-    this.audio.play().catch(() => {});
+    if (this.audio) this.audio.play().catch(() => {});
   }
 
   pause() {
-    this.audio.pause();
+    if (this.audio) this.audio.pause();
   }
 
   seekTo(seconds) {
-    if (this.audio.duration && !isNaN(this.audio.duration)) {
+    if (this.audio && this.audio.duration && !isNaN(this.audio.duration)) {
       this.audio.currentTime = Math.max(0, Math.min(this.audio.duration, seconds));
     }
   }
 
   setVolume(fraction) {
-    this.audio.volume = Math.max(0, Math.min(1, parseFloat(fraction)));
+    if (this.audio) {
+      this.audio.volume = Math.max(0, Math.min(1, parseFloat(fraction)));
+    }
   }
 
   getCurrentTime() {
-    return this.audio.currentTime || 0;
+    return this.audio ? (this.audio.currentTime || 0) : 0;
   }
 
   getDuration() {
-    return this.currentTrack?.duration || this.audio.duration || 200;
+    return this.currentTrack?.duration || (this.audio ? this.audio.duration : 200) || 200;
+  }
+
+  getFrequencyData() {
+    const data = new Uint8Array(64);
+    for (let i = 0; i < 64; i++) {
+      data[i] = this.isPlaying ? Math.floor(60 + Math.sin(Date.now() / 150 + i * 0.4) * 50) : 10;
+    }
+    return data;
+  }
+
+  getWaveformData() {
+    const data = new Uint8Array(64);
+    for (let i = 0; i < 64; i++) {
+      data[i] = this.isPlaying ? Math.floor(128 + Math.sin(Date.now() / 100 + i * 0.3) * 60) : 128;
+    }
+    return data;
   }
 }
 

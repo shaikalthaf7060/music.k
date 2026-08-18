@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { X, Activity, Radio, Disc, Sparkles } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
-import { audioEngine } from '../services/synthAudio';
+import { audioEngine } from '../services/audioEngine';
 
 export default function VisualizerModal() {
   const { currentTrack, isPlaying, isVisualizerOpen, setIsVisualizerOpen } = useAudio();
