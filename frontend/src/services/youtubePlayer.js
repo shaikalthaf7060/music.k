@@ -1,5 +1,5 @@
 /**
- * music.k Full-Length YouTube Streaming Engine (Youtify Style)
+ * music.k Full-Length YouTube Streaming Engine
  * 100% Full-Length Online Audio Streaming with 0 Backend Storage.
  */
 
@@ -149,7 +149,7 @@ export function findOnlineYouTubeId(title, artist) {
     }
   }
 
-  return "of3gZ_N-_a8"; // Default to full-length song
+  return "of3gZ_N-_a8"; // Default to full-length song (Enna Sona)
 }
 
 class FullLengthYouTubeController {
@@ -187,7 +187,7 @@ class FullLengthYouTubeController {
       this.player = new window.YT.Player(containerId, {
         height: '100%',
         width: '100%',
-        videoId: this.pendingTrack?.youtubeId || '4NRXx6U8ABQ',
+        videoId: this.pendingTrack?.youtubeId || 'of3gZ_N-_a8',
         playerVars: {
           autoplay: 1,
           controls: 0,
@@ -245,14 +245,12 @@ class FullLengthYouTubeController {
 
     if (!this.isReady || !this.player || !this.player.loadVideoById) {
       this.pendingTrack = track;
+      this.init('yt-music-iframe');
       return;
     }
 
     try {
-      this.player.loadVideoById({
-        videoId: videoId,
-        suggestedQuality: 'small'
-      });
+      this.player.loadVideoById(videoId);
       this.player.playVideo();
       this.notify('stateChange', 1);
     } catch (err) {
