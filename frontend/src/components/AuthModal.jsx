@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, User, Flame, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { X, Lock, Mail, User, ArrowRight, Sparkles } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
+import Logo from './Logo';
 
 export default function AuthModal() {
   const { isAuthModalOpen, setIsAuthModalOpen, login, register, loginGoogle } = useAudio();
@@ -71,30 +72,25 @@ export default function AuthModal() {
   return (
     <div className="modal-backdrop" onClick={() => setIsAuthModalOpen(false)}>
       <div 
-        className="modal-content" 
-        style={{ maxWidth: '440px', padding: '32px' }}
+        className="modal-content glossy-card" 
+        style={{ 
+          maxWidth: '440px', 
+          padding: '32px',
+          background: 'linear-gradient(145deg, rgba(28, 14, 18, 0.95) 0%, rgba(14, 14, 18, 0.98) 100%)',
+          borderRadius: '20px',
+          border: '1px solid rgba(229, 9, 20, 0.35)',
+          boxShadow: '0 20px 50px rgba(0,0,0,0.85), 0 0 30px rgba(229, 9, 20, 0.2)'
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="modal-close-btn" onClick={() => setIsAuthModalOpen(false)}>
+        <button className="modal-close-btn action-icon-btn" onClick={() => setIsAuthModalOpen(false)}>
           <X size={20} />
         </button>
 
         {/* Modal Brand Header */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div 
-            style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              width: '48px', 
-              height: '48px', 
-              borderRadius: '50%', 
-              background: 'linear-gradient(135deg, #FF2A3A, #990000)',
-              boxShadow: '0 0 20px rgba(229, 9, 20, 0.4)',
-              marginBottom: '12px'
-            }}
-          >
-            <Flame size={26} color="#ffffff" />
+          <div style={{ display: 'inline-flex', marginBottom: '12px' }}>
+            <Logo size={48} />
           </div>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', fontWeight: 800 }}>
             {mode === 'login' ? 'Welcome Back to music.k' : 'Create music.k Account'}
@@ -120,12 +116,12 @@ export default function AuthModal() {
             color: '#1a1a1a',
             fontWeight: 700,
             padding: '12px',
-            borderRadius: '8px',
+            borderRadius: '10px',
             border: 'none',
             cursor: loading ? 'not-allowed' : 'pointer',
             width: '100%',
             marginBottom: '18px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            boxShadow: '0 4px 14px rgba(0,0,0,0.4)',
             transition: 'transform 0.15s ease'
           }}
         >
@@ -148,14 +144,14 @@ export default function AuthModal() {
         </div>
 
         {/* Mode Switcher Tabs */}
-        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: '8px', padding: '4px', marginBottom: '18px' }}>
+        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: '10px', padding: '4px', marginBottom: '18px' }}>
           <button
             type="button"
             onClick={() => { setMode('login'); setError(''); }}
             style={{
               flex: 1,
               padding: '8px',
-              borderRadius: '6px',
+              borderRadius: '8px',
               border: 'none',
               background: mode === 'login' ? 'var(--red-primary)' : 'transparent',
               color: mode === 'login' ? 'white' : 'var(--text-secondary)',
@@ -173,7 +169,7 @@ export default function AuthModal() {
             style={{
               flex: 1,
               padding: '8px',
-              borderRadius: '6px',
+              borderRadius: '8px',
               border: 'none',
               background: mode === 'register' ? 'var(--red-primary)' : 'transparent',
               color: mode === 'register' ? 'white' : 'var(--text-secondary)',
@@ -281,7 +277,7 @@ export default function AuthModal() {
             style={{
               marginTop: '8px',
               padding: '12px',
-              borderRadius: '8px',
+              borderRadius: '10px',
               border: 'none',
               background: 'linear-gradient(135deg, #FF2A3A, #E50914)',
               color: 'white',
@@ -292,7 +288,7 @@ export default function AuthModal() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              boxShadow: '0 4px 16px rgba(229, 9, 20, 0.4)'
+              boxShadow: '0 6px 20px rgba(229, 9, 20, 0.45)'
             }}
           >
             <span>{loading ? 'Authenticating...' : mode === 'login' ? 'Sign In to music.k' : 'Create Free Account'}</span>

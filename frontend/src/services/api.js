@@ -281,7 +281,7 @@ export async function searchMusicOnline(query) {
   let onlineResults = [];
 
   try {
-    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=25`;
+    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=30`;
     const res = await fetch(url);
     if (res.ok) {
       const data = await res.json();
@@ -300,7 +300,9 @@ export async function searchMusicOnline(query) {
             genre: item.primaryGenreName || "Music",
             year: item.releaseDate ? new Date(item.releaseDate).getFullYear() : 2026,
             plays: "Trending",
-            coverUrl: highRes
+            coverUrl: highRes,
+            audioUrl: item.previewUrl || null,
+            previewUrl: item.previewUrl || null
           };
         });
       }
@@ -348,9 +350,9 @@ export async function fetchOnlineLyrics(track) {
 
   const generated = [
     { time: 0, text: `[Now Playing ${track.title} by ${track.artist}]` },
-    { time: 10, text: "Streaming full-length ad-free audio online" },
-    { time: 25, text: `Enjoy ${track.album || 'music.k'}...` },
-    { time: 50, text: "music.k • The Red Spotify" }
+    { time: 8, text: "Streaming full-length ad-free audio online" },
+    { time: 22, text: `Album: ${track.album || 'music.k'}` },
+    { time: 45, text: "music.k • The Red Spotify" }
   ];
 
   return { trackId: track.id, lyrics: generated };

@@ -51,6 +51,7 @@ export function AudioProvider({ children }) {
   
   const [currentView, setCurrentView] = useState('home');
   const [viewParam, setViewParam] = useState(null);
+  const [isNowPlayingOpen, setIsNowPlayingOpen] = useState(false);
   const [isLyricsOpen, setIsLyricsOpen] = useState(false);
   const [isVisualizerOpen, setIsVisualizerOpen] = useState(false);
   const [isEqualizerOpen, setIsEqualizerOpen] = useState(false);
@@ -64,7 +65,7 @@ export function AudioProvider({ children }) {
 
   const pollTimerRef = useRef(null);
 
-  // Subscribe to YouTube Player state changes
+  // Subscribe to YouTube / HTML5 Player state changes
   useEffect(() => {
     const unsubscribe = ytController.subscribe((type, data) => {
       if (type === 'stateChange') {
@@ -95,7 +96,7 @@ export function AudioProvider({ children }) {
         if (dur && !isNaN(dur) && dur > 0) {
           setDuration(dur);
         }
-      }, 500);
+      }, 400);
     } else {
       if (pollTimerRef.current) clearInterval(pollTimerRef.current);
     }
@@ -186,7 +187,7 @@ export function AudioProvider({ children }) {
     setCurrentTime(0);
     setDuration(track.duration || 200);
 
-    // Accurate online playback via YouTube IFrame API
+    // Trigger online playback
     ytController.playTrack(track);
     setIsPlaying(true);
   }, [currentTrack]);
@@ -394,6 +395,8 @@ export function AudioProvider({ children }) {
         currentUser,
         authToken,
         isAuthModalOpen,
+        isNowPlayingOpen,
+        setIsNowPlayingOpen,
         currentView,
         viewParam,
         isLyricsOpen,

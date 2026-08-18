@@ -1,33 +1,41 @@
 import React from 'react';
-import { Home, Library, Flame } from 'lucide-react';
+import { Home, Library } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
+import Logo from './Logo';
 
 export default function Sidebar() {
   const { currentView, navigateTo } = useAudio();
 
   return (
-    <aside className="sidebar" style={{ width: '220px', padding: '16px 12px' }}>
-      {/* Brand Header */}
+    <aside className="sidebar glossy-sidebar" style={{ width: '240px', padding: '20px 14px' }}>
+      {/* Brand Header with New Logo */}
       <div 
         className="brand-header" 
         onClick={() => navigateTo('home')} 
-        style={{ cursor: 'pointer', padding: '8px 10px', marginBottom: '24px' }}
+        style={{ 
+          cursor: 'pointer', 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '12px', 
+          padding: '8px 12px', 
+          marginBottom: '28px',
+          borderRadius: '12px',
+          background: 'rgba(255, 255, 255, 0.03)',
+          border: '1px solid rgba(255, 255, 255, 0.06)'
+        }}
       >
-        <div className="brand-logo" style={{ width: '32px', height: '32px' }}>
-          <Flame size={18} fill="#ffffff" />
-        </div>
-        <div className="brand-title" style={{ fontSize: '1.25rem' }}>
+        <Logo size={32} />
+        <div className="brand-title" style={{ fontSize: '1.35rem', fontWeight: 800 }}>
           music<span className="red-dot">.k</span>
         </div>
       </div>
 
       {/* Clean Navigation: Only Home and Your Library */}
-      <ul className="nav-list" style={{ gap: '6px' }}>
+      <ul className="nav-list" style={{ gap: '8px' }}>
         <li>
           <button 
-            className={`nav-item-btn ${currentView === 'home' ? 'active' : ''}`}
+            className={`nav-item-btn glossy-nav-btn ${currentView === 'home' ? 'active' : ''}`}
             onClick={() => navigateTo('home')}
-            style={{ padding: '12px 14px', fontSize: '0.95rem' }}
           >
             <Home size={20} className="nav-icon" />
             <span>Home</span>
@@ -35,9 +43,8 @@ export default function Sidebar() {
         </li>
         <li>
           <button 
-            className={`nav-item-btn ${currentView === 'library' ? 'active' : ''}`}
+            className={`nav-item-btn glossy-nav-btn ${currentView === 'library' ? 'active' : ''}`}
             onClick={() => navigateTo('library')}
-            style={{ padding: '12px 14px', fontSize: '0.95rem' }}
           >
             <Library size={20} className="nav-icon" />
             <span>Your Library</span>

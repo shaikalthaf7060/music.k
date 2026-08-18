@@ -14,7 +14,8 @@ import {
   Mic2, 
   ListMusic, 
   Activity, 
-  Sliders
+  Sliders,
+  Maximize2
 } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 
@@ -42,6 +43,7 @@ export default function PlayerBar() {
     isQueueOpen,
     isVisualizerOpen,
     isEqualizerOpen,
+    setIsNowPlayingOpen,
     togglePlay,
     seek,
     setVolume,
@@ -54,8 +56,7 @@ export default function PlayerBar() {
     setIsLyricsOpen,
     setIsQueueOpen,
     setIsVisualizerOpen,
-    setIsEqualizerOpen,
-    navigateTo
+    setIsEqualizerOpen
   } = useAudio();
 
   const scrubBarRef = useRef(null);
@@ -74,31 +75,43 @@ export default function PlayerBar() {
   };
 
   return (
-    <div className="player-bar">
+    <div className="player-bar glossy-player-deck">
       {/* Left: Track Information */}
       <div className="player-left">
-        <img 
-          src={currentTrack.coverUrl} 
-          alt={currentTrack.title} 
-          className="player-cover" 
-          onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER; }}
-          onClick={() => setIsLyricsOpen(true)}
-          title="Open Synced Lyrics & Art"
-        />
-        
-        <div className="player-meta">
-          <span 
-            className="player-title" 
-            title={currentTrack.title}
-            onClick={() => navigateTo('home')}
-            style={{ cursor: 'pointer' }}
+        <div 
+          style={{ position: 'relative', cursor: 'pointer' }}
+          onClick={() => setIsNowPlayingOpen(true)}
+          title="Click to Open Fullscreen Player"
+        >
+          <img 
+            src={currentTrack.coverUrl} 
+            alt={currentTrack.title} 
+            className="player-cover" 
+            onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER; }}
+          />
+          <div 
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'rgba(0,0,0,0.4)',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              opacity: 0,
+              transition: 'opacity 0.2s ease'
+            }}
+            className="cover-hover-expand"
           >
+            <Maximize2 size={16} color="#ffffff" />
+          </div>
+        </div>
+        
+        <div className="player-meta" onClick={() => setIsNowPlayingOpen(true)} style={{ cursor: 'pointer' }}>
+          <span className="player-title" title={currentTrack.title}>
             {currentTrack.title}
           </span>
-          <span 
-            className="player-artist" 
-            title={currentTrack.artist}
-          >
+          <span className="player-artist" title={currentTrack.artist}>
             {currentTrack.artist}
           </span>
         </div>
@@ -134,9 +147,9 @@ export default function PlayerBar() {
             <SkipBack size={22} fill="currentColor" />
           </button>
 
-          {/* Signature Bold Red Play/Pause Button */}
+          {/* Signature Glossy Bold Red Play/Pause Button */}
           <button 
-            className="main-play-btn" 
+            className="main-play-btn glossy-play-btn" 
             onClick={togglePlay}
             title={isPlaying ? "Pause" : "Play"}
           >
@@ -189,6 +202,15 @@ export default function PlayerBar() {
 
       {/* Right: Tools & Volume */}
       <div className="player-right">
+        {/* Full Player Modal Toggle */}
+        <button 
+          className="tool-icon-btn"
+          onClick={() => setIsNowPlayingOpen(true)}
+          title="Open Fullscreen Player"
+        >
+          <Maximize2 size={18} />
+        </button>
+
         {/* Synced Lyrics Toggle */}
         <button 
           className={`tool-icon-btn ${isLyricsOpen ? 'active' : ''}`}
@@ -248,9 +270,7 @@ export default function PlayerBar() {
             step="0.01" 
             value={isMuted ? 0 : volume}
             onChange={(e) => setVolume(e.target.value)}
-            className="vertical-range"
             style={{ 
-              writingMode: 'horizontal-tb', 
               width: '80px', 
               height: '4px',
               accentColor: '#FF2A3A',

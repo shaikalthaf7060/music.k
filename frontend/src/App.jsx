@@ -9,6 +9,7 @@ import SearchView from './views/SearchView';
 import LibraryView from './views/LibraryView';
 import PlaylistDetailView from './views/PlaylistDetailView';
 import LikedSongsView from './views/LikedSongsView';
+import NowPlayingModal from './components/NowPlayingModal';
 import LyricsModal from './components/LyricsModal';
 import VisualizerModal from './components/VisualizerModal';
 import EqualizerModal from './components/EqualizerModal';
@@ -61,24 +62,31 @@ function MainAppContent() {
       {/* Persistent Bottom Player Bar */}
       <PlayerBar />
 
-      {/* Dedicated YouTube Streaming Container */}
+      {/* YouTube Online Streaming Mount Frame */}
       <div 
+        id="yt-player-dock"
         style={{ 
           position: 'fixed', 
-          bottom: '-300px', 
-          right: '0px', 
-          width: '240px', 
-          height: '240px', 
+          bottom: '96px', 
+          right: '16px', 
+          width: '160px', 
+          height: '90px', 
+          borderRadius: '8px',
+          overflow: 'hidden',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.8)',
+          border: '1px solid rgba(229, 9, 20, 0.4)',
+          background: '#000',
+          zIndex: 50,
+          opacity: 0.05,
           pointerEvents: 'none',
-          visibility: 'visible',
-          opacity: 0.01,
-          zIndex: -1
+          transition: 'all 0.3s ease'
         }}
       >
         <div id="yt-music-iframe" style={{ width: '100%', height: '100%' }} />
       </div>
 
-      {/* Dynamic Overlays & Modals */}
+      {/* Overlays & Modals */}
+      <NowPlayingModal />
       <AuthModal />
       <LyricsModal />
       <VisualizerModal />
