@@ -31,7 +31,7 @@ class AudioStreamEngine {
     this.audio.addEventListener('timeupdate', () => {
       this.notify('timeUpdate', {
         currentTime: this.audio.currentTime,
-        duration: this.audio.duration || (this.currentTrack?.duration || 200)
+        duration: this.currentTrack?.duration || this.audio.duration || 200
       });
     });
 
@@ -124,12 +124,9 @@ class AudioStreamEngine {
   }
 
   getDuration() {
-    if (this.audio.duration && !isNaN(this.audio.duration) && this.audio.duration > 0) {
-      return this.audio.duration;
-    }
-    return this.currentTrack?.duration || 200;
+    return this.currentTrack?.duration || this.audio.duration || 200;
   }
 }
 
 export const audioEngine = new AudioStreamEngine();
-export const ytController = audioEngine; // Backwards compatibility alias
+export const ytController = audioEngine;
