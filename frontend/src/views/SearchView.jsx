@@ -58,7 +58,7 @@ export default function SearchView({ searchQuery }) {
             <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
               <Music size={48} color="#FF2A3A" style={{ marginBottom: '16px', opacity: 0.7 }} />
               <h2 style={{ fontSize: '1.5rem', marginBottom: '8px', color: 'white' }}>No results found for "{searchQuery}"</h2>
-              <p>Try searching for popular artists (e.g. "Coldplay", "Eminem", "The Weeknd", "Taylor Swift", "Arijit Singh") or track titles.</p>
+              <p>Try searching for artists (e.g. "Coldplay", "Eminem", "Arijit Singh", "The Weeknd") or song titles.</p>
             </div>
           ) : (
             <div>
@@ -148,31 +148,119 @@ export default function SearchView({ searchQuery }) {
           )}
         </div>
       ) : (
-        /* Empty Search Prompt with quick suggestions */
-        <div style={{ textAlign: 'center', padding: '60px 0' }}>
-          <SearchIcon size={52} color="#FF2A3A" style={{ marginBottom: '16px', opacity: 0.8 }} />
-          <h1 className="greeting-text" style={{ fontSize: '2rem', marginBottom: '8px' }}>
-            Search Millions of Songs
-          </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1rem', maxWidth: '480px', margin: '0 auto 24px' }}>
-            Type any song, artist, or album in the top search bar to stream live online.
-          </p>
+        /* Empty Search Landing State: Quick Search Tags + Trending Track Table */
+        <div>
+          <div style={{ textAlign: 'center', padding: '36px 0 28px' }}>
+            <SearchIcon size={44} color="#FF2A3A" style={{ marginBottom: '12px', opacity: 0.9 }} />
+            <h1 className="greeting-text" style={{ fontSize: '2rem', marginBottom: '6px' }}>
+              Search Any Song Online
+            </h1>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '500px', margin: '0 auto 20px' }}>
+              Instant 100% full-length ad-free streaming. Type in the search bar above or click a suggestion below.
+            </p>
 
-          <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '8px' }}>
-            {['The Weeknd', 'Coldplay', 'Eminem', 'Taylor Swift', 'Billie Eilish', 'Kendrick Lamar', 'Arijit Singh', 'Dua Lipa', 'Drake', 'Alan Walker'].map(tag => (
-              <button
-                key={tag}
-                className="badge-pill-btn"
-                onClick={() => {
-                  searchMusicOnline(tag).then(res => {
-                    setResults(res);
-                  });
-                }}
-                style={{ padding: '8px 16px', fontSize: '0.88rem' }}
-              >
-                {tag}
-              </button>
-            ))}
+            <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '8px' }}>
+              {['Arijit Singh', 'The Weeknd', 'Coldplay', 'Eminem', 'Taylor Swift', 'Billie Eilish', 'Kendrick Lamar', 'Dua Lipa', 'Drake', 'Alan Walker'].map(tag => (
+                <button
+                  key={tag}
+                  className="badge-pill-btn"
+                  onClick={() => {
+                    searchMusicOnline(tag).then(res => {
+                      setResults(res);
+                    });
+                  }}
+                  style={{ padding: '7px 14px', fontSize: '0.86rem' }}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Trending Table on Default Open */}
+          <div style={{ marginTop: '20px' }}>
+            <h2 className="section-title" style={{ fontSize: '1.25rem', marginBottom: '14px', color: 'white' }}>
+              Popular Songs Ready to Stream
+            </h2>
+
+            <table className="tracks-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '44px', textAlign: 'center' }}>#</th>
+                  <th>Title</th>
+                  <th>Album</th>
+                  <th>Year</th>
+                  <th style={{ width: '80px', textAlign: 'right' }}>
+                    <Clock size={16} style={{ verticalAlign: 'middle' }} />
+                  </th>
+                  <th style={{ width: '50px' }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {ONLINE_CHARTS.slice(0, 8).map((track, idx) => {
+                  const isCurrent = currentTrack && currentTrack.id === track.id;
+                  const isLiked = likedTrackIds.includes(track.id);
+
+                  return (
+                    <tr 
+                      key={track.id}
+                      className={`track-row ${isCurrent ? 'playing' : ''}`}
+                      onClick={() => handleTrackClick(track, ONLINE_CHARTS)}
+                    >
+                      <td className="track-cell track-num-cell">
+                        {isCurrent && isPlaying ? (
+                          <div className="sound-wave" style={{ justifyContent: 'center' }}>
+                            <span /><span /><span /><span />
+                          </div>
+                        ) : (
+                          idx + 1
+                        )}
+                      </td>
+
+                      <td className="track-cell">
+                        <div className="track-info-cell">
+                          <img 
+                            src={track.coverUrl} 
+                            alt={track.title} 
+                            className="track-row-thumb"
+                            onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER; }}
+                          />
+                          <div className="track-titles">
+                            <span className="track-title-text">{track.title}</span>
+                            <span className="track-artist-text">{track.artist}</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="track-cell" style={{ color: 'var(--text-muted)' }}>
+                        {track.album}
+                      </td>
+
+                      <td className="track-cell" style={{ color: 'var(--text-muted)' }}>
+                        {track.year || '2026'}
+                      </td>
+
+                      <td className="track-cell" style={{ textAlign: 'right', color: 'var(--text-muted)' }}>
+                        {formatDuration(track.duration)}
+                      </td>
+
+                      <td className="track-cell" style={{ textAlign: 'center' }}>
+                        <button 
+                          className={`like-heart-btn ${isLiked ? 'liked' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleLike(track.id);
+                          }}
+                          title={isLiked ? "Unlike" : "Like"}
+                        >
+                          <Heart size={16} fill={isLiked ? "#FF2A3A" : "none"} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

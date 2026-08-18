@@ -49,7 +49,7 @@ export function AudioProvider({ children }) {
     return saved ? JSON.parse(saved) : ['yt-01', 'yt-02', 'yt-04'];
   });
   
-  const [currentView, setCurrentView] = useState('home');
+  const [currentView, setCurrentView] = useState('search');
   const [viewParam, setViewParam] = useState(null);
   const [isNowPlayingOpen, setIsNowPlayingOpen] = useState(false);
   const [isLyricsOpen, setIsLyricsOpen] = useState(false);

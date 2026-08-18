@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Library } from 'lucide-react';
+import { Search, Home, Library } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 import Logo from './Logo';
 
@@ -8,10 +8,10 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar glossy-sidebar" style={{ width: '240px', padding: '20px 14px' }}>
-      {/* Brand Header with New Logo */}
+      {/* Brand Header with Logo */}
       <div 
         className="brand-header" 
-        onClick={() => navigateTo('home')} 
+        onClick={() => navigateTo('search')} 
         style={{ 
           cursor: 'pointer', 
           display: 'flex', 
@@ -30,15 +30,24 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* Clean Navigation: Only Home and Your Library */}
+      {/* Clean Navigation: Search, Home, Your Library */}
       <ul className="nav-list" style={{ gap: '8px' }}>
+        <li>
+          <button 
+            className={`nav-item-btn glossy-nav-btn ${currentView === 'search' ? 'active' : ''}`}
+            onClick={() => navigateTo('search')}
+          >
+            <Search size={20} className="nav-icon" />
+            <span>Search</span>
+          </button>
+        </li>
         <li>
           <button 
             className={`nav-item-btn glossy-nav-btn ${currentView === 'home' ? 'active' : ''}`}
             onClick={() => navigateTo('home')}
           >
             <Home size={20} className="nav-icon" />
-            <span>Home</span>
+            <span>Trending</span>
           </button>
         </li>
         <li>
