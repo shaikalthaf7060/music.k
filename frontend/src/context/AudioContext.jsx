@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { ONLINE_CHARTS, fetchOnlineLyrics } from '../services/api';
+import { ytController } from '../services/youtubePlayer';
 import { 
   auth, 
   signInWithGoogle, 
@@ -12,8 +13,6 @@ import {
 import confetti from 'canvas-confetti';
 
 const AudioContext = createContext();
-
-const API_BASE = "http://localhost:8000";
 
 export const EQ_PRESETS = {
   "Bass Boost": [8, 5, 1, -1, -2],
@@ -47,7 +46,7 @@ export function AudioProvider({ children }) {
 
   const [likedTrackIds, setLikedTrackIds] = useState(() => {
     const saved = localStorage.getItem('musick_liked_tracks');
-    return saved ? JSON.parse(saved) : ['chart-01', 'chart-02', 'chart-04'];
+    return saved ? JSON.parse(saved) : ['yt-01', 'yt-02', 'yt-04'];
   });
   
   const [currentView, setCurrentView] = useState('home');
@@ -63,9 +62,50 @@ export function AudioProvider({ children }) {
   const [activeEqPreset, setActiveEqPreset] = useState("EDM Crimson");
   const [eqBands, setEqBands] = useState(EQ_PRESETS["EDM Crimson"]);
 
-  const audioRef = useRef(new Audio());
+  const pollTimerRef = useRef(null);
 
-  // Listen to Firebase auth state if configured
+  // Subscribe to YouTube Player state changes
+  useEffect(() => {
+    const unsubscribe = ytController.subscribe((type, data) => {
+      if (type === 'stateChange') {
+        if (data === 1) { // PLAYING
+          setIsPlaying(true);
+          const dur = ytController.getDuration();
+          if (dur > 0) setDuration(dur);
+        } else if (data === 2) { // PAUSED
+          setIsPlaying(false);
+        } else if (data === 0) { // ENDED
+          handleTrackEnd();
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [repeatMode, queue, currentTrack, isShuffle]);
+
+  // Smooth polling for playback time & duration
+  useEffect(() => {
+    if (isPlaying) {
+      pollTimerRef.current = setInterval(() => {
+        const time = ytController.getCurrentTime();
+        if (time !== undefined && !isNaN(time)) {
+          setCurrentTime(time);
+        }
+        const dur = ytController.getDuration();
+        if (dur && !isNaN(dur) && dur > 0) {
+          setDuration(dur);
+        }
+      }, 500);
+    } else {
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+    }
+
+    return () => {
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+    };
+  }, [isPlaying]);
+
+  // Firebase auth state listener
   useEffect(() => {
     if (isFirebaseConfigured() && auth) {
       const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -87,17 +127,7 @@ export function AudioProvider({ children }) {
 
   useEffect(() => {
     localStorage.setItem('musick_liked_tracks', JSON.stringify(likedTrackIds));
-    if (authToken) {
-      fetch(`${API_BASE}/api/user/sync-likes`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify(likedTrackIds)
-      }).catch(() => {});
-    }
-  }, [likedTrackIds, authToken]);
+  }, [likedTrackIds]);
 
   useEffect(() => {
     if (authToken) {
@@ -114,41 +144,6 @@ export function AudioProvider({ children }) {
       localStorage.removeItem('musick_user_profile');
     }
   }, [currentUser]);
-
-  // Setup Audio element event listeners
-  useEffect(() => {
-    const audio = audioRef.current;
-    audio.volume = volume;
-
-    const handleTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-    };
-
-    const handleLoadedMetadata = () => {
-      if (audio.duration && !isNaN(audio.duration) && audio.duration > 0) {
-        setDuration(audio.duration);
-      }
-    };
-
-    const handleEnded = () => {
-      if (repeatMode === 'one') {
-        audio.currentTime = 0;
-        audio.play();
-      } else {
-        nextTrack();
-      }
-    };
-
-    audio.addEventListener('timeupdate', handleTimeUpdate);
-    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-    audio.addEventListener('ended', handleEnded);
-
-    return () => {
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
-      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      audio.removeEventListener('ended', handleEnded);
-    };
-  }, [repeatMode, currentTrack, volume]);
 
   // Sync active lyric line
   useEffect(() => {
@@ -176,7 +171,7 @@ export function AudioProvider({ children }) {
     }
   }, [currentTrack]);
 
-  // Stream full-length ad-free audio via YouTube Music stream proxy
+  // Play track online via YouTube streaming engine (0 backend storage)
   const playTrack = useCallback((track, playlistContext = null) => {
     if (playlistContext) {
       const nextInList = playlistContext.filter(t => t.id !== track.id);
@@ -189,38 +184,31 @@ export function AudioProvider({ children }) {
 
     setCurrentTrack(track);
     setCurrentTime(0);
-    setDuration(track.duration || 210);
+    setDuration(track.duration || 200);
 
-    const audio = audioRef.current;
-    audio.pause();
-
-    // Stream full-length ad-free audio directly from YouTube Music backend proxy
-    const streamUrl = `${API_BASE}/api/stream-audio?q=${encodeURIComponent(`${track.artist} ${track.title}`)}`;
-    audio.src = streamUrl;
-    audio.load();
-
-    audio.play()
-      .then(() => {
-        setIsPlaying(true);
-      })
-      .catch(err => {
-        console.warn("Direct stream play notice:", err);
-      });
+    // Accurate online playback via YouTube IFrame API
+    ytController.playTrack(track);
+    setIsPlaying(true);
   }, [currentTrack]);
 
   const togglePlay = useCallback(() => {
-    const audio = audioRef.current;
     if (isPlaying) {
-      audio.pause();
+      ytController.pause();
       setIsPlaying(false);
     } else {
-      if (!audio.src && currentTrack) {
-        playTrack(currentTrack);
-        return;
-      }
-      audio.play().then(() => setIsPlaying(true)).catch(() => {});
+      ytController.play();
+      setIsPlaying(true);
     }
-  }, [isPlaying, currentTrack, playTrack]);
+  }, [isPlaying]);
+
+  const handleTrackEnd = () => {
+    if (repeatMode === 'one') {
+      ytController.seekTo(0);
+      ytController.play();
+    } else {
+      nextTrack();
+    }
+  };
 
   const nextTrack = useCallback(() => {
     if (queue.length > 0) {
@@ -244,9 +232,8 @@ export function AudioProvider({ children }) {
   }, [queue, isShuffle, repeatMode, tracks, currentTrack, playTrack]);
 
   const prevTrack = useCallback(() => {
-    const audio = audioRef.current;
-    if (audio.currentTime > 3) {
-      audio.currentTime = 0;
+    if (currentTime > 3) {
+      ytController.seekTo(0);
       setCurrentTime(0);
       return;
     }
@@ -257,14 +244,13 @@ export function AudioProvider({ children }) {
       setQueue(prev => [currentTrack, ...prev]);
       playTrack(prevSong);
     } else {
-      audio.currentTime = 0;
+      ytController.seekTo(0);
       setCurrentTime(0);
     }
-  }, [history, currentTrack, playTrack]);
+  }, [currentTime, history, currentTrack, playTrack]);
 
   const seek = useCallback((timeInSeconds) => {
-    const audio = audioRef.current;
-    audio.currentTime = timeInSeconds;
+    ytController.seekTo(timeInSeconds);
     setCurrentTime(timeInSeconds);
   }, []);
 
@@ -272,21 +258,20 @@ export function AudioProvider({ children }) {
     const v = parseFloat(val);
     setVolumeState(v);
     setIsMuted(v === 0);
-    audioRef.current.volume = Math.max(0, Math.min(1, v));
+    ytController.setVolume(v);
   }, []);
 
   const toggleMute = useCallback(() => {
-    const audio = audioRef.current;
     if (isMuted) {
       setIsMuted(false);
       const restored = prevVolume || 0.85;
       setVolumeState(restored);
-      audio.volume = restored;
+      ytController.setVolume(restored);
     } else {
       setPrevVolume(volume);
       setIsMuted(true);
       setVolumeState(0);
-      audio.volume = 0;
+      ytController.setVolume(0);
     }
   }, [isMuted, prevVolume, volume]);
 
@@ -321,7 +306,7 @@ export function AudioProvider({ children }) {
     });
   }, []);
 
-  // Firebase + Backend Auth Handlers
+  // Firebase Auth Handlers
   const loginGoogle = async () => {
     const user = await signInWithGoogle();
     const profile = {
@@ -337,65 +322,31 @@ export function AudioProvider({ children }) {
   };
 
   const login = async (email, password) => {
-    try {
-      const user = await fbLogin(email, password);
-      const profile = {
-        id: user.uid,
-        name: user.displayName || email.split('@')[0],
-        email: user.email,
-        avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${email}`,
-        tier: "VIP Red Member"
-      };
-      setCurrentUser(profile);
-      setAuthToken(user.uid);
-      return profile;
-    } catch (fbErr) {
-      // Fallback to local FastAPI auth
-      const res = await fetch(`${API_BASE}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || 'Login failed');
-      }
-      const data = await res.json();
-      setAuthToken(data.token);
-      setCurrentUser(data.user);
-      return data.user;
-    }
+    const user = await fbLogin(email, password);
+    const profile = {
+      id: user.uid,
+      name: user.displayName || email.split('@')[0],
+      email: user.email,
+      avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${email}`,
+      tier: "VIP Red Member"
+    };
+    setCurrentUser(profile);
+    setAuthToken(user.uid);
+    return profile;
   };
 
   const register = async (name, email, password) => {
-    try {
-      const user = await fbRegister(name, email, password);
-      const profile = {
-        id: user.uid,
-        name: name,
-        email: email,
-        avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${email}`,
-        tier: "VIP Red Member"
-      };
-      setCurrentUser(profile);
-      setAuthToken(user.uid);
-      return profile;
-    } catch (fbErr) {
-      // Fallback to local FastAPI auth
-      const res = await fetch(`${API_BASE}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || 'Registration failed');
-      }
-      const data = await res.json();
-      setAuthToken(data.token);
-      setCurrentUser(data.user);
-      return data.user;
-    }
+    const user = await fbRegister(name, email, password);
+    const profile = {
+      id: user.uid,
+      name: name,
+      email: email,
+      avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${email}`,
+      tier: "VIP Red Member"
+    };
+    setCurrentUser(profile);
+    setAuthToken(user.uid);
+    return profile;
   };
 
   const logout = async () => {

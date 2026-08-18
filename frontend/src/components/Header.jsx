@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ChevronLeft, ChevronRight, User as UserIcon, LogOut, ShieldCheck, LogIn } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, LogOut, ShieldCheck, LogIn } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 
 export default function Header({ searchQuery, setSearchQuery }) {
@@ -18,45 +18,56 @@ export default function Header({ searchQuery, setSearchQuery }) {
     <header className="top-header">
       {/* Left: Navigation history arrows */}
       <div className="header-left">
-        <button 
-          className="history-arrow-btn" 
-          onClick={() => navigateTo('home')}
-          title="Back to Home"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        <button 
-          className="history-arrow-btn" 
-          onClick={() => navigateTo('library')}
-          title="Go to Library"
-        >
-          <ChevronRight size={20} />
-        </button>
-      </div>
+        <div className="history-btns">
+          <button 
+            className="circle-nav-btn" 
+            onClick={() => navigateTo('home')}
+            title="Back to Home"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button 
+            className="circle-nav-btn" 
+            onClick={() => navigateTo('library')}
+            title="Go to Library"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
 
-      {/* Center: Live Music Search Bar */}
-      <div className="search-bar-wrapper">
-        <Search size={18} className="search-icon-inside" />
-        <input 
-          type="text" 
-          placeholder="Search any song, artist, or album worldwide..." 
-          className="search-input"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          onFocus={() => {
-            if (currentView !== 'search') navigateTo('search');
-          }}
-        />
+        {/* Center: Live Music Search Bar */}
+        <div className="search-bar-wrapper">
+          <Search size={18} className="search-icon-left" />
+          <input 
+            type="text" 
+            placeholder="Search any song, artist, or album worldwide..." 
+            className="search-input"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            onFocus={() => {
+              if (currentView !== 'search') navigateTo('search');
+            }}
+          />
+        </div>
       </div>
 
       {/* Right: User Authentication & Profile */}
-      <div className="header-right" style={{ position: 'relative' }}>
+      <div className="header-right">
         {authToken ? (
           <div style={{ position: 'relative' }}>
             <button 
               className="user-profile-badge" 
               onClick={() => setShowDropdown(prev => !prev)}
-              style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.08)', padding: '4px 12px 4px 6px', borderRadius: '30px', border: '1px solid rgba(229, 9, 20, 0.4)', cursor: 'pointer' }}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '10px', 
+                background: 'rgba(255,255,255,0.08)', 
+                padding: '5px 14px 5px 6px', 
+                borderRadius: '30px', 
+                border: '1px solid rgba(229, 9, 20, 0.4)', 
+                cursor: 'pointer' 
+              }}
             >
               <img 
                 src={currentUser?.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=musickvip"} 
@@ -89,7 +100,7 @@ export default function Header({ searchQuery, setSearchQuery }) {
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{currentUser?.email}</div>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', marginTop: '4px', fontSize: '0.72rem', color: '#FF2A3A', fontWeight: 800 }}>
                     <ShieldCheck size={12} />
-                    <span>{currentUser?.tier || "VIP Red Premium"}</span>
+                    <span>{currentUser?.tier || "VIP Red Member"}</span>
                   </div>
                 </div>
 
@@ -133,7 +144,8 @@ export default function Header({ searchQuery, setSearchQuery }) {
               fontWeight: 800,
               gap: '6px',
               display: 'flex',
-              alignItems: 'center'
+              alignItems: 'center',
+              boxShadow: '0 4px 14px rgba(229, 9, 20, 0.4)'
             }}
           >
             <LogIn size={16} />

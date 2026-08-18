@@ -1,12 +1,12 @@
 /**
- * music.k Live Music Search & Online Catalog
- * Full-length ad-free audio powered by YouTube Music stream extractor.
+ * music.k Online Audio Engine & Live Music Search
+ * 100% Online music playback via YouTube streaming (0 backend storage).
  */
 
-// Curated top global tracks with verified high-res 600x600 album artwork
 export const ONLINE_CHARTS = [
   {
-    id: "chart-01",
+    id: "yt-01",
+    youtubeId: "4NRXx6U8ABQ",
     title: "Blinding Lights",
     artist: "The Weeknd",
     album: "After Hours",
@@ -32,7 +32,8 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "chart-02",
+    id: "yt-02",
+    youtubeId: "dQTJ8sbm4Tg",
     title: "Starboy",
     artist: "The Weeknd ft. Daft Punk",
     album: "Starboy",
@@ -51,7 +52,8 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "chart-03",
+    id: "yt-03",
+    youtubeId: "V9PVRfjEBTI",
     title: "BIRDS OF A FEATHER",
     artist: "Billie Eilish",
     album: "HIT ME HARD AND SOFT",
@@ -69,7 +71,8 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "chart-04",
+    id: "yt-04",
+    youtubeId: "H58vbez_m4E",
     title: "Not Like Us",
     artist: "Kendrick Lamar",
     album: "Single",
@@ -86,7 +89,8 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "chart-05",
+    id: "yt-05",
+    youtubeId: "_Yhyp-_hX2s",
     title: "Lose Yourself",
     artist: "Eminem",
     album: "Curtain Call: The Hits",
@@ -103,7 +107,8 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "chart-06",
+    id: "yt-06",
+    youtubeId: "TUVcZfQe-Kw",
     title: "Levitating",
     artist: "Dua Lipa",
     album: "Future Nostalgia",
@@ -120,7 +125,8 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "chart-07",
+    id: "yt-07",
+    youtubeId: "60ItHLz5WEA",
     title: "Faded",
     artist: "Alan Walker",
     album: "Different World",
@@ -137,7 +143,8 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "chart-08",
+    id: "yt-08",
+    youtubeId: "UceaB44wvJ4",
     title: "FE!N",
     artist: "Travis Scott ft. Playboi Carti",
     album: "UTOPIA",
@@ -152,7 +159,8 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "chart-09",
+    id: "yt-09",
+    youtubeId: "ic8j13piAhQ",
     title: "Cruel Summer",
     artist: "Taylor Swift",
     album: "Lover",
@@ -168,7 +176,8 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "chart-10",
+    id: "yt-10",
+    youtubeId: "wXhTHyIgQ_U",
     title: "Circles",
     artist: "Post Malone",
     album: "Hollywood's Bleeding",
@@ -184,7 +193,8 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "chart-11",
+    id: "yt-11",
+    youtubeId: "uxpDa-c-4Mc",
     title: "God's Plan",
     artist: "Drake",
     album: "Scorpion",
@@ -200,7 +210,27 @@ export const ONLINE_CHARTS = [
     ]
   },
   {
-    id: "chart-12",
+    id: "yt-12",
+    youtubeId: "of3gZ_N-_a8",
+    title: "Enna Sona",
+    artist: "Arijit Singh & A.R. Rahman",
+    album: "OK Jaanu",
+    duration: 214,
+    genre: "Bollywood / Romantic",
+    year: 2016,
+    plays: "350M",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/9f/13/ca/9f13ca3b-e533-03e0-f19a-f0aaa774581d/196589311191.jpg/600x600bb.jpg",
+    lyrics: [
+      { time: 0, text: "[Acoustic Guitar & Soft Melody]" },
+      { time: 14, text: "Enna sona kyun Rabb ne banaya" },
+      { time: 24, text: "Aavan javan te main yaara nu manavan" },
+      { time: 36, text: "Enna sona, enna sona..." },
+      { time: 48, text: "Kol hove te sekh lagda ae" }
+    ]
+  },
+  {
+    id: "yt-13",
+    youtubeId: "BddP6PYo2gs",
     title: "Kesariya",
     artist: "Arijit Singh",
     album: "Brahmastra",
@@ -213,6 +243,24 @@ export const ONLINE_CHARTS = [
       { time: 0, text: "[Flute & Acoustic Melody]" },
       { time: 18, text: "Mujhko itna bataye koi" },
       { time: 45, text: "Kesariya tera ishq hai piya" }
+    ]
+  },
+  {
+    id: "yt-14",
+    youtubeId: "yKNxeF4KMsY",
+    title: "Yellow",
+    artist: "Coldplay",
+    album: "Parachutes",
+    duration: 269,
+    genre: "Alternative Rock",
+    year: 2000,
+    plays: "2.1B",
+    coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/44/e9/87/44e98715-e3d6-4100-337a-bc12b8ff1206/0724352778358.jpg/600x600bb.jpg",
+    lyrics: [
+      { time: 0, text: "[Acoustic Strumming & Drum Intro]" },
+      { time: 15, text: "Look at the stars, look how they shine for you" },
+      { time: 30, text: "And everything you do" },
+      { time: 38, text: "Yeah, they were all yellow" }
     ]
   }
 ];
@@ -251,7 +299,7 @@ export async function searchMusicOnline(query) {
             duration: Math.round((item.trackTimeMillis || 210000) / 1000),
             genre: item.primaryGenreName || "Music",
             year: item.releaseDate ? new Date(item.releaseDate).getFullYear() : 2026,
-            plays: "Popular",
+            plays: "Trending",
             coverUrl: highRes
           };
         });
@@ -300,8 +348,8 @@ export async function fetchOnlineLyrics(track) {
 
   const generated = [
     { time: 0, text: `[Now Playing ${track.title} by ${track.artist}]` },
-    { time: 10, text: "Streaming full-length ad-free audio via YouTube Music engine" },
-    { time: 25, text: `Enjoy the sound of ${track.album || 'music.k'}...` },
+    { time: 10, text: "Streaming full-length ad-free audio online" },
+    { time: 25, text: `Enjoy ${track.album || 'music.k'}...` },
     { time: 50, text: "music.k • The Red Spotify" }
   ];
 

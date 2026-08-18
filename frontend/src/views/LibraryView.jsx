@@ -1,7 +1,9 @@
 import React from 'react';
-import { Heart, Music } from 'lucide-react';
+import { Heart, Music, Clock } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 import { ONLINE_CHARTS } from '../services/api';
+
+const DEFAULT_COVER = "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a6/6e/bf/a66ebf79-5008-8948-b352-a790fc87446b/19UM1IM04638.rgb.jpg/600x600bb.jpg";
 
 function formatDuration(sec) {
   if (!sec || isNaN(sec)) return "3:00";
@@ -15,16 +17,6 @@ export default function LibraryView() {
 
   const likedTracks = ONLINE_CHARTS.filter(t => likedTrackIds.includes(t.id));
   const isCurrentPlaying = likedTracks.some(t => currentTrack && t.id === currentTrack.id);
-
-  const handlePlayAll = () => {
-    if (likedTracks.length > 0) {
-      if (isCurrentPlaying) {
-        togglePlay();
-      } else {
-        playTrack(likedTracks[0], likedTracks);
-      }
-    }
-  };
 
   return (
     <div className="library-view" style={{ padding: '24px 32px' }}>
@@ -103,7 +95,12 @@ export default function LibraryView() {
 
                     <td className="track-cell">
                       <div className="track-info-cell">
-                        <img src={track.coverUrl} alt={track.title} className="track-row-thumb" />
+                        <img 
+                          src={track.coverUrl} 
+                          alt={track.title} 
+                          className="track-row-thumb" 
+                          onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER; }}
+                        />
                         <div className="track-titles">
                           <span className="track-title-text">{track.title}</span>
                           <span className="track-artist-text">{track.artist}</span>

@@ -1,72 +1,65 @@
 /**
- * YouTube IFrame API Controller & Full-Song Stream Engine for music.k
- * Streams full-length online audio directly from YouTube (no 30s limits).
+ * YouTube IFrame Online Music Engine for music.k
+ * Streams 100% online audio directly from YouTube with 0 backend storage.
  */
 
-const YT_ID_CACHE = new Map([
-  ["the weeknd blinding lights", "4NRXx6U8ABQ"],
-  ["the weeknd ft. daft punk starboy", "dQTJ8sbm4Tg"],
-  ["the weeknd starboy", "dQTJ8sbm4Tg"],
-  ["billie eilish birds of a feather", "V9PVRfjEBTI"],
-  ["kendrick lamar not like us", "H58vbez_m4E"],
-  ["eminem lose yourself", "_Yhyp-_hX2s"],
-  ["dua lipa levitating", "TUVcZfQe-Kw"],
-  ["alan walker faded", "60ItHLz5WEA"],
-  ["travis scott ft. playboi carti fe!n", "UceaB44wvJ4"],
-  ["travis scott fein", "UceaB44wvJ4"],
-  ["taylor swift cruel summer", "ic8j13piAhQ"],
-  ["post malone circles", "wXhTHyIgQ_U"],
-  ["drake gods plan", "uxpDa-c-4Mc"],
-  ["ed sheeran shape of you", "JGwWNGJdvx8"],
-  ["coldplay yellow", "yKNxeF4KMsY"],
-  ["arijit singh kesariya", "BddP6PYo2gs"],
-  ["bts dynamite", "gdZLi9oWNZg"],
-  ["linkin park in the end", "eVTXPUF4Oz4"],
-  ["imagine dragons believer", "7wtfhZwyrcc"],
-  ["queen bohemian rhapsody", "fJ9rUzIMcZQ"]
+// Instant verified YouTube Video IDs for top hits worldwide
+const YT_CATALOG = new Map([
+  // Global Hits
+  ["blinding lights", "4NRXx6U8ABQ"],
+  ["starboy", "dQTJ8sbm4Tg"],
+  ["birds of a feather", "V9PVRfjEBTI"],
+  ["not like us", "H58vbez_m4E"],
+  ["lose yourself", "_Yhyp-_hX2s"],
+  ["without me", "YVkUvmDQ3HY"],
+  ["rap god", "XbGs_qK2PQA"],
+  ["levitating", "TUVcZfQe-Kw"],
+  ["faded", "60ItHLz5WEA"],
+  ["fein", "UceaB44wvJ4"],
+  ["fe!n", "UceaB44wvJ4"],
+  ["cruel summer", "ic8j13piAhQ"],
+  ["circles", "wXhTHyIgQ_U"],
+  ["gods plan", "uxpDa-c-4Mc"],
+  ["god's plan", "uxpDa-c-4Mc"],
+  ["shape of you", "JGwWNGJdvx8"],
+  ["yellow", "yKNxeF4KMsY"],
+  ["viva la vida", "dvgZkm1xWPE"],
+  ["the scientist", "RB-RcX5DS5A"],
+  ["a sky full of stars", "VPRjCeoBqrI"],
+  ["kesariya", "BddP6PYo2gs"],
+  ["enna sona", "of3gZ_N-_a8"],
+  ["apna bana le", "ElZfdU54Cp8"],
+  ["tum hi ho", "IJq0yyWug1k"],
+  ["believer", "7wtfhZwyrcc"],
+  ["dynamite", "gdZLi9oWNZg"],
+  ["in the end", "eVTXPUF4Oz4"],
+  ["bohemian rhapsody", "fJ9rUzIMcZQ"],
+  ["as it was", "H5v3kku4y6Q"],
+  ["stay", "kTJczUoc26U"],
+  ["bad guy", "DyDfgMOUjCI"],
+  ["industry baby", "UTHLKHL_whs"],
+  ["save your tears", "XXYlFuWEuKI"],
+  ["heat waves", "mRD0-GxqHVo"],
+  ["someone you loved", "zABLecsR5UE"],
+  ["sunflower", "ApXoWvfEYVU"],
+  ["lovely", "V1Pl8CzNzCw"],
+  ["mockingbird", "S9bCLPwzSC0"]
 ]);
 
-export async function resolveExactYouTubeId(title, artist) {
+export function findOnlineYouTubeId(title, artist) {
   if (!title) return "4NRXx6U8ABQ";
-  const cleanKey = `${artist || ''} ${title}`.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+  const cleanTitle = title.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+  const cleanArtist = (artist || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+  const fullKey = `${cleanArtist} ${cleanTitle}`.trim();
 
-  // 1. Direct cache check
-  for (const [key, id] of YT_ID_CACHE.entries()) {
-    if (cleanKey.includes(key) || key.includes(cleanKey)) {
+  // 1. Direct match on full key or title
+  for (const [key, id] of YT_CATALOG.entries()) {
+    if (fullKey.includes(key) || cleanTitle.includes(key) || key.includes(cleanTitle)) {
       return id;
     }
   }
 
-  // 2. Query public Invidious / Piped search instances for full-length video ID
-  const searchEndpoints = [
-    `https://inv.nadeko.net/api/v1/search?q=${encodeURIComponent(`${artist || ''} ${title} audio`)}`,
-    `https://invidious.nerdvpn.de/api/v1/search?q=${encodeURIComponent(`${artist || ''} ${title} audio`)}`,
-    `https://vid.priv.au/api/v1/search?q=${encodeURIComponent(`${artist || ''} ${title}`)}`
-  ];
-
-  for (const endpoint of searchEndpoints) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
-
-      const res = await fetch(endpoint, { signal: controller.signal });
-      clearTimeout(timeoutId);
-
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          const video = data.find(item => item.type === 'video' || item.videoId);
-          if (video && (video.videoId || video.id)) {
-            const foundId = video.videoId || video.id;
-            YT_ID_CACHE.set(cleanKey, foundId);
-            return foundId;
-          }
-        }
-      }
-    } catch (e) {}
-  }
-
-  return "4NRXx6U8ABQ";
+  return null;
 }
 
 class YouTubePlayerController {
@@ -78,12 +71,8 @@ class YouTubePlayerController {
     this.pendingVideoId = null;
   }
 
-  init(containerId = 'yt-player-iframe', onStateChange = null) {
+  init(containerId = 'yt-music-iframe') {
     if (this.isReady && this.player) return;
-
-    if (onStateChange) {
-      this.listeners.add(onStateChange);
-    }
 
     if (!window.YT || !window.YT.Player) {
       const tag = document.createElement('script');
@@ -101,6 +90,9 @@ class YouTubePlayerController {
 
   createPlayer(containerId) {
     if (this.player) return;
+
+    const el = document.getElementById(containerId);
+    if (!el) return;
 
     try {
       this.player = new window.YT.Player(containerId, {
@@ -130,6 +122,7 @@ class YouTubePlayerController {
             this.notifyListeners('stateChange', event.data);
           },
           onError: (event) => {
+            console.warn('YouTube playback notice:', event.data);
             this.notifyListeners('error', event.data);
           }
         }
@@ -152,16 +145,8 @@ class YouTubePlayerController {
     });
   }
 
-  async playTrackAccurate(track) {
-    // Resolve exact full-length YouTube video ID
-    let vId = track.youtubeId;
-    if (!vId) {
-      vId = await resolveExactYouTubeId(track.title, track.artist);
-    }
-    if (!vId) {
-      vId = track.id && track.id.startsWith('yt-') ? track.youtubeId : '4NRXx6U8ABQ';
-    }
-
+  playTrack(track) {
+    const vId = track.youtubeId || findOnlineYouTubeId(track.title, track.artist) || "4NRXx6U8ABQ";
     this.currentVideoId = vId;
     this.loadAndPlay(vId);
   }

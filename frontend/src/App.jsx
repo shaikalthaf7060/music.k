@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { AudioProvider, useAudio } from './context/AudioContext';
+import { ytController } from './services/youtubePlayer';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import PlayerBar from './components/PlayerBar';
@@ -18,6 +19,11 @@ import AuthModal from './components/AuthModal';
 function MainAppContent() {
   const { currentView, viewParam } = useAudio();
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Mount YouTube IFrame API Controller
+  useEffect(() => {
+    ytController.init('yt-music-iframe');
+  }, []);
 
   const activeViewComponent = useMemo(() => {
     switch (currentView) {
@@ -54,6 +60,23 @@ function MainAppContent() {
 
       {/* Persistent Bottom Player Bar */}
       <PlayerBar />
+
+      {/* Dedicated YouTube Streaming Container */}
+      <div 
+        style={{ 
+          position: 'fixed', 
+          bottom: '-300px', 
+          right: '0px', 
+          width: '240px', 
+          height: '240px', 
+          pointerEvents: 'none',
+          visibility: 'visible',
+          opacity: 0.01,
+          zIndex: -1
+        }}
+      >
+        <div id="yt-music-iframe" style={{ width: '100%', height: '100%' }} />
+      </div>
 
       {/* Dynamic Overlays & Modals */}
       <AuthModal />
