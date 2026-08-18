@@ -78,6 +78,13 @@ export function AudioProvider({ children }) {
         } else if (data === 0) { // ENDED
           handleTrackEnd();
         }
+      } else if (type === 'timeUpdate') {
+        if (data.currentTime !== undefined && !isNaN(data.currentTime)) {
+          setCurrentTime(data.currentTime);
+        }
+        if (data.duration && !isNaN(data.duration) && data.duration > 0) {
+          setDuration(data.duration);
+        }
       }
     });
 
