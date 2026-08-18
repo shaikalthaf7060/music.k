@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { ONLINE_CHARTS, fetchOnlineLyrics } from '../services/api';
-import { ytController } from '../services/youtubePlayer';
+import { ytController } from '../services/audioEngine';
 import { 
   auth, 
   signInWithGoogle, 
@@ -23,30 +23,47 @@ export const EQ_PRESETS = {
 };
 
 export function AudioProvider({ children }) {
-  const [tracks, setTracks] = useState(ONLINE_CHARTS);
-  const [currentTrack, setCurrentTrack] = useState(ONLINE_CHARTS[0]);
+  const [tracks, setTracks] = useState(ONLINE_CHARTS || []);
+  const [currentTrack, setCurrentTrack] = useState((ONLINE_CHARTS && ONLINE_CHARTS.length > 0) ? ONLINE_CHARTS[0] : null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(ONLINE_CHARTS[0].duration || 200);
+  const [duration, setDuration] = useState((ONLINE_CHARTS && ONLINE_CHARTS[0]?.duration) || 200);
   const [volume, setVolumeState] = useState(0.85);
   const [isMuted, setIsMuted] = useState(false);
   const [prevVolume, setPrevVolume] = useState(0.85);
-  const [queue, setQueue] = useState(ONLINE_CHARTS.slice(1));
+  const [queue, setQueue] = useState((ONLINE_CHARTS && ONLINE_CHARTS.length > 1) ? ONLINE_CHARTS.slice(1) : []);
   const [history, setHistory] = useState([]);
   const [isShuffle, setIsShuffle] = useState(false);
   const [repeatMode, setRepeatMode] = useState('off');
   
-  // Auth state
-  const [authToken, setAuthToken] = useState(() => localStorage.getItem('musick_auth_token') || '');
-  const [currentUser, setCurrentUser] = useState(() => {
-    const saved = localStorage.getItem('musick_user_profile');
-    return saved ? JSON.parse(saved) : null;
+  // Safe Auth state initialization
+  const [authToken, setAuthToken] = useState(() => {
+    try {
+      return localStorage.getItem('musick_auth_token') || '';
+    } catch (e) {
+      return '';
+    }
   });
+
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('musick_user_profile');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const [likedTrackIds, setLikedTrackIds] = useState(() => {
-    const saved = localStorage.getItem('musick_liked_tracks');
-    return saved ? JSON.parse(saved) : ['yt-01', 'yt-02', 'yt-04'];
+    try {
+      const saved = localStorage.getItem('musick_liked_tracks');
+      const parsed = saved ? JSON.parse(saved) : null;
+      return Array.isArray(parsed) ? parsed : ['yt-01', 'yt-02', 'yt-04'];
+    } catch (e) {
+      return ['yt-01', 'yt-02', 'yt-04'];
+    }
   });
   
   const [currentView, setCurrentView] = useState('search');
@@ -65,7 +82,7 @@ export function AudioProvider({ children }) {
 
   const pollTimerRef = useRef(null);
 
-  // Subscribe to YouTube / HTML5 Player state changes
+  // Subscribe to Audio Player state changes
   useEffect(() => {
     const unsubscribe = ytController.subscribe((type, data) => {
       if (type === 'stateChange') {
@@ -77,7 +94,7 @@ export function AudioProvider({ children }) {
           handleTrackEnd();
         }
       } else if (type === 'timeUpdate') {
-        if (data.currentTime !== undefined && !isNaN(data.currentTime)) {
+        if (data && data.currentTime !== undefined && !isNaN(data.currentTime)) {
           setCurrentTime(data.currentTime);
         }
       }
@@ -86,17 +103,13 @@ export function AudioProvider({ children }) {
     return () => unsubscribe();
   }, [repeatMode, queue, currentTrack, isShuffle]);
 
-  // Smooth polling for playback time & duration
+  // Smooth polling for playback time
   useEffect(() => {
     if (isPlaying) {
       pollTimerRef.current = setInterval(() => {
         const time = ytController.getCurrentTime();
         if (time !== undefined && !isNaN(time)) {
           setCurrentTime(time);
-        }
-        const dur = ytController.getDuration();
-        if (dur && !isNaN(dur) && dur > 0) {
-          setDuration(dur);
         }
       }, 400);
     } else {
@@ -111,41 +124,49 @@ export function AudioProvider({ children }) {
   // Firebase auth state listener
   useEffect(() => {
     if (isFirebaseConfigured() && auth) {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user) {
-          const profile = {
-            id: user.uid,
-            name: user.displayName || user.email?.split('@')[0] || "VIP Red Member",
-            email: user.email,
-            avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`,
-            tier: "VIP Firebase Member"
-          };
-          setCurrentUser(profile);
-          setAuthToken(user.uid);
-        }
-      });
-      return () => unsubscribe();
+      try {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          if (user) {
+            const profile = {
+              id: user.uid,
+              name: user.displayName || user.email?.split('@')[0] || "VIP Member",
+              email: user.email,
+              avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`,
+              tier: "VIP Member"
+            };
+            setCurrentUser(profile);
+            setAuthToken(user.uid);
+          }
+        });
+        return () => unsubscribe();
+      } catch (e) {}
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('musick_liked_tracks', JSON.stringify(likedTrackIds));
+    try {
+      localStorage.setItem('musick_liked_tracks', JSON.stringify(likedTrackIds));
+    } catch (e) {}
   }, [likedTrackIds]);
 
   useEffect(() => {
-    if (authToken) {
-      localStorage.setItem('musick_auth_token', authToken);
-    } else {
-      localStorage.removeItem('musick_auth_token');
-    }
+    try {
+      if (authToken) {
+        localStorage.setItem('musick_auth_token', authToken);
+      } else {
+        localStorage.removeItem('musick_auth_token');
+      }
+    } catch (e) {}
   }, [authToken]);
 
   useEffect(() => {
-    if (currentUser) {
-      localStorage.setItem('musick_user_profile', JSON.stringify(currentUser));
-    } else {
-      localStorage.removeItem('musick_user_profile');
-    }
+    try {
+      if (currentUser) {
+        localStorage.setItem('musick_user_profile', JSON.stringify(currentUser));
+      } else {
+        localStorage.removeItem('musick_user_profile');
+      }
+    } catch (e) {}
   }, [currentUser]);
 
   // Sync active lyric line
@@ -170,12 +191,13 @@ export function AudioProvider({ children }) {
     if (currentTrack) {
       fetchOnlineLyrics(currentTrack).then(res => {
         setActiveLyrics(res.lyrics || []);
-      });
+      }).catch(() => {});
     }
   }, [currentTrack]);
 
-  // Play track online via YouTube streaming engine (0 backend storage)
+  // Play track online
   const playTrack = useCallback((track, playlistContext = null) => {
+    if (!track) return;
     if (playlistContext) {
       const nextInList = playlistContext.filter(t => t.id !== track.id);
       setQueue(nextInList);
@@ -224,7 +246,7 @@ export function AudioProvider({ children }) {
       setQueue(remaining);
       playTrack(nextSong);
     } else if (repeatMode === 'all') {
-      const allTracks = tracks.filter(t => t.id !== currentTrack.id);
+      const allTracks = tracks.filter(t => t.id !== currentTrack?.id);
       if (allTracks.length > 0) {
         setQueue(allTracks.slice(1));
         playTrack(allTracks[0]);
@@ -244,7 +266,9 @@ export function AudioProvider({ children }) {
     if (history.length > 0) {
       const prevSong = history[0];
       setHistory(prev => prev.slice(1));
-      setQueue(prev => [currentTrack, ...prev]);
+      if (currentTrack) {
+        setQueue(prev => [currentTrack, ...prev]);
+      }
       playTrack(prevSong);
     } else {
       ytController.seekTo(0);
@@ -292,7 +316,8 @@ export function AudioProvider({ children }) {
 
   const toggleLike = useCallback((trackId) => {
     setLikedTrackIds(prev => {
-      const exists = prev.includes(trackId);
+      const safePrev = Array.isArray(prev) ? prev : [];
+      const exists = safePrev.includes(trackId);
       if (!exists) {
         try {
           confetti({
@@ -302,9 +327,9 @@ export function AudioProvider({ children }) {
             colors: ['#FF2A3A', '#E50914', '#ffffff', '#990000']
           });
         } catch (e) {}
-        return [...prev, trackId];
+        return [...safePrev, trackId];
       } else {
-        return prev.filter(id => id !== trackId);
+        return safePrev.filter(id => id !== trackId);
       }
     });
   }, []);
@@ -314,10 +339,10 @@ export function AudioProvider({ children }) {
     const user = await signInWithGoogle();
     const profile = {
       id: user.uid,
-      name: user.displayName || "Google Red Listener",
+      name: user.displayName || "Google Member",
       email: user.email,
       avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.email}`,
-      tier: "VIP Google Member"
+      tier: "VIP Member"
     };
     setCurrentUser(profile);
     setAuthToken(user.uid);
@@ -331,7 +356,7 @@ export function AudioProvider({ children }) {
       name: user.displayName || email.split('@')[0],
       email: user.email,
       avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${email}`,
-      tier: "VIP Red Member"
+      tier: "VIP Member"
     };
     setCurrentUser(profile);
     setAuthToken(user.uid);
@@ -345,7 +370,7 @@ export function AudioProvider({ children }) {
       name: name,
       email: email,
       avatar: user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${email}`,
-      tier: "VIP Red Member"
+      tier: "VIP Member"
     };
     setCurrentUser(profile);
     setAuthToken(user.uid);
@@ -393,7 +418,7 @@ export function AudioProvider({ children }) {
         history,
         isShuffle,
         repeatMode,
-        likedTrackIds,
+        likedTrackIds: Array.isArray(likedTrackIds) ? likedTrackIds : [],
         currentUser,
         authToken,
         isAuthModalOpen,
