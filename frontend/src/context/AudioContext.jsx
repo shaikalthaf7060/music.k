@@ -36,6 +36,16 @@ export function AudioProvider({ children }) {
   const [isShuffle, setIsShuffle] = useState(false);
   const [repeatMode, setRepeatMode] = useState('off');
   
+  // Custom Playlists State
+  const [customPlaylists, setCustomPlaylists] = useState(() => {
+    try {
+      const saved = localStorage.getItem('musick_custom_playlists');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
   // Safe Auth state initialization
   const [authToken, setAuthToken] = useState(() => {
     try {
@@ -55,6 +65,7 @@ export function AudioProvider({ children }) {
   });
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isCreatePlaylistOpen, setIsCreatePlaylistOpen] = useState(false);
 
   const [likedTrackIds, setLikedTrackIds] = useState(() => {
     try {
@@ -151,6 +162,12 @@ export function AudioProvider({ children }) {
 
   useEffect(() => {
     try {
+      localStorage.setItem('musick_custom_playlists', JSON.stringify(customPlaylists));
+    } catch (e) {}
+  }, [customPlaylists]);
+
+  useEffect(() => {
+    try {
       if (authToken) {
         localStorage.setItem('musick_auth_token', authToken);
       } else {
@@ -198,13 +215,13 @@ export function AudioProvider({ children }) {
   // Play track online
   const playTrack = useCallback((track, playlistContext = null) => {
     if (!track) return;
-    if (playlistContext) {
+    if (playlistContext && Array.isArray(playlistContext)) {
       const nextInList = playlistContext.filter(t => t.id !== track.id);
       setQueue(nextInList);
     }
 
     if (currentTrack && currentTrack.id !== track.id) {
-      setHistory(prev => [currentTrack, ...prev.slice(0, 19)]);
+      setHistory(prev => [currentTrack, ...(Array.isArray(prev) ? prev.slice(0, 19) : [])]);
     }
 
     setCurrentTrack(track);
@@ -236,7 +253,7 @@ export function AudioProvider({ children }) {
   };
 
   const nextTrack = useCallback(() => {
-    if (queue.length > 0) {
+    if (queue && queue.length > 0) {
       let nextIndex = 0;
       if (isShuffle) {
         nextIndex = Math.floor(Math.random() * queue.length);
@@ -246,7 +263,7 @@ export function AudioProvider({ children }) {
       setQueue(remaining);
       playTrack(nextSong);
     } else if (repeatMode === 'all') {
-      const allTracks = tracks.filter(t => t.id !== currentTrack?.id);
+      const allTracks = (tracks || []).filter(t => t.id !== currentTrack?.id);
       if (allTracks.length > 0) {
         setQueue(allTracks.slice(1));
         playTrack(allTracks[0]);
@@ -263,11 +280,11 @@ export function AudioProvider({ children }) {
       return;
     }
 
-    if (history.length > 0) {
+    if (history && history.length > 0) {
       const prevSong = history[0];
-      setHistory(prev => prev.slice(1));
+      setHistory(prev => (Array.isArray(prev) ? prev.slice(1) : []));
       if (currentTrack) {
-        setQueue(prev => [currentTrack, ...prev]);
+        setQueue(prev => [currentTrack, ...(Array.isArray(prev) ? prev : [])]);
       }
       playTrack(prevSong);
     } else {
@@ -332,6 +349,18 @@ export function AudioProvider({ children }) {
         return safePrev.filter(id => id !== trackId);
       }
     });
+  }, []);
+
+  const createPlaylist = useCallback((title, description = '', coverUrl = '') => {
+    const newPlaylist = {
+      id: `pl-${Date.now()}`,
+      title,
+      description,
+      coverUrl: coverUrl || "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&auto=format&fit=crop&q=80",
+      tracks: []
+    };
+    setCustomPlaylists(prev => [...(Array.isArray(prev) ? prev : []), newPlaylist]);
+    return newPlaylist;
   }, []);
 
   // Firebase Auth Handlers
@@ -414,14 +443,18 @@ export function AudioProvider({ children }) {
         duration,
         volume,
         isMuted,
-        queue,
-        history,
+        queue: Array.isArray(queue) ? queue : [],
+        history: Array.isArray(history) ? history : [],
         isShuffle,
         repeatMode,
         likedTrackIds: Array.isArray(likedTrackIds) ? likedTrackIds : [],
+        customPlaylists: Array.isArray(customPlaylists) ? customPlaylists : [],
         currentUser,
         authToken,
         isAuthModalOpen,
+        isCreatePlaylistOpen,
+        setIsCreatePlaylistOpen,
+        createPlaylist,
         isNowPlayingOpen,
         setIsNowPlayingOpen,
         currentView,
