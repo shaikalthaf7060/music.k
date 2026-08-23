@@ -28,7 +28,7 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.warn("React boundary caught error:", error, errorInfo);
+    console.error("React boundary caught error:", error, errorInfo);
   }
 
   render() {
@@ -39,30 +39,53 @@ class ErrorBoundary extends Component {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          height: '100vh',
+          minHeight: '100vh',
           background: '#060608',
           color: 'white',
           textAlign: 'center',
-          padding: '24px'
+          padding: '32px',
+          fontFamily: 'sans-serif'
         }}>
-          <h1 style={{ fontSize: '1.8rem', color: '#FF2A3A', marginBottom: '12px' }}>music.k</h1>
-          <p style={{ color: '#aaa', marginBottom: '24px' }}>Reloading your music player session...</p>
+          <h1 style={{ fontSize: '2rem', color: '#FF2A3A', marginBottom: '12px' }}>music.k</h1>
+          <p style={{ color: '#ccc', marginBottom: '16px', maxWidth: '500px' }}>
+            We encountered an unexpected rendering issue. Click below to reset your cache and reload.
+          </p>
+          {this.state.error && (
+            <pre style={{
+              background: 'rgba(255,255,255,0.06)',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              color: '#ff6b6b',
+              fontSize: '0.82rem',
+              maxWidth: '600px',
+              overflowX: 'auto',
+              marginBottom: '24px',
+              textAlign: 'left'
+            }}>
+              {this.state.error.toString()}
+            </pre>
+          )}
           <button
             onClick={() => {
-              try { localStorage.clear(); } catch(e) {}
+              try { 
+                localStorage.clear(); 
+                sessionStorage.clear();
+              } catch(e) {}
               window.location.reload();
             }}
             style={{
-              padding: '12px 24px',
+              padding: '12px 28px',
               borderRadius: '24px',
               border: 'none',
               background: '#E50914',
               color: 'white',
               fontWeight: 800,
-              cursor: 'pointer'
+              fontSize: '0.95rem',
+              cursor: 'pointer',
+              boxShadow: '0 4px 18px rgba(229, 9, 20, 0.4)'
             }}
           >
-            Refresh music.k
+            Clear Cache & Refresh music.k
           </button>
         </div>
       );
@@ -78,7 +101,9 @@ function MainAppContent() {
   // Mount Audio Controller
   useEffect(() => {
     try {
-      ytController.init();
+      if (ytController && ytController.init) {
+        ytController.init();
+      }
     } catch (e) {}
   }, []);
 

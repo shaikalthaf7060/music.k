@@ -63,6 +63,7 @@ export default function PlayerBar() {
 
   if (!currentTrack) return null;
 
+  const isLiked = Boolean(currentTrack && Array.isArray(likedTrackIds) && likedTrackIds.includes(currentTrack.id));
   const trackDuration = currentTrack?.duration || duration || 200;
   const progressPercent = trackDuration > 0 ? Math.min(100, (currentTime / trackDuration) * 100) : 0;
 
