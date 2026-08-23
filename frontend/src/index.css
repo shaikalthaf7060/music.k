@@ -1,13 +1,13 @@
 /* ==========================================================================
-   music.k — PURE FROSTED GLASS & BLENDED 3D COVERFLOW SYSTEM
-   Matches Spotify Reference Exactly (Zero Red, Pure Glass Aesthetic)
+   music.k — PURE FROSTED GLASS, 3D COVERFLOW & INTERACTIVE AUDIO SYSTEM
+   Matches Spotify Reference with Zero Red, Interactive Seeking & Reactive Glow
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
 :root {
   --bg-deep-plum: #140d17;
-  --bg-gradient: radial-gradient(ellipse at 50% 30%, #26132b 0%, #150917 55%, #0a040c 100%);
+  --bg-gradient: radial-gradient(ellipse at 50% 30%, #29122c 0%, #150917 55%, #09030b 100%);
   --text-primary: #FFFFFF;
   --text-secondary: #C8C6D0;
   --text-muted: #8E8A96;
@@ -60,7 +60,7 @@ input {
 }
 
 /* ==========================================================================
-   Main Experience Container
+   Main Experience Container & Reactive Ambient Glow
    ========================================================================== */
 
 .experience-container {
@@ -76,51 +76,76 @@ input {
   padding-bottom: 95px;
 }
 
+.reactive-ambient-glow {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 350px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(140, 50, 160, 0.25) 0%, rgba(90, 20, 110, 0.08) 50%, transparent 80%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 1;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0.6;
+}
+
+.reactive-ambient-glow.active-glow {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.15);
+  background: radial-gradient(circle, rgba(160, 60, 180, 0.35) 0%, rgba(100, 30, 120, 0.12) 50%, transparent 80%);
+}
+
 /* ==========================================================================
-   Hero Top Header & Attractive Glass Search Bar
+   Hero Top Header: Logo + Attractive Search + Developed By Althaf
    ========================================================================== */
 
 .hero-top-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 14px;
-  margin-top: 22px;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
   z-index: 50;
   width: 100%;
-  padding: 0 20px;
+  max-width: 1200px;
+  padding: 0 32px;
 }
 
+/* Left: Monochrome Logo */
 .hero-logo-box {
   display: flex;
   align-items: center;
   gap: 8px;
-  opacity: 0.75;
-  transition: opacity 0.2s ease;
-}
-
-.hero-logo-box:hover {
-  opacity: 1;
+  opacity: 0.8;
+  flex-shrink: 0;
+  min-width: 140px;
 }
 
 .hero-brand-name {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: -0.3px;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.65);
 }
 
-/* Attractive Glassmorphic Search Bar */
+.hero-dot {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Center: Attractive Glassmorphic Search Bar */
 .hero-search-wrapper {
   position: relative;
-  width: min(480px, 92vw);
+  width: min(520px, 50vw);
   height: 44px;
   border-radius: 30px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
@@ -130,13 +155,13 @@ input {
 
 .hero-search-wrapper:hover {
   background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .hero-search-wrapper:focus-within {
   background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.28);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 24px rgba(255, 255, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 28px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.18);
   transform: translateY(-1px);
 }
 
@@ -158,6 +183,67 @@ input {
   color: rgba(255, 255, 255, 0.35);
 }
 
+.search-clear-btn {
+  color: rgba(255, 255, 255, 0.4);
+  padding: 4px;
+  border-radius: 50%;
+  margin-left: 6px;
+}
+
+.search-clear-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Right: Developed by Althaf (Seamless Glass Badge) */
+.hero-dev-credit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  min-width: 140px;
+  justify-content: flex-end;
+}
+
+.dev-text {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+}
+
+.dev-link-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.dev-link-badge:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 16px rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.github-icon {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.dev-name {
+  color: #FFFFFF;
+}
+
 /* ==========================================================================
    Hero Main Stage & 3D Coverflow Carousel
    ========================================================================== */
@@ -170,6 +256,7 @@ input {
   align-items: center;
   justify-content: center;
   position: relative;
+  z-index: 10;
 }
 
 .coverflow-container {
@@ -211,8 +298,15 @@ input {
 }
 
 .coverflow-card.active-center {
-  border-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 35px 70px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 35px 70px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  animation: cardPulse 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardPulse {
+  0% { transform: scale(1.08); }
+  50% { transform: scale(1.18); }
+  100% { transform: scale(1.15); }
 }
 
 .card-artwork-box {
@@ -313,12 +407,12 @@ input {
 }
 
 /* ==========================================================================
-   Bottom Floating Pill Player (Pure Frosted Glass, Zero Red)
+   Bottom Floating Pill Player (Interactive Seeking Everywhere)
    ========================================================================== */
 
 .floating-pill-player-wrapper {
   position: fixed;
-  bottom: 26px;
+  bottom: 24px;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -332,8 +426,8 @@ input {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  width: min(690px, 92vw);
-  height: 64px;
+  width: min(720px, 94vw);
+  height: 68px;
   padding: 0 20px;
   border-radius: 40px;
   background: rgba(36, 24, 40, 0.85);
@@ -361,8 +455,8 @@ input {
 }
 
 .pill-main-play-btn {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   color: #FFFFFF;
   transition: all 0.15s ease;
@@ -373,32 +467,40 @@ input {
   color: rgba(255, 255, 255, 0.95);
 }
 
-/* Center Island Track Card */
+/* Center Island Track Card + Interactive Scrub Bar */
+.pill-center-track-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  max-width: 320px;
+  position: relative;
+}
+
 .pill-center-track {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 6px 14px;
-  border-radius: 24px;
+  gap: 10px;
+  padding: 5px 12px;
+  border-radius: 20px;
   background: rgba(22, 14, 26, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
-  flex: 1;
-  max-width: 270px;
+  width: 100%;
   overflow: hidden;
   transition: all 0.2s ease;
 }
 
 .pill-center-track:hover {
   background: rgba(28, 18, 34, 0.92);
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .pill-track-thumb {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -407,10 +509,11 @@ input {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  flex: 1;
 }
 
 .pill-track-artist {
-  font-size: 0.84rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: #FFFFFF;
   white-space: nowrap;
@@ -419,11 +522,21 @@ input {
 }
 
 .pill-track-title {
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   color: #9CA3AF;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.pill-time-badge {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
 
 .pill-soundwave {
@@ -431,13 +544,13 @@ input {
   align-items: flex-end;
   gap: 2px;
   height: 12px;
-  margin-left: auto;
+  margin-left: 4px;
   flex-shrink: 0;
 }
 
 .pill-soundwave span {
   width: 2px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 1px;
   animation: waveAnim 0.9s ease-in-out infinite alternate;
 }
@@ -445,19 +558,66 @@ input {
 .pill-soundwave span:nth-child(2) { animation-delay: 0.2s; height: 10px; }
 .pill-soundwave span:nth-child(3) { animation-delay: 0.4s; height: 6px; }
 
-.pill-progress-track {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.08);
+/* Interactive Timeline Scrubber */
+.pill-scrub-bar {
+  width: 100%;
+  padding: 4px 0 0;
+  cursor: pointer;
+  position: relative;
 }
 
-.pill-progress-fill {
+.pill-scrub-track {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: visible;
+  transition: height 0.15s ease;
+}
+
+.pill-scrub-bar:hover .pill-scrub-track {
+  height: 6px;
+}
+
+.pill-scrub-fill {
   height: 100%;
   background: rgba(255, 255, 255, 0.85);
   border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+.pill-scrub-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.pill-scrub-bar:hover .pill-scrub-thumb {
+  opacity: 1;
+}
+
+.scrub-tooltip {
+  position: absolute;
+  bottom: 18px;
+  transform: translateX(-50%);
+  background: rgba(18, 10, 22, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  color: #FFFFFF;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 /* Right Group */
@@ -510,7 +670,17 @@ input {
 }
 
 /* Responsive Rules for Mobile */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  .hero-top-header {
+    flex-direction: column;
+    padding: 0 16px;
+    gap: 12px;
+  }
+  
+  .hero-search-wrapper {
+    width: 100%;
+  }
+
   .coverflow-card {
     width: 200px;
     height: 290px;
@@ -521,7 +691,7 @@ input {
   }
 
   .floating-pill-player {
-    height: 58px;
+    height: 62px;
     padding: 0 12px;
   }
 

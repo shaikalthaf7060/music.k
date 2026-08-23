@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { 
   Play, 
   Pause, 
@@ -8,11 +8,19 @@ import {
   Sliders, 
   Volume2, 
   VolumeX, 
-  Volume1 
+  Volume1,
+  Maximize2
 } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 
 const DEFAULT_COVER = "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80";
+
+function formatTime(seconds) {
+  if (isNaN(seconds) || seconds < 0) return "0:00";
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
 
 export default function FloatingPillPlayer() {
   const {
@@ -33,6 +41,9 @@ export default function FloatingPillPlayer() {
   } = useAudio();
 
   const scrubBarRef = useRef(null);
+  const [isHoveringScrub, setIsHoveringScrub] = useState(false);
+  const [hoverTime, setHoverTime] = useState(0);
+  const [hoverPos, setHoverPos] = useState(0);
 
   if (!currentTrack) return null;
 
@@ -44,7 +55,17 @@ export default function FloatingPillPlayer() {
     const rect = scrubBarRef.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const percentage = Math.max(0, Math.min(1, clickX / rect.width));
-    seek(percentage * trackDuration);
+    const targetSec = percentage * trackDuration;
+    seek(targetSec);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!scrubBarRef.current) return;
+    const rect = scrubBarRef.current.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(1, clickX / rect.width));
+    setHoverTime(percentage * trackDuration);
+    setHoverPos(clickX);
   };
 
   return (
@@ -69,45 +90,65 @@ export default function FloatingPillPlayer() {
           </button>
         </div>
 
-        {/* Center: Mini Track Island Card */}
-        <div 
-          className="pill-center-track" 
-          onClick={() => setIsNowPlayingOpen(true)}
-          title="Open Full Player"
-        >
-          <img 
-            src={currentTrack.coverUrl || DEFAULT_COVER} 
-            alt={currentTrack.title}
-            className="pill-track-thumb"
-            onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER; }}
-          />
+        {/* Center: Interactive Track & Scrub Island */}
+        <div className="pill-center-track-wrapper">
+          <div 
+            className="pill-center-track" 
+            onClick={() => setIsNowPlayingOpen(true)}
+            title="Click to Open Fullscreen Player"
+          >
+            <img 
+              src={currentTrack.coverUrl || DEFAULT_COVER} 
+              alt={currentTrack.title}
+              className="pill-track-thumb"
+              onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER; }}
+            />
 
-          <div className="pill-track-meta">
-            <span className="pill-track-artist">{currentTrack.artist || 'Artist'}</span>
-            <span className="pill-track-title">{currentTrack.title || 'Song Title'}</span>
+            <div className="pill-track-meta">
+              <span className="pill-track-artist">{currentTrack.artist || 'Artist'}</span>
+              <span className="pill-track-title">{currentTrack.title || 'Song Title'}</span>
+            </div>
+
+            {/* Time Stamp Indicators */}
+            <div className="pill-time-badge">
+              <span>{formatTime(currentTime)}</span>
+              <span style={{ opacity: 0.5 }}>/</span>
+              <span>{formatTime(trackDuration)}</span>
+            </div>
+
+            {/* Animated Soundwave */}
+            {isPlaying && (
+              <div className="pill-soundwave">
+                <span /><span /><span />
+              </div>
+            )}
           </div>
 
-          {/* Mini Soundwave Indicator */}
-          {isPlaying && (
-            <div className="pill-soundwave">
-              <span /><span /><span />
-            </div>
-          )}
-
-          {/* Micro Progress Bar Underline */}
+          {/* Interactive Scrub Bar (Click & Drag Anywhere) */}
           <div 
-            className="pill-progress-track"
+            className="pill-scrub-bar"
             ref={scrubBarRef}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleScrubClick(e);
-            }}
+            onClick={handleScrubClick}
+            onMouseEnter={() => setIsHoveringScrub(true)}
+            onMouseLeave={() => setIsHoveringScrub(false)}
+            onMouseMove={handleMouseMove}
+            title="Click anywhere to jump in song"
           >
-            <div className="pill-progress-fill" style={{ width: `${progressPercent}%` }} />
+            <div className="pill-scrub-track">
+              <div className="pill-scrub-fill" style={{ width: `${progressPercent}%` }} />
+              <div className="pill-scrub-thumb" style={{ left: `${progressPercent}%` }} />
+            </div>
+
+            {/* Tooltip on Hover */}
+            {isHoveringScrub && (
+              <div className="scrub-tooltip" style={{ left: `${hoverPos}px` }}>
+                {formatTime(hoverTime)}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Right: Audio Features & Volume */}
+        {/* Right: Audio Tools & Volume */}
         <div className="pill-right-controls">
           <button 
             className="pill-tool-btn"
