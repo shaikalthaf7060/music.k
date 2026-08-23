@@ -1,60 +1,77 @@
-# music.k 🔴
+# music.k 🎵
 
-> A sleek, ad-free music streaming app with a bold Red Spotify dark aesthetic.
+> A modern, frosted-glass music streaming web experience featuring an interactive **3D Coverflow Stage**, compact **Floating Pill Player**, and **100% Pure Audio Streaming**.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-E50914?style=for-the-badge)](https://shaikalthaf7060.github.io/music.k/)
-[![React](https://img.shields.io/badge/React-19-black?style=for-the-badge&logo=react)](https://react.dev/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-Python-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Firebase](https://img.shields.io/badge/Firebase-Auth-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-1e1422?style=for-the-badge&logo=github)](https://shaikalthaf7060.github.io/music.k/)
+[![React 19](https://img.shields.io/badge/React-19.2-20232a?style=for-the-badge&logo=react)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8.2-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
+[![Author](https://img.shields.io/badge/Developed%20by-Althaf-3a2240?style=for-the-badge&logo=github)](https://github.com/shaikalthaf7060)
 
 ---
 
-## 🌐 Live App
+## 🌐 Live Experience
 👉 **[https://shaikalthaf7060.github.io/music.k/](https://shaikalthaf7060.github.io/music.k/)**
 
 ---
 
-## ✨ Features
+## ✨ Key Highlights & Features
 
-- **⚡ Full-Length Ad-Free Streaming**: Pure audio streamed directly from YouTube Music with full seeking.
-- **🔍 Global Search**: Instant live search across millions of songs with 600×600 album artwork.
-- **🔥 Firebase Auth**: 1-Click Google Sign-In and Email/Password authentication.
-- **🎤 Synced Lyrics**: Real-time karaoke lyrics auto-scrolling with the music.
-- **🎛️ Studio Equalizer & Visualizer**: 5-Band EQ (Bass Boost, EDM Crimson, Pop) + 60 FPS audio visualizer.
-- **🖤 Minimalist Red UI**: High-contrast dark theme with bold crimson accents (Home & Library navigation).
-
----
-
-## 🛠️ Tech Stack
-
-- **Frontend**: React 19, Vite, Vanilla CSS, Lucide Icons, Canvas Confetti
-- **Backend**: FastAPI, Uvicorn, `yt-dlp`, `requests`
-- **Auth**: Firebase Authentication (Google OAuth + Email)
-- **Deployment**: GitHub Pages
+- **🌟 3D Coverflow Stage**: Interactive 3D perspective carousel allowing users to browse, flip, and trigger playback with smooth spatial animations.
+- **🔍 Frosted Glass Search Bar**: Attractive capsule search bar with `backdrop-filter: blur(28px)`, live auto-search, and instant clear capability.
+- **💊 Compact Floating Pill Player**: Snug, ergonomic bottom player bar featuring playback controls, track artwork, animated soundwaves, and interactive scrubbing.
+- **⏱️ Interactive Scrubber & Hover Tooltip**: Click or drag anywhere along the timeline to jump directly to any second in the song with live timestamp previews.
+- **💫 Reactive Ambient Atmosphere**: Dynamic background aura that softly blooms and reacts to track changes.
+- **🚫 100% Pure Audio Interface**: Zero intrusive video docks or iframes — direct, instantaneous audio streaming.
+- **🎤 Synchronized Karaoke Lyrics**: Live scrolling synced lyrics powered by LRCLIB.
+- **🎛️ 5-Band Equalizer & Visualizer**: Frequency visualizer and sound equalizer presets.
+- **👨‍💻 Seamless Developer Credit**: Integrated frosted badge linking directly to the developer's GitHub profile.
 
 ---
 
-## ⚡ Quick Start
+## 🛠️ Architecture & Tech Stack
 
-### 1. Backend (Streaming & Auth)
-```bash
-cd backend
-pip install -r requirements.txt
-python -m uvicorn main:app --port 8000 --reload
-```
-
-### 2. Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open `http://localhost:5173` in your browser.
+| Layer | Technology |
+|---|---|
+| **Frontend Framework** | [React 19](https://react.dev/) + [Vite](https://vitejs.dev/) |
+| **Styling & 3D Graphics** | Pure CSS3 (3D Transforms, `preserve-3d`, Frosted Glassmorphism) |
+| **Audio Engine** | Native HTML5 Audio Engine & Web Audio API |
+| **Icons & Typography** | [Lucide React](https://lucide.dev/), Plus Jakarta Sans, Outfit |
+| **Authentication** | [Firebase Auth](https://firebase.google.com/) (Google Sign-In & Email) |
+| **Deployment** | GitHub Pages CDN |
 
 ---
 
-## 🚀 Deploy
+## 🚀 Getting Started Locally
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or pnpm
+
+### Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/shaikalthaf7060/music.k.git
+   cd music.k/frontend
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Start the local development server**:
+   ```bash
+   npm run dev
+   ```
+
+4. Open your browser and navigate to `http://localhost:5173`.
+
+---
+
+## 📦 Building & Deploying
+
+To build and deploy the latest version to GitHub Pages:
 
 ```bash
 cd frontend
@@ -63,5 +80,11 @@ npm run deploy
 
 ---
 
+## 👨‍💻 Developer
+
+Developed by **[Althaf](https://github.com/shaikalthaf7060)**.
+
+---
+
 ## 📄 License
-MIT License.
+This project is open-source and available under the [MIT License](LICENSE).
