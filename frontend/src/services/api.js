@@ -1,6 +1,6 @@
 /**
- * music.k High-Performance Online Audio Catalog & Live Music Search
- * 100% Reliable HTML5 Audio Streaming with Authentic High-Res Album Posters.
+ * music.k Live Music Search & Online Catalog
+ * 100% Authentic Official Release Posters & Metadata.
  */
 
 export const RECENT_PLAYLISTS = [
@@ -37,15 +37,6 @@ export const RECENT_PLAYLISTS = [
         duration: 195,
         audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/34/31/d3/3431d34e-847f-5d66-df83-0bce688d997e/mzaf_18106743962423782018.plus.aac.p.m4a",
         coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/92/9f/69/929f69f1-9977-3a44-d674-11f70c852d1b/24UMGIM36186.rgb.jpg/600x600bb.jpg"
-      },
-      {
-        id: "yt-04",
-        title: "Not Like Us",
-        artist: "Kendrick Lamar",
-        album: "Single",
-        duration: 274,
-        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/b6/6b/8c/b66b8c42-8c82-242b-4ef1-3655d19ac1aa/mzaf_1950801191699299821.plus.aac.p.m4a",
-        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/31/3a/3f/313a3fbc-bb8f-80c7-b5a2-e226869a38cd/24UMGIM51924.rgb.jpg/600x600bb.jpg"
       }
     ]
   },
@@ -109,51 +100,6 @@ export const RECENT_PLAYLISTS = [
         duration: 202,
         audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/b8/b8/b8/b8b8b8eb-9a2c-6218-4e99-92389dd88a10/mzaf_24901847192847192.plus.aac.p.m4a",
         coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/7d/ef/7b/7def7b44-93dc-5645-db43-df463ee3dc89/8901858032731.jpg/600x600bb.jpg"
-      },
-      {
-        id: "yt-sth-03",
-        title: "Hukum - Thalaivar Alappara",
-        artist: "Anirudh Ravichander",
-        album: "Jailer",
-        duration: 207,
-        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/6b/8a/0f/6b8a0fc2-841c-8e36-fb69-1a1b8da22467/mzaf_16315582312648719864.plus.aac.p.m4a",
-        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/33/c7/2b/33c72b53-4876-0f80-0a2a-3507119ff31d/8903431952309_cover.jpg/600x600bb.jpg"
-      }
-    ]
-  },
-  {
-    id: "pl-hiphop-rap",
-    title: "Hip-Hop & Rap Essentials",
-    description: "Eminem, Drake, Kendrick, Travis Scott.",
-    coverUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop&q=80",
-    color: "#b30000",
-    tracks: [
-      {
-        id: "yt-rap-01",
-        title: "Lose Yourself",
-        artist: "Eminem",
-        album: "Curtain Call: The Hits",
-        duration: 326,
-        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/62/0a/a5/620aa56f-189e-708a-80f0-cebdada3872e/mzaf_7131619873177773332.plus.aac.p.m4a",
-        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/08/23/fc/0823fcd9-cb44-695b-32bf-b3bf51d9f800/00606949351229.rgb.jpg/600x600bb.jpg"
-      },
-      {
-        id: "yt-rap-02",
-        title: "FE!N",
-        artist: "Travis Scott ft. Playboi Carti",
-        album: "UTOPIA",
-        duration: 191,
-        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/85/82/96/8582960b-2b19-b1eb-8179-b03be49f332b/mzaf_10214925442893249225.plus.aac.p.m4a",
-        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/98/b5/5e/98b55efe-7310-e3cb-0f9f-27abb1a2b182/20a1306b-6cf6-4194-a492-a402d3dee879.jpg/600x600bb.jpg"
-      },
-      {
-        id: "yt-rap-03",
-        title: "God's Plan",
-        artist: "Drake",
-        album: "Scorpion",
-        duration: 198,
-        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/da/7d/f1/da7df14b-8ee6-5020-d850-ccc0381eb141/mzaf_5511967710095380808.plus.aac.p.m4a",
-        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/bb/6d/8f/bb6d8f67-6d04-10b5-dd62-eb5809ac54fc/00602567879152.rgb.jpg/600x600bb.jpg"
       }
     ]
   }
@@ -166,61 +112,47 @@ export async function searchMusicOnline(query) {
     return { query: "", topResult: null, tracks: [], artists: [], playlists: [] };
   }
 
-  const q = query.trim().toLowerCase();
-
-  // Search local mapped tracks first
-  const localMatches = ONLINE_CHARTS.filter(
-    t => t.title.toLowerCase().includes(q) || 
-         t.artist.toLowerCase().includes(q) ||
-         (t.album && t.album.toLowerCase().includes(q))
-  );
-
   let onlineResults = [];
 
   try {
-    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=30`;
+    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query.trim())}&entity=song&limit=35`;
     const res = await fetch(url);
     if (res.ok) {
       const data = await res.json();
       if (data.results && data.results.length > 0) {
-        onlineResults = data.results.map(item => {
-          // Extract high-res original cover artwork (600x600)
-          const highRes = item.artworkUrl100 
-            ? item.artworkUrl100.replace('100x100bb', '600x600bb') 
-            : 'https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a6/6e/bf/a66ebf79-5008-8948-b352-a790fc87446b/19UM1IM04638.rgb.jpg/600x600bb.jpg';
+        onlineResults = data.results
+          .filter(item => item.trackName && item.previewUrl)
+          .map(item => {
+            // High-resolution authentic release artwork
+            const highResCover = item.artworkUrl100 
+              ? item.artworkUrl100.replace('100x100bb', '600x600bb') 
+              : 'https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/9f/13/ca/9f13ca3b-e533-03e0-f19a-f0aaa774581d/196589311191.jpg/600x600bb.jpg';
 
-          return {
-            id: `online-${item.trackId}`,
-            title: item.trackName,
-            artist: item.artistName,
-            album: item.collectionName || "Single",
-            duration: Math.round((item.trackTimeMillis || 210000) / 1000),
-            genre: item.primaryGenreName || "Music",
-            year: item.releaseDate ? new Date(item.releaseDate).getFullYear() : 2026,
-            plays: "Popular",
-            coverUrl: highRes,
-            audioUrl: item.previewUrl || null
-          };
-        });
+            return {
+              id: `online-${item.trackId}`,
+              title: item.trackName,
+              artist: item.artistName,
+              album: item.collectionName || "Single",
+              duration: Math.round((item.trackTimeMillis || 210000) / 1000),
+              genre: item.primaryGenreName || "Music",
+              year: item.releaseDate ? new Date(item.releaseDate).getFullYear() : 2024,
+              plays: "Popular",
+              coverUrl: highResCover,
+              audioUrl: item.previewUrl
+            };
+          });
       }
     }
   } catch (err) {
-    console.warn("Live online search notice:", err);
+    console.warn("Live search error:", err);
   }
 
-  const allTracks = [...localMatches];
-  onlineResults.forEach(track => {
-    if (!allTracks.some(t => t.title.toLowerCase() === track.title.toLowerCase() && t.artist.toLowerCase() === track.artist.toLowerCase())) {
-      allTracks.push(track);
-    }
-  });
-
-  const topResult = allTracks.length > 0 ? { type: "track", data: allTracks[0] } : null;
+  const topResult = onlineResults.length > 0 ? { type: "track", data: onlineResults[0] } : null;
 
   return {
     query,
     topResult,
-    tracks: allTracks,
+    tracks: onlineResults,
     artists: [],
     playlists: []
   };
