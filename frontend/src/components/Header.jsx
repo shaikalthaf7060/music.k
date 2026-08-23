@@ -15,33 +15,33 @@ export default function Header({ searchQuery, setSearchQuery }) {
   };
 
   return (
-    <header className="top-header glossy-header">
-      {/* Left: Navigation history arrows */}
-      <div className="header-left">
-        <div className="history-btns">
+    <header className="top-header">
+      {/* Left: Integrated Search Bar with Navigation Arrows */}
+      <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, maxWidth: '680px' }}>
+        <div className="history-btns" style={{ display: 'flex', gap: '8px' }}>
           <button 
-            className="circle-nav-btn glossy-btn" 
-            onClick={() => navigateTo('home')}
-            title="Back to Home"
+            className="circle-nav-btn" 
+            onClick={() => navigateTo('search')}
+            title="Search"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={18} />
           </button>
           <button 
-            className="circle-nav-btn glossy-btn" 
+            className="circle-nav-btn" 
             onClick={() => navigateTo('library')}
-            title="Go to Library"
+            title="Library"
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={18} />
           </button>
         </div>
 
-        {/* Center: Live Music Search Bar with perfectly centered icon */}
-        <div className="search-bar-wrapper">
-          <Search size={18} className="search-icon-inside" />
+        {/* Integrated Flow Search Input */}
+        <div className="search-bar-wrapper" style={{ flex: 1 }}>
+          <Search size={18} className="search-icon-inside" color="#9CA3AF" />
           <input 
             type="text" 
             placeholder="Search any song, artist, or album worldwide..." 
-            className="search-input glossy-input"
+            className="search-input"
             value={searchQuery}
             onChange={handleSearchChange}
             onFocus={() => {
@@ -51,22 +51,23 @@ export default function Header({ searchQuery, setSearchQuery }) {
         </div>
       </div>
 
-      {/* Right: User Authentication & Profile */}
+      {/* Right: User Profile / Sign In with balanced glow */}
       <div className="header-right">
         {authToken ? (
           <div style={{ position: 'relative' }}>
             <button 
-              className="user-profile-badge glossy-btn" 
+              className="user-profile-badge" 
               onClick={() => setShowDropdown(prev => !prev)}
               style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '10px', 
-                background: 'rgba(255,255,255,0.08)', 
+                background: 'rgba(255,255,255,0.04)', 
                 padding: '6px 14px 6px 8px', 
                 borderRadius: '30px', 
-                border: '1px solid rgba(229, 9, 20, 0.4)', 
-                cursor: 'pointer' 
+                border: '1px solid rgba(255, 255, 255, 0.08)', 
+                cursor: 'pointer',
+                backdropFilter: 'blur(16px)'
               }}
             >
               <img 
@@ -74,12 +75,12 @@ export default function Header({ searchQuery, setSearchQuery }) {
                 alt="Avatar" 
                 style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#1e1e24' }} 
               />
-              <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'white' }}>
-                {currentUser?.name || "VIP Red Member"}
+              <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#FFFFFF' }}>
+                {currentUser?.name || "VIP Member"}
               </span>
             </button>
 
-            {/* User Dropdown Menu */}
+            {/* Dropdown Menu */}
             {showDropdown && (
               <div 
                 className="glossy-dropdown"
@@ -88,7 +89,7 @@ export default function Header({ searchQuery, setSearchQuery }) {
                   right: 0,
                   top: '115%',
                   background: 'rgba(22, 22, 28, 0.95)',
-                  border: '1px solid rgba(229, 9, 20, 0.35)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '12px',
                   boxShadow: '0 12px 36px rgba(0,0,0,0.85)',
                   padding: '8px',
@@ -98,11 +99,11 @@ export default function Header({ searchQuery, setSearchQuery }) {
                 }}
               >
                 <div style={{ padding: '10px 12px', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '6px' }}>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'white' }}>{currentUser?.name}</div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{currentUser?.email}</div>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', marginTop: '6px', fontSize: '0.74rem', color: '#FF2A3A', fontWeight: 800 }}>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#FFFFFF' }}>{currentUser?.name}</div>
+                  <div style={{ fontSize: '0.78rem', color: '#9CA3AF' }}>{currentUser?.email}</div>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', marginTop: '6px', fontSize: '0.74rem', color: '#FF2A3A', fontWeight: 700 }}>
                     <ShieldCheck size={13} />
-                    <span>{currentUser?.tier || "VIP Red Member"}</span>
+                    <span>{currentUser?.tier || "VIP Member"}</span>
                   </div>
                 </div>
 
@@ -135,22 +136,25 @@ export default function Header({ searchQuery, setSearchQuery }) {
           </div>
         ) : (
           <button 
-            className="main-play-btn glossy-signin-btn" 
+            className="signin-btn-refined" 
             onClick={() => setIsAuthModalOpen(true)}
             style={{ 
               borderRadius: '24px', 
-              padding: '9px 20px', 
-              width: 'auto', 
-              height: 'auto', 
-              fontSize: '0.9rem', 
-              fontWeight: 800,
+              padding: '8px 18px', 
+              fontSize: '0.88rem', 
+              fontWeight: 600,
               gap: '8px',
               display: 'flex',
               alignItems: 'center',
-              boxShadow: '0 4px 18px rgba(229, 9, 20, 0.45)'
+              background: '#E50914',
+              color: '#FFFFFF',
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(229, 9, 20, 0.35)',
+              transition: 'all 0.2s ease'
             }}
           >
-            <LogIn size={16} />
+            <LogIn size={15} />
             <span>Sign In</span>
           </button>
         )}

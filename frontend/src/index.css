@@ -239,76 +239,78 @@ a {
   border-radius: var(--radius-md);
   font-weight: 700;
   font-size: 0.95rem;
-  color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid transparent;
   transition: all var(--transition-fast);
   text-align: left;
 }
 
-.nav-item-btn:hover {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateX(3px);
+/* Glassmorphic Panels & Ambient Surfaces */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.nav-item-btn.active {
-  color: var(--text-primary);
-  background: linear-gradient(90deg, rgba(229, 9, 20, 0.22) 0%, rgba(229, 9, 20, 0.05) 100%);
-  border: 1px solid rgba(229, 9, 20, 0.4);
-  box-shadow: 0 4px 16px rgba(229, 9, 20, 0.2);
+.glass-panel:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(229, 9, 20, 0.35);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.65), 0 0 20px rgba(229, 9, 20, 0.2);
 }
 
-.nav-item-btn.active .nav-icon {
+.playlist-nav-link:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #FFFFFF !important;
+}
+
+.nav-item-btn.active-pill {
+  color: #FFFFFF !important;
+  background: linear-gradient(90deg, rgba(229, 9, 20, 0.22) 0%, rgba(229, 9, 20, 0.06) 100%) !important;
+  border: 1px solid rgba(229, 9, 20, 0.45) !important;
+  box-shadow: 0 4px 16px rgba(229, 9, 20, 0.25) !important;
+  border-radius: 30px !important;
+}
+
+.nav-item-btn.active-pill .nav-icon {
   color: var(--red-bright);
   filter: drop-shadow(0 0 8px var(--red-bright));
 }
 
-/* ==========================================================================
-   Glossy Header Bar
-   ========================================================================== */
-
-.top-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  height: var(--header-height);
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: var(--bg-glass-strong);
-  backdrop-filter: var(--glass-blur);
-  border-bottom: 1px solid var(--border-subtle);
+.badge-pill-btn {
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #9CA3AF;
+  backdrop-filter: blur(12px);
+  transition: all 0.18s ease;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex: 1;
+.badge-pill-btn:hover {
+  background: rgba(229, 9, 20, 0.15);
+  border-color: rgba(229, 9, 20, 0.4);
+  color: #FFFFFF;
+  transform: translateY(-1px);
 }
 
-.history-btns {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.circle-nav-btn {
-  width: 36px;
-  height: 36px;
+.row-action-btn {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  transition: all 0.15s ease;
 }
 
-.circle-nav-btn:hover {
-  color: var(--text-primary);
+.row-action-btn:hover {
   background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(229, 9, 20, 0.3);
+  color: #FFFFFF;
 }
 
 /* Search Bar with Perfectly Centered Icon */

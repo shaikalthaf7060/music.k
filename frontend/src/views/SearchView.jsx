@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, Heart, Clock, Search as SearchIcon, Music, Sparkles, ListMusic } from 'lucide-react';
+import { Play, Pause, Heart, Clock, Search as SearchIcon, Music, Sparkles, ListPlus } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 import { searchMusicOnline, RECENT_PLAYLISTS, ONLINE_CHARTS } from '../services/api';
 
-const DEFAULT_COVER = "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a6/6e/bf/a66ebf79-5008-8948-b352-a790fc87446b/19UM1IM04638.rgb.jpg/600x600bb.jpg";
+const DEFAULT_COVER = "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/9f/13/ca/9f13ca3b-e533-03e0-f19a-f0aaa774581d/196589311191.jpg/600x600bb.jpg";
 
 function formatDuration(sec) {
   if (!sec || isNaN(sec)) return "3:30";
@@ -13,9 +13,10 @@ function formatDuration(sec) {
 }
 
 export default function SearchView({ searchQuery }) {
-  const { currentTrack, isPlaying, playTrack, togglePlay, likedTrackIds, toggleLike, navigateTo } = useAudio();
+  const { currentTrack, isPlaying, playTrack, togglePlay, likedTrackIds, toggleLike, navigateTo, setQueue } = useAudio();
   const [results, setResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
 
   useEffect(() => {
     if (searchQuery && searchQuery.trim().length > 0) {
@@ -42,71 +43,77 @@ export default function SearchView({ searchQuery }) {
     }
   };
 
-  const handlePlayPlaylist = (playlist) => {
-    if (playlist.tracks && playlist.tracks.length > 0) {
-      playTrack(playlist.tracks[0], playlist.tracks);
-    }
+  const handleAddToQueue = (track, e) => {
+    e.stopPropagation();
+    setQueue(prev => [...(Array.isArray(prev) ? prev : []), track]);
   };
 
   return (
-    <div className="search-view" style={{ padding: '24px 32px 100px' }}>
+    <div className="search-view" style={{ padding: '24px 36px 120px' }}>
       {/* If Search Query is active */}
       {searchQuery && searchQuery.trim().length > 0 ? (
         <div>
           {isSearching && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--red-bright)', marginBottom: '20px', fontSize: '0.95rem', fontWeight: 600 }}>
-              <Sparkles size={18} />
-              <span>Searching live full-length songs...</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FF2A3A', marginBottom: '20px', fontSize: '0.92rem', fontWeight: 600 }}>
+              <Sparkles size={16} />
+              <span>Searching music catalog...</span>
             </div>
           )}
 
           {results && results.tracks.length === 0 && !isSearching ? (
-            <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
-              <Music size={48} color="#FF2A3A" style={{ marginBottom: '16px', opacity: 0.7 }} />
-              <h2 style={{ fontSize: '1.5rem', marginBottom: '8px', color: 'white' }}>No results found for "{searchQuery}"</h2>
-              <p>Try searching for artists (e.g. "Coldplay", "Eminem", "Arijit Singh", "The Weeknd") or song titles.</p>
+            <div style={{ textAlign: 'center', padding: '60px 0', color: '#9CA3AF' }}>
+              <Music size={44} color="#FF2A3A" style={{ marginBottom: '16px', opacity: 0.8 }} />
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 600, marginBottom: '8px', color: '#FFFFFF' }}>No results found for "{searchQuery}"</h2>
+              <p style={{ fontSize: '0.9rem' }}>Try searching by artist (e.g. "Arijit Singh", "Coldplay", "Sid Sriram") or track title.</p>
             </div>
           ) : (
             <div>
-              <h2 className="section-title" style={{ fontSize: '1.4rem', marginBottom: '18px' }}>
-                Search Results ({results?.tracks.length || 0})
-              </h2>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#FFFFFF' }}>
+                  Search Results ({results?.tracks.length || 0})
+                </h2>
+              </div>
 
               <table className="tracks-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '44px', textAlign: 'center' }}>#</th>
-                    <th>Title</th>
-                    <th>Album</th>
-                    <th>Year</th>
-                    <th style={{ width: '80px', textAlign: 'right' }}>
-                      <Clock size={16} style={{ verticalAlign: 'middle' }} />
+                    <th style={{ width: '48px', textAlign: 'center' }}>#</th>
+                    <th style={{ paddingLeft: '12px' }}>Title</th>
+                    <th style={{ paddingLeft: '24px' }}>Album</th>
+                    <th style={{ paddingLeft: '24px', width: '100px' }}>Year</th>
+                    <th style={{ width: '80px', textAlign: 'right', paddingRight: '16px' }}>
+                      <Clock size={15} style={{ verticalAlign: 'middle' }} />
                     </th>
-                    <th style={{ width: '50px' }}></th>
+                    <th style={{ width: '80px', textAlign: 'center' }}></th>
                   </tr>
                 </thead>
                 <tbody>
                   {results?.tracks.map((track, idx) => {
                     const isCurrent = currentTrack && currentTrack.id === track.id;
                     const isLiked = (likedTrackIds || []).includes(track.id);
+                    const isHovered = hoveredIndex === idx;
 
                     return (
                       <tr 
                         key={track.id || idx}
                         className={`track-row ${isCurrent ? 'playing' : ''}`}
                         onClick={() => handleTrackClick(track, results.tracks)}
+                        onMouseEnter={() => setHoveredIndex(idx)}
+                        onMouseLeave={() => setHoveredIndex(null)}
                       >
-                        <td className="track-cell track-num-cell">
+                        <td className="track-cell track-num-cell" style={{ width: '48px' }}>
                           {isCurrent && isPlaying ? (
                             <div className="sound-wave" style={{ justifyContent: 'center' }}>
                               <span /><span /><span /><span />
                             </div>
+                          ) : isHovered ? (
+                            <Play size={16} fill="#FFFFFF" color="#FFFFFF" style={{ margin: '0 auto', display: 'block' }} />
                           ) : (
                             idx + 1
                           )}
                         </td>
 
-                        <td className="track-cell">
+                        <td className="track-cell" style={{ paddingLeft: '12px' }}>
                           <div className="track-info-cell">
                             <img 
                               src={track.coverUrl} 
@@ -121,29 +128,40 @@ export default function SearchView({ searchQuery }) {
                           </div>
                         </td>
 
-                        <td className="track-cell" style={{ color: 'var(--text-muted)' }}>
+                        <td className="track-cell" style={{ paddingLeft: '24px', color: '#9CA3AF', fontSize: '0.85rem' }}>
                           {track.album}
                         </td>
 
-                        <td className="track-cell" style={{ color: 'var(--text-muted)' }}>
-                          {track.year || '2026'}
+                        <td className="track-cell" style={{ paddingLeft: '24px', color: '#9CA3AF', fontSize: '0.85rem' }}>
+                          {track.year || '2024'}
                         </td>
 
-                        <td className="track-cell" style={{ textAlign: 'right', color: 'var(--text-muted)' }}>
+                        <td className="track-cell" style={{ textAlign: 'right', paddingRight: '16px', color: '#9CA3AF', fontSize: '0.85rem' }}>
                           {formatDuration(track.duration)}
                         </td>
 
-                        <td className="track-cell" style={{ textAlign: 'center' }}>
-                          <button 
-                            className={`like-heart-btn ${isLiked ? 'liked' : ''}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleLike(track.id);
-                            }}
-                            title={isLiked ? "Unlike" : "Like"}
-                          >
-                            <Heart size={16} fill={isLiked ? "#FF2A3A" : "none"} />
-                          </button>
+                        <td className="track-cell" style={{ textAlign: 'center', width: '80px' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <button 
+                              className="row-action-btn"
+                              onClick={(e) => handleAddToQueue(track, e)}
+                              title="Add to Queue"
+                              style={{ opacity: isHovered ? 1 : 0.4 }}
+                            >
+                              <ListPlus size={16} color="#9CA3AF" />
+                            </button>
+
+                            <button 
+                              className={`like-heart-btn ${isLiked ? 'liked' : ''}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleLike(track.id);
+                              }}
+                              title={isLiked ? "Unlike" : "Like"}
+                            >
+                              <Heart size={16} fill={isLiked ? "#FF2A3A" : "none"} strokeWidth={1.8} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -154,26 +172,26 @@ export default function SearchView({ searchQuery }) {
           )}
         </div>
       ) : (
-        /* Landing State: Search Tags + Recent Playlists Grid (No Trending Table) */
+        /* Landing View: Search Chips & Recent Playlists Glass Cards */
         <div>
-          {/* Quick Search Chips */}
-          <div style={{ textAlign: 'center', padding: '24px 0 32px' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', borderRadius: '20px', background: 'rgba(229, 9, 20, 0.12)', border: '1px solid rgba(229, 9, 20, 0.3)', marginBottom: '12px' }}>
-              <Sparkles size={16} color="#FF2A3A" />
-              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#FF2A3A', letterSpacing: '0.5px' }}>
-                100% FULL-LENGTH SONGS • ZERO ADS
+          {/* Quick Search Chips with Glassmorphism */}
+          <div style={{ textAlign: 'center', padding: '24px 0 36px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', borderRadius: '20px', background: 'rgba(229, 9, 20, 0.1)', border: '1px solid rgba(229, 9, 20, 0.25)', marginBottom: '16px' }}>
+              <Sparkles size={15} color="#FF2A3A" />
+              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FF2A3A', letterSpacing: '0.5px' }}>
+                ONLINE STREAMING DASHBOARD
               </span>
             </div>
             
-            <h1 className="greeting-text" style={{ fontSize: '2.2rem', marginBottom: '8px', fontWeight: 800 }}>
+            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '8px', letterSpacing: '-0.5px' }}>
               Search Any Song Worldwide
             </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '520px', margin: '0 auto 20px' }}>
+            <p style={{ color: '#9CA3AF', fontSize: '0.95rem', maxWidth: '520px', margin: '0 auto 24px' }}>
               Type any song, artist, or album name in the search bar above to stream instantly.
             </p>
 
-            <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '8px', maxWidth: '750px', margin: '0 auto' }}>
-              {['Arijit Singh', 'Sid Sriram', 'Harris Jayaraj', 'Anirudh', 'Coldplay', 'Eminem', 'The Weeknd', 'Taylor Swift', 'Travis Scott', 'Drake'].map(tag => (
+            <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '8px', maxWidth: '780px', margin: '0 auto' }}>
+              {['Arijit Singh', 'Sid Sriram', 'Harris Jayaraj', 'Anirudh', 'Coldplay', 'Eminem', 'The Weeknd', 'Taylor Swift', 'Travis Scott', 'Drake', 'Pritam', 'AR Rahman'].map(tag => (
                 <button
                   key={tag}
                   className="badge-pill-btn"
@@ -182,7 +200,6 @@ export default function SearchView({ searchQuery }) {
                       setResults(res);
                     });
                   }}
-                  style={{ padding: '7px 16px', fontSize: '0.86rem' }}
                 >
                   {tag}
                 </button>
@@ -191,23 +208,20 @@ export default function SearchView({ searchQuery }) {
           </div>
 
           {/* Recent Playlists Grid */}
-          <div style={{ marginTop: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <ListMusic size={22} color="#FF2A3A" />
-                <h2 className="section-title" style={{ fontSize: '1.35rem', color: 'white', margin: 0 }}>
-                  Recent Playlists
-                </h2>
-              </div>
-              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                Full-Length Tracks
+          <div style={{ marginTop: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+                Recent Playlists
+              </h2>
+              <span style={{ fontSize: '0.82rem', color: '#9CA3AF' }}>
+                Curated Collections
               </span>
             </div>
 
             <div style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', 
-              gap: '20px' 
+              gap: '22px' 
             }}>
               {RECENT_PLAYLISTS.map((pl) => {
                 const isPlPlaying = pl.tracks.some(t => currentTrack && t.id === currentTrack.id) && isPlaying;
@@ -215,19 +229,16 @@ export default function SearchView({ searchQuery }) {
                 return (
                   <div
                     key={pl.id}
-                    className="glossy-card"
+                    className="glass-panel playlist-card-hover"
                     style={{
                       padding: '16px',
                       borderRadius: '14px',
-                      background: 'rgba(22, 22, 28, 0.7)',
-                      border: '1px solid rgba(255, 255, 255, 0.06)',
                       cursor: 'pointer',
-                      transition: 'all 0.25s ease',
                       position: 'relative'
                     }}
                     onClick={() => navigateTo('playlist', pl.id)}
                   >
-                    <div style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: '10px', overflow: 'hidden', marginBottom: '14px', boxShadow: '0 8px 20px rgba(0,0,0,0.6)' }}>
+                    <div style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: '10px', overflow: 'hidden', marginBottom: '14px', boxShadow: '0 8px 24px rgba(0,0,0,0.6)' }}>
                       <img 
                         src={pl.coverUrl} 
                         alt={pl.title}
@@ -241,28 +252,30 @@ export default function SearchView({ searchQuery }) {
                           position: 'absolute',
                           bottom: '10px',
                           right: '10px',
-                          width: '44px',
-                          height: '44px',
-                          boxShadow: '0 4px 16px rgba(229, 9, 20, 0.6)'
+                          width: '42px',
+                          height: '42px',
+                          boxShadow: '0 4px 16px rgba(229, 9, 20, 0.5)'
                         }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handlePlayPlaylist(pl);
+                          if (pl.tracks && pl.tracks.length > 0) {
+                            playTrack(pl.tracks[0], pl.tracks);
+                          }
                         }}
                         title={isPlPlaying ? "Pause" : `Play ${pl.title}`}
                       >
                         {isPlPlaying ? (
-                          <Pause size={20} fill="#ffffff" />
+                          <Pause size={18} fill="#FFFFFF" />
                         ) : (
-                          <Play size={20} fill="#ffffff" style={{ marginLeft: '2px' }} />
+                          <Play size={18} fill="#FFFFFF" style={{ marginLeft: '2px' }} />
                         )}
                       </button>
                     </div>
 
-                    <h3 style={{ fontSize: '1.02rem', fontWeight: 700, color: 'white', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#FFFFFF', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {pl.title}
                     </h3>
-                    <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.3', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    <p style={{ fontSize: '0.8rem', color: '#9CA3AF', lineHeight: '1.35', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                       {pl.description}
                     </p>
                   </div>
