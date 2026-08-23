@@ -7,7 +7,7 @@ import {
   createUserWithEmailAndPassword, 
   signOut, 
   updateProfile, 
-  onAuthStateChanged 
+  onAuthStateChanged as fbOnAuthStateChanged
 } from "firebase/auth";
 
 // Live Firebase configuration for musick-a7927
@@ -21,39 +21,69 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-6SKKY9RJ60"
 };
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
+let app = null;
+let auth = null;
+let googleProvider = null;
 
-export const isFirebaseConfigured = () => true;
+try {
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  auth = getAuth(app);
+  googleProvider = new GoogleAuthProvider();
+} catch (e) {
+  console.warn("Firebase client notice:", e);
+}
+
+export { auth, googleProvider };
+
+export const isFirebaseConfigured = () => Boolean(auth);
 
 // 1-Click Google Sign-In
 export const signInWithGoogle = async () => {
+  if (!auth || !googleProvider) {
+    throw new Error("Authentication service is temporarily unavailable");
+  }
   const res = await signInWithPopup(auth, googleProvider);
   return res.user;
 };
 
 // Email & Password Registration
 export const registerWithEmail = async (name, email, password) => {
+  if (!auth) {
+    throw new Error("Authentication service is temporarily unavailable");
+  }
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-  if (name) {
-    await updateProfile(userCredential.user, {
-      displayName: name,
-      photoURL: `https://api.dicebear.com/7.x/bottts/svg?seed=${email}`
-    });
+  if (name && userCredential.user) {
+    try {
+      await updateProfile(userCredential.user, {
+        displayName: name,
+        photoURL: `https://api.dicebear.com/7.x/bottts/svg?seed=${email}`
+      });
+    } catch (e) {}
   }
   return userCredential.user;
 };
 
 // Email & Password Login
 export const loginWithEmail = async (email, password) => {
+  if (!auth) {
+    throw new Error("Authentication service is temporarily unavailable");
+  }
   const res = await signInWithEmailAndPassword(auth, email, password);
   return res.user;
 };
 
 // Sign Out
 export const logoutFirebase = async () => {
-  await signOut(auth);
+  if (auth) {
+    await signOut(auth);
+  }
 };
 
-export { onAuthStateChanged };
+export const onAuthStateChanged = (authInstance, callback) => {
+  if (!authInstance) return () => {};
+  try {
+    return fbOnAuthStateChanged(authInstance, callback);
+  } catch (e) {
+    return () => {};
+  }
+};
