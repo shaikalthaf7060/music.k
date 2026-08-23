@@ -15,10 +15,10 @@ export default function Header({ searchQuery, setSearchQuery }) {
   };
 
   return (
-    <header className="top-header">
-      {/* Left: Integrated Search Bar with Navigation Arrows */}
-      <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, maxWidth: '680px' }}>
-        <div className="history-btns" style={{ display: 'flex', gap: '8px' }}>
+    <header className="top-header" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'nowrap', width: '100%', padding: '0 24px', height: '64px' }}>
+      {/* Left: Navigation Arrows + Search Input */}
+      <div className="header-left" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '14px', flex: 1, minWidth: 0 }}>
+        <div className="history-btns" style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
           <button 
             className="circle-nav-btn" 
             onClick={() => navigateTo('search')}
@@ -35,8 +35,8 @@ export default function Header({ searchQuery, setSearchQuery }) {
           </button>
         </div>
 
-        {/* Integrated Flow Search Input */}
-        <div className="search-bar-wrapper" style={{ flex: 1 }}>
+        {/* Integrated Search Input */}
+        <div className="search-bar-wrapper" style={{ flex: 1, maxWidth: '540px' }}>
           <Search size={18} className="search-icon-inside" color="#9CA3AF" />
           <input 
             type="text" 
@@ -51,8 +51,8 @@ export default function Header({ searchQuery, setSearchQuery }) {
         </div>
       </div>
 
-      {/* Right: User Profile / Sign In with balanced glow */}
-      <div className="header-right">
+      {/* Right: Sign In / User Profile Badge */}
+      <div className="header-right" style={{ flexShrink: 0, marginLeft: '16px', display: 'flex', alignItems: 'center' }}>
         {authToken ? (
           <div style={{ position: 'relative' }}>
             <button 
@@ -67,7 +67,8 @@ export default function Header({ searchQuery, setSearchQuery }) {
                 borderRadius: '30px', 
                 border: '1px solid rgba(255, 255, 255, 0.08)', 
                 cursor: 'pointer',
-                backdropFilter: 'blur(16px)'
+                backdropFilter: 'blur(16px)',
+                whiteSpace: 'nowrap'
               }}
             >
               <img 
@@ -140,9 +141,9 @@ export default function Header({ searchQuery, setSearchQuery }) {
             onClick={() => setIsAuthModalOpen(true)}
             style={{ 
               borderRadius: '24px', 
-              padding: '8px 18px', 
+              padding: '8px 20px', 
               fontSize: '0.88rem', 
-              fontWeight: 600,
+              fontWeight: 700,
               gap: '8px',
               display: 'flex',
               alignItems: 'center',
@@ -151,7 +152,8 @@ export default function Header({ searchQuery, setSearchQuery }) {
               border: 'none',
               cursor: 'pointer',
               boxShadow: '0 4px 14px rgba(229, 9, 20, 0.35)',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap'
             }}
           >
             <LogIn size={15} />
