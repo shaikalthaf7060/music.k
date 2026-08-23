@@ -90,7 +90,6 @@ export default function CoverflowStage({ tracks }) {
           if (offset < -2) offset += playlist.length;
           if (offset > 2) offset -= playlist.length;
 
-          // Render only within 2 cards distance
           if (Math.abs(offset) > 2) return null;
 
           const isCenter = offset === 0;
@@ -98,18 +97,18 @@ export default function CoverflowStage({ tracks }) {
 
           let transformStyle = '';
           let zIndex = 5 - Math.abs(offset);
-          let opacity = 1 - Math.abs(offset) * 0.25;
+          let opacity = 1 - Math.abs(offset) * 0.28;
 
           if (offset === 0) {
             transformStyle = 'translateX(0px) translateZ(0px) scale(1.15) rotateY(0deg)';
           } else if (offset === -1) {
-            transformStyle = 'translateX(-170px) translateZ(-60px) scale(0.92) rotateY(28deg)';
+            transformStyle = 'translateX(-175px) translateZ(-60px) scale(0.92) rotateY(28deg)';
           } else if (offset === 1) {
-            transformStyle = 'translateX(170px) translateZ(-60px) scale(0.92) rotateY(-28deg)';
+            transformStyle = 'translateX(175px) translateZ(-60px) scale(0.92) rotateY(-28deg)';
           } else if (offset === -2) {
-            transformStyle = 'translateX(-310px) translateZ(-120px) scale(0.78) rotateY(42deg)';
+            transformStyle = 'translateX(-320px) translateZ(-120px) scale(0.78) rotateY(42deg)';
           } else if (offset === 2) {
-            transformStyle = 'translateX(310px) translateZ(-120px) scale(0.78) rotateY(-42deg)';
+            transformStyle = 'translateX(320px) translateZ(-120px) scale(0.78) rotateY(-42deg)';
           }
 
           return (

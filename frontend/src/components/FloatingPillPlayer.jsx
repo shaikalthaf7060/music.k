@@ -8,20 +8,11 @@ import {
   Sliders, 
   Volume2, 
   VolumeX, 
-  Volume1, 
-  Heart, 
-  Maximize2 
+  Volume1 
 } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 
 const DEFAULT_COVER = "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80";
-
-function formatTime(seconds) {
-  if (isNaN(seconds) || seconds < 0) return "0:00";
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-}
 
 export default function FloatingPillPlayer() {
   const {
@@ -31,14 +22,11 @@ export default function FloatingPillPlayer() {
     duration,
     volume,
     isMuted,
-    likedTrackIds,
     togglePlay,
     seek,
-    setVolume,
     toggleMute,
     nextTrack,
     prevTrack,
-    toggleLike,
     setIsNowPlayingOpen,
     setIsEqualizerOpen,
     setIsVisualizerOpen
@@ -48,7 +36,6 @@ export default function FloatingPillPlayer() {
 
   if (!currentTrack) return null;
 
-  const isLiked = Boolean(currentTrack && Array.isArray(likedTrackIds) && likedTrackIds.includes(currentTrack.id));
   const trackDuration = currentTrack?.duration || duration || 210;
   const progressPercent = trackDuration > 0 ? Math.min(100, (currentTime / trackDuration) * 100) : 0;
 
@@ -66,19 +53,19 @@ export default function FloatingPillPlayer() {
         {/* Left: Playback Controls */}
         <div className="pill-left-controls">
           <button className="pill-ctrl-btn" onClick={prevTrack} title="Previous">
-            <SkipBack size={20} fill="currentColor" />
+            <SkipBack size={19} fill="currentColor" />
           </button>
           
           <button className="pill-main-play-btn" onClick={togglePlay} title={isPlaying ? "Pause" : "Play"}>
             {isPlaying ? (
-              <Pause size={20} fill="currentColor" />
+              <Pause size={19} fill="currentColor" />
             ) : (
-              <Play size={20} fill="currentColor" style={{ marginLeft: '2px' }} />
+              <Play size={19} fill="currentColor" style={{ marginLeft: '2px' }} />
             )}
           </button>
 
           <button className="pill-ctrl-btn" onClick={nextTrack} title="Next">
-            <SkipForward size={20} fill="currentColor" />
+            <SkipForward size={19} fill="currentColor" />
           </button>
         </div>
 
@@ -127,7 +114,7 @@ export default function FloatingPillPlayer() {
             onClick={() => setIsVisualizerOpen(prev => !prev)}
             title="Audio Visualizer"
           >
-            <Cast size={19} />
+            <Cast size={18} />
           </button>
 
           <button 
@@ -135,7 +122,7 @@ export default function FloatingPillPlayer() {
             onClick={() => setIsEqualizerOpen(prev => !prev)}
             title="Equalizer"
           >
-            <Sliders size={18} />
+            <Sliders size={17} />
           </button>
 
           <button 
@@ -144,11 +131,11 @@ export default function FloatingPillPlayer() {
             title={isMuted ? "Unmute" : "Mute"}
           >
             {isMuted || volume === 0 ? (
-              <VolumeX size={19} color="#FF4757" />
+              <VolumeX size={18} color="#9CA3AF" />
             ) : volume < 0.5 ? (
-              <Volume1 size={19} />
+              <Volume1 size={18} />
             ) : (
-              <Volume2 size={19} />
+              <Volume2 size={18} />
             )}
           </button>
         </div>

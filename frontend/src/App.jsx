@@ -11,8 +11,7 @@ import EqualizerModal from './components/EqualizerModal';
 import QueueDrawer from './components/QueueDrawer';
 import CreatePlaylistModal from './components/CreatePlaylistModal';
 import AuthModal from './components/AuthModal';
-import { Search, Music2, Sparkles } from 'lucide-react';
-import Logo from './components/Logo';
+import { Search, Sparkles, Disc3 } from 'lucide-react';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -43,7 +42,7 @@ class ErrorBoundary extends Component {
           padding: '32px',
           fontFamily: 'sans-serif'
         }}>
-          <h1 style={{ fontSize: '2rem', color: '#FF2A3A', marginBottom: '12px' }}>music.k</h1>
+          <h1 style={{ fontSize: '2rem', color: '#FFFFFF', marginBottom: '12px' }}>music.k</h1>
           <p style={{ color: '#ccc', marginBottom: '16px', maxWidth: '500px' }}>
             We encountered an unexpected rendering issue. Click below to reset your cache and reload.
           </p>
@@ -59,12 +58,12 @@ class ErrorBoundary extends Component {
               padding: '12px 28px',
               borderRadius: '24px',
               border: 'none',
-              background: '#E50914',
+              background: 'rgba(255,255,255,0.15)',
               color: 'white',
               fontWeight: 800,
               fontSize: '0.95rem',
               cursor: 'pointer',
-              boxShadow: '0 4px 18px rgba(229, 9, 20, 0.4)'
+              backdropFilter: 'blur(16px)'
             }}
           >
             Clear Cache & Refresh music.k
@@ -77,7 +76,7 @@ class ErrorBoundary extends Component {
 }
 
 function MainAppContent() {
-  const { currentTrack, playTrack } = useAudio();
+  const { currentTrack } = useAudio();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -91,7 +90,7 @@ function MainAppContent() {
     } catch (e) {}
   }, []);
 
-  // Handle Search Queries
+  // Handle Live Search
   useEffect(() => {
     if (searchQuery && searchQuery.trim().length > 0) {
       setIsSearching(true);
@@ -117,18 +116,20 @@ function MainAppContent() {
 
   return (
     <div className="experience-container">
-      {/* Top Header: Logo + Clean Integrated Search Bar */}
+      {/* Top Header: Monochromatic Blended Logo + Attractive Glass Search Bar */}
       <header className="hero-top-header">
+        {/* Seamless Blended Logo (Zero Red) */}
         <div className="hero-logo-box">
-          <Logo size={28} />
-          <span className="hero-brand-name">music<span className="hero-red-dot">.k</span></span>
+          <Disc3 size={24} color="rgba(255, 255, 255, 0.45)" />
+          <span className="hero-brand-name">music<span style={{ color: 'rgba(255, 255, 255, 0.45)' }}>.k</span></span>
         </div>
 
+        {/* Attractive Glassmorphic Search Bar */}
         <div className="hero-search-wrapper">
-          <Search size={18} className="hero-search-icon" color="#9CA3AF" />
+          <Search size={18} className="hero-search-icon" color="rgba(255, 255, 255, 0.4)" />
           <input 
             type="text" 
-            placeholder="Search any song, artist, or album..."
+            placeholder="Search songs, artists, albums..."
             className="hero-search-input"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -139,8 +140,8 @@ function MainAppContent() {
       {/* Main 3D Coverflow Stage */}
       <main className="hero-main-stage">
         {isSearching && (
-          <div style={{ color: '#FF2A3A', fontWeight: 600, fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-            <Sparkles size={15} />
+          <div style={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600, fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+            <Sparkles size={14} color="rgba(255, 255, 255, 0.6)" />
             <span>Finding songs...</span>
           </div>
         )}

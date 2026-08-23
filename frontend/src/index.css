@@ -1,18 +1,16 @@
 /* ==========================================================================
-   music.k — 3D COVERFLOW & FLOATING PILL PLAYER DESIGN SYSTEM
-   Matches Reference Architecture Exactly
+   music.k — PURE FROSTED GLASS & BLENDED 3D COVERFLOW SYSTEM
+   Matches Spotify Reference Exactly (Zero Red, Pure Glass Aesthetic)
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
 
 :root {
-  --bg-deep-plum: #120c15;
-  --bg-gradient: radial-gradient(ellipse at 50% 30%, #2a152f 0%, #180c1b 50%, #0c050e 100%);
-  --red-primary: #E50914;
-  --red-bright: #FF2A3A;
+  --bg-deep-plum: #140d17;
+  --bg-gradient: radial-gradient(ellipse at 50% 30%, #26132b 0%, #150917 55%, #0a040c 100%);
   --text-primary: #FFFFFF;
-  --text-secondary: #C4C4D4;
-  --text-muted: #9CA3AF;
+  --text-secondary: #C8C6D0;
+  --text-muted: #8E8A96;
   --font-main: 'Plus Jakarta Sans', sans-serif;
   --font-display: 'Outfit', sans-serif;
 }
@@ -51,7 +49,7 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.18s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 input {
@@ -75,19 +73,19 @@ input {
   align-items: center;
   position: relative;
   background: var(--bg-gradient);
-  padding-bottom: 90px;
+  padding-bottom: 95px;
 }
 
 /* ==========================================================================
-   Hero Top Header & Search Bar
+   Hero Top Header & Attractive Glass Search Bar
    ========================================================================== */
 
 .hero-top-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin-top: 24px;
+  gap: 14px;
+  margin-top: 22px;
   z-index: 50;
   width: 100%;
   padding: 0 20px;
@@ -96,44 +94,55 @@ input {
 .hero-logo-box {
   display: flex;
   align-items: center;
-  gap: 10px;
-  opacity: 0.9;
+  gap: 8px;
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+.hero-logo-box:hover {
+  opacity: 1;
 }
 
 .hero-brand-name {
   font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  color: #FFFFFF;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: rgba(255, 255, 255, 0.55);
 }
 
-.hero-red-dot {
-  color: var(--red-bright);
-}
-
+/* Attractive Glassmorphic Search Bar */
 .hero-search-wrapper {
   position: relative;
-  width: min(460px, 92vw);
-  height: 42px;
+  width: min(480px, 92vw);
+  height: 44px;
   border-radius: 30px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
-  padding: 0 16px;
-  transition: all 0.22s ease;
+  padding: 0 18px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-search-wrapper:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .hero-search-wrapper:focus-within {
   background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(229, 9, 20, 0.5);
-  box-shadow: 0 0 24px rgba(229, 9, 20, 0.3);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 24px rgba(255, 255, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
 }
 
 .hero-search-icon {
-  margin-right: 10px;
+  margin-right: 12px;
+  flex-shrink: 0;
 }
 
 .hero-search-input {
@@ -141,11 +150,12 @@ input {
   height: 100%;
   background: transparent;
   color: #FFFFFF;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
+  font-weight: 500;
 }
 
 .hero-search-input::placeholder {
-  color: #8E8A95;
+  color: rgba(255, 255, 255, 0.35);
 }
 
 /* ==========================================================================
@@ -165,7 +175,7 @@ input {
 .coverflow-container {
   perspective: 1200px;
   width: 100%;
-  max-width: 900px;
+  max-width: 960px;
   height: 400px;
   display: flex;
   align-items: center;
@@ -187,30 +197,31 @@ input {
   position: absolute;
   width: 240px;
   height: 330px;
-  border-radius: 24px;
-  background: rgba(36, 24, 42, 0.85);
+  border-radius: 26px;
+  background: rgba(36, 24, 40, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.75);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   padding: 12px;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
 
 .coverflow-card.active-center {
-  border-color: rgba(229, 9, 20, 0.45);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(229, 9, 20, 0.25);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 35px 70px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .card-artwork-box {
   position: relative;
   width: 100%;
   height: 220px;
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
-  background: #1a0f1d;
+  background: #180c1a;
 }
 
 .card-artwork-img {
@@ -230,7 +241,7 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.3);
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -243,9 +254,9 @@ input {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #E50914;
-  color: white;
-  box-shadow: 0 6px 20px rgba(229, 9, 20, 0.6);
+  background: rgba(255, 255, 255, 0.9);
+  color: #120c15;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
 .card-meta {
@@ -276,7 +287,7 @@ input {
   top: 50%;
   transform: translateY(-50%);
   width: 100%;
-  max-width: 720px;
+  max-width: 760px;
   display: flex;
   justify-content: space-between;
   pointer-events: none;
@@ -290,24 +301,24 @@ input {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #FFFFFF;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
   pointer-events: auto;
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 
 .coverflow-nav-btn:hover {
-  background: rgba(229, 9, 20, 0.3);
-  border-color: rgba(229, 9, 20, 0.6);
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.3);
   transform: scale(1.08);
 }
 
 /* ==========================================================================
-   Bottom Floating Pill Player (Matches Reference Image Exactly)
+   Bottom Floating Pill Player (Pure Frosted Glass, Zero Red)
    ========================================================================== */
 
 .floating-pill-player-wrapper {
   position: fixed;
-  bottom: 28px;
+  bottom: 26px;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -321,15 +332,15 @@ input {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  width: min(680px, 92vw);
+  width: min(690px, 92vw);
   height: 64px;
   padding: 0 20px;
   border-radius: 40px;
-  background: rgba(34, 22, 38, 0.88);
+  background: rgba(36, 24, 40, 0.85);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.75), 0 0 24px rgba(229, 9, 20, 0.15);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 /* Left Group */
@@ -340,7 +351,7 @@ input {
 }
 
 .pill-ctrl-btn {
-  color: #D1D5DB;
+  color: rgba(255, 255, 255, 0.7);
   transition: all 0.15s ease;
 }
 
@@ -358,8 +369,8 @@ input {
 }
 
 .pill-main-play-btn:hover {
-  color: var(--red-bright);
-  transform: scale(1.12);
+  transform: scale(1.14);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 /* Center Island Track Card */
@@ -370,18 +381,18 @@ input {
   gap: 12px;
   padding: 6px 14px;
   border-radius: 24px;
-  background: rgba(22, 14, 26, 0.85);
+  background: rgba(22, 14, 26, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
   flex: 1;
-  max-width: 260px;
+  max-width: 270px;
   overflow: hidden;
   transition: all 0.2s ease;
 }
 
 .pill-center-track:hover {
-  background: rgba(30, 18, 36, 0.95);
-  border-color: rgba(229, 9, 20, 0.35);
+  background: rgba(28, 18, 34, 0.92);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .pill-track-thumb {
@@ -426,7 +437,7 @@ input {
 
 .pill-soundwave span {
   width: 2px;
-  background: var(--red-bright);
+  background: rgba(255, 255, 255, 0.8);
   border-radius: 1px;
   animation: waveAnim 0.9s ease-in-out infinite alternate;
 }
@@ -440,12 +451,12 @@ input {
   left: 0;
   right: 0;
   height: 3px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .pill-progress-fill {
   height: 100%;
-  background: var(--red-bright);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 2px;
 }
 
@@ -457,7 +468,7 @@ input {
 }
 
 .pill-tool-btn {
-  color: #9CA3AF;
+  color: rgba(255, 255, 255, 0.6);
   transition: all 0.15s ease;
 }
 
@@ -478,8 +489,8 @@ input {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(16px);
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(20px);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -495,7 +506,7 @@ input {
 }
 
 .action-icon-btn:hover {
-  background: rgba(229, 9, 20, 0.3);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Responsive Rules for Mobile */
