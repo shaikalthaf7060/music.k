@@ -238,10 +238,16 @@ export function AudioProvider({ children }) {
       ytController.pause();
       setIsPlaying(false);
     } else {
-      ytController.play();
+      if (currentTrack) {
+        if (!ytController.audio?.src || ytController.audio.src === '' || ytController.audio.src === window.location.href) {
+          ytController.playTrack(currentTrack);
+        } else {
+          ytController.play();
+        }
+      }
       setIsPlaying(true);
     }
-  }, [isPlaying]);
+  }, [isPlaying, currentTrack]);
 
   const handleTrackEnd = () => {
     if (repeatMode === 'one') {

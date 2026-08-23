@@ -1,9 +1,9 @@
 /**
- * music.k Instant Native Audio Engine
- * Blazing-fast 100% reliable HTML5 audio playback across all browsers & mobile devices.
+ * music.k Ultra-Reliable Native HTML5 Audio Engine
+ * Synchronous, instant user-action playback across all mobile & desktop browsers.
  */
 
-class NativeAudioEngine {
+class SynchronousAudioEngine {
   constructor() {
     this.audio = typeof Audio !== 'undefined' ? new Audio() : null;
     this.currentTrack = null;
@@ -15,7 +15,13 @@ class NativeAudioEngine {
       this.audio.preload = 'auto';
       this.audio.volume = this.volume;
 
+      // Handle native audio playback events
       this.audio.addEventListener('play', () => {
+        this.isPlaying = true;
+        this.notify('stateChange', 1);
+      });
+
+      this.audio.addEventListener('playing', () => {
         this.isPlaying = true;
         this.notify('stateChange', 1);
       });
@@ -32,15 +38,15 @@ class NativeAudioEngine {
 
       this.audio.addEventListener('timeupdate', () => {
         const cur = this.audio.currentTime || 0;
-        const dur = this.audio.duration || 30;
+        const dur = this.audio.duration || this.currentTrack?.duration || 30;
         this.notify('timeUpdate', {
           currentTime: cur,
           duration: dur
         });
       });
 
-      this.audio.addEventListener('error', (err) => {
-        console.warn('Audio stream notice:', err);
+      this.audio.addEventListener('error', (e) => {
+        console.error('HTML5 Audio playback error details:', this.audio.error, e);
       });
     }
   }
@@ -56,59 +62,72 @@ class NativeAudioEngine {
     });
   }
 
-  async playTrack(track) {
+  /**
+   * Synchronous Playback to strictly satisfy browser Autoplay Security Policies
+   */
+  playTrack(track) {
     if (!track || !this.audio) return;
     this.currentTrack = track;
 
-    let streamUrl = track.audioUrl || track.previewUrl;
-
-    // If audioUrl missing, fetch from iTunes search immediately
-    if (!streamUrl) {
-      try {
-        const q = `${track.title} ${track.artist}`.trim();
-        const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=song&limit=1`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.results && data.results.length > 0 && data.results[0].previewUrl) {
-            streamUrl = data.results[0].previewUrl;
-            track.audioUrl = streamUrl;
-            if (data.results[0].artworkUrl100 && !track.coverUrl) {
-              track.coverUrl = data.results[0].artworkUrl100.replace('100x100bb', '600x600bb');
-            }
-          }
-        }
-      } catch (e) {
-        console.warn('Track stream fetch notice:', e);
-      }
-    }
+    const streamUrl = track.audioUrl || track.previewUrl;
 
     if (streamUrl) {
       try {
         this.audio.pause();
         this.audio.src = streamUrl;
-        this.audio.load();
-        const playPromise = this.audio.play();
-        if (playPromise !== undefined) {
-          playPromise
+        this.audio.currentTime = 0;
+        
+        // Immediate play call within user-event tick
+        const promise = this.audio.play();
+        if (promise !== undefined) {
+          promise
             .then(() => {
               this.isPlaying = true;
               this.notify('stateChange', 1);
             })
             .catch(err => {
-              console.warn('Playback notice:', err);
+              console.warn('Audio play request notice (autoplay token):', err);
+              // Fallback retry
+              setTimeout(() => {
+                if (this.audio && this.audio.paused) {
+                  this.audio.play().catch(() => {});
+                }
+              }, 100);
             });
         }
-      } catch (e) {
-        console.warn('Audio element error:', e);
+      } catch (err) {
+        console.error('Audio element execution error:', err);
       }
+    } else {
+      // If URL missing, fetch and load
+      const q = `${track.title} ${track.artist}`.trim();
+      fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=song&limit=1`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.results && data.results.length > 0 && data.results[0].previewUrl) {
+            const url = data.results[0].previewUrl;
+            track.audioUrl = url;
+            if (this.currentTrack?.id === track.id) {
+              this.audio.src = url;
+              this.audio.play().catch(() => {});
+            }
+          }
+        })
+        .catch(err => {
+          console.warn('Lookup error:', err);
+        });
     }
   }
 
   play() {
     if (this.audio) {
-      this.audio.play().catch(() => {});
-      this.isPlaying = true;
-      this.notify('stateChange', 1);
+      const promise = this.audio.play();
+      if (promise !== undefined) {
+        promise.then(() => {
+          this.isPlaying = true;
+          this.notify('stateChange', 1);
+        }).catch(() => {});
+      }
     }
   }
 
@@ -142,7 +161,7 @@ class NativeAudioEngine {
   }
 
   getDuration() {
-    return this.audio ? (this.audio.duration || 30) : 30;
+    return this.audio ? (this.audio.duration || this.currentTrack?.duration || 30) : 30;
   }
 
   getFrequencyData() {
@@ -166,5 +185,5 @@ class NativeAudioEngine {
   }
 }
 
-export const audioEngine = new NativeAudioEngine();
+export const audioEngine = new SynchronousAudioEngine();
 export const ytController = audioEngine;
