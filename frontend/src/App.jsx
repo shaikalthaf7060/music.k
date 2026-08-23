@@ -1,14 +1,9 @@
 import React, { useState, useEffect, useMemo, Component } from 'react';
 import { AudioProvider, useAudio } from './context/AudioContext';
 import { ytController } from './services/audioEngine';
-import Sidebar from './components/Sidebar';
-import Header from './components/Header';
-import PlayerBar from './components/PlayerBar';
-import HomeView from './views/HomeView';
-import SearchView from './views/SearchView';
-import LibraryView from './views/LibraryView';
-import PlaylistDetailView from './views/PlaylistDetailView';
-import LikedSongsView from './views/LikedSongsView';
+import { searchMusicOnline, ONLINE_CHARTS } from './services/api';
+import CoverflowStage from './components/CoverflowStage';
+import FloatingPillPlayer from './components/FloatingPillPlayer';
 import NowPlayingModal from './components/NowPlayingModal';
 import LyricsModal from './components/LyricsModal';
 import VisualizerModal from './components/VisualizerModal';
@@ -16,6 +11,8 @@ import EqualizerModal from './components/EqualizerModal';
 import QueueDrawer from './components/QueueDrawer';
 import CreatePlaylistModal from './components/CreatePlaylistModal';
 import AuthModal from './components/AuthModal';
+import { Search, Music2, Sparkles } from 'lucide-react';
+import Logo from './components/Logo';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -40,7 +37,7 @@ class ErrorBoundary extends Component {
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: '100vh',
-          background: '#060608',
+          background: '#120c15',
           color: 'white',
           textAlign: 'center',
           padding: '32px',
@@ -50,21 +47,6 @@ class ErrorBoundary extends Component {
           <p style={{ color: '#ccc', marginBottom: '16px', maxWidth: '500px' }}>
             We encountered an unexpected rendering issue. Click below to reset your cache and reload.
           </p>
-          {this.state.error && (
-            <pre style={{
-              background: 'rgba(255,255,255,0.06)',
-              padding: '12px 16px',
-              borderRadius: '8px',
-              color: '#ff6b6b',
-              fontSize: '0.82rem',
-              maxWidth: '600px',
-              overflowX: 'auto',
-              marginBottom: '24px',
-              textAlign: 'left'
-            }}>
-              {this.state.error.toString()}
-            </pre>
-          )}
           <button
             onClick={() => {
               try { 
@@ -95,8 +77,10 @@ class ErrorBoundary extends Component {
 }
 
 function MainAppContent() {
-  const { currentView, viewParam } = useAudio();
+  const { currentTrack, playTrack } = useAudio();
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Mount Audio Controller
   useEffect(() => {
@@ -107,42 +91,67 @@ function MainAppContent() {
     } catch (e) {}
   }, []);
 
-  const activeViewComponent = useMemo(() => {
-    switch (currentView) {
-      case 'home':
-      case 'search':
-        return <SearchView searchQuery={searchQuery} />;
-      case 'library':
-        return <LibraryView />;
-      case 'playlist':
-        return <PlaylistDetailView playlistId={viewParam} />;
-      case 'liked':
-        return <LikedSongsView />;
-      default:
-        return <SearchView searchQuery={searchQuery} />;
+  // Handle Search Queries
+  useEffect(() => {
+    if (searchQuery && searchQuery.trim().length > 0) {
+      setIsSearching(true);
+      const timer = setTimeout(() => {
+        searchMusicOnline(searchQuery).then(res => {
+          setSearchResults(res);
+          setIsSearching(false);
+        });
+      }, 250);
+      return () => clearTimeout(timer);
+    } else {
+      setSearchResults(null);
+      setIsSearching(false);
     }
-  }, [currentView, viewParam, searchQuery]);
+  }, [searchQuery]);
+
+  const activeCoverflowTracks = useMemo(() => {
+    if (searchResults && searchResults.tracks.length > 0) {
+      return searchResults.tracks;
+    }
+    return ONLINE_CHARTS;
+  }, [searchResults]);
 
   return (
-    <div className="app-container">
-      {/* Left Fixed Navigation Sidebar */}
-      <Sidebar />
-
-      {/* Main Dynamic Viewport */}
-      <main className="main-viewport">
-        {/* Top Header Bar with Live Search & User Profile */}
-        <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-
-        {/* Scrollable View Content */}
-        <div className="content-scrollable">
-          {activeViewComponent}
+    <div className="experience-container">
+      {/* Top Header: Logo + Clean Integrated Search Bar */}
+      <header className="hero-top-header">
+        <div className="hero-logo-box">
+          <Logo size={28} />
+          <span className="hero-brand-name">music<span className="hero-red-dot">.k</span></span>
         </div>
+
+        <div className="hero-search-wrapper">
+          <Search size={18} className="hero-search-icon" color="#9CA3AF" />
+          <input 
+            type="text" 
+            placeholder="Search any song, artist, or album..."
+            className="hero-search-input"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </header>
+
+      {/* Main 3D Coverflow Stage */}
+      <main className="hero-main-stage">
+        {isSearching && (
+          <div style={{ color: '#FF2A3A', fontWeight: 600, fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+            <Sparkles size={15} />
+            <span>Finding songs...</span>
+          </div>
+        )}
+
+        <CoverflowStage tracks={activeCoverflowTracks} />
       </main>
 
-      {/* Persistent Bottom Player Bar */}
-      <PlayerBar />
+      {/* Bottom Floating Pill Player (Matches Reference Image) */}
+      <FloatingPillPlayer />
 
-      {/* Overlays & Modals */}
+      {/* Modals & Overlays */}
       <NowPlayingModal />
       <AuthModal />
       <LyricsModal />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, Heart, Clock, Search as SearchIcon, Music, Sparkles, ListPlus } from 'lucide-react';
+import { Play, Heart, Clock, Search as SearchIcon, Music, Sparkles, ListPlus } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
-import { searchMusicOnline, RECENT_PLAYLISTS, ONLINE_CHARTS } from '../services/api';
+import { searchMusicOnline, ONLINE_CHARTS } from '../services/api';
 
 const DEFAULT_COVER = "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/9f/13/ca/9f13ca3b-e533-03e0-f19a-f0aaa774581d/196589311191.jpg/600x600bb.jpg";
 
@@ -13,7 +13,7 @@ function formatDuration(sec) {
 }
 
 export default function SearchView({ searchQuery }) {
-  const { currentTrack, isPlaying, playTrack, togglePlay, likedTrackIds, toggleLike, navigateTo, setQueue } = useAudio();
+  const { currentTrack, isPlaying, playTrack, togglePlay, likedTrackIds, toggleLike, setQueue } = useAudio();
   const [results, setResults] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -49,14 +49,14 @@ export default function SearchView({ searchQuery }) {
   };
 
   return (
-    <div className="search-view" style={{ padding: '24px 36px 120px' }}>
+    <div className="search-view" style={{ padding: '24px 32px 120px' }}>
       {/* If Search Query is active */}
       {searchQuery && searchQuery.trim().length > 0 ? (
         <div>
           {isSearching && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FF2A3A', marginBottom: '20px', fontSize: '0.92rem', fontWeight: 600 }}>
               <Sparkles size={16} />
-              <span>Searching music catalog...</span>
+              <span>Searching songs...</span>
             </div>
           )}
 
@@ -78,9 +78,9 @@ export default function SearchView({ searchQuery }) {
                 <thead>
                   <tr>
                     <th style={{ width: '48px', textAlign: 'center' }}>#</th>
-                    <th style={{ paddingLeft: '12px' }}>Title</th>
-                    <th style={{ paddingLeft: '24px' }}>Album</th>
-                    <th style={{ paddingLeft: '24px', width: '100px' }}>Year</th>
+                    <th style={{ paddingLeft: '12px' }}>TITLE</th>
+                    <th style={{ paddingLeft: '24px' }}>ALBUM</th>
+                    <th style={{ paddingLeft: '24px', width: '100px' }}>YEAR</th>
                     <th style={{ width: '80px', textAlign: 'right', paddingRight: '16px' }}>
                       <Clock size={15} style={{ verticalAlign: 'middle' }} />
                     </th>
@@ -172,116 +172,33 @@ export default function SearchView({ searchQuery }) {
           )}
         </div>
       ) : (
-        /* Landing View: Search Chips & Recent Playlists Glass Cards */
-        <div>
-          {/* Quick Search Chips with Glassmorphism */}
-          <div style={{ textAlign: 'center', padding: '24px 0 36px' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', borderRadius: '20px', background: 'rgba(229, 9, 20, 0.1)', border: '1px solid rgba(229, 9, 20, 0.25)', marginBottom: '16px' }}>
-              <Sparkles size={15} color="#FF2A3A" />
-              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FF2A3A', letterSpacing: '0.5px' }}>
-                ONLINE STREAMING DASHBOARD
-              </span>
-            </div>
-            
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '8px', letterSpacing: '-0.5px' }}>
-              Search Any Song Worldwide
-            </h1>
-            <p style={{ color: '#9CA3AF', fontSize: '0.95rem', maxWidth: '520px', margin: '0 auto 24px' }}>
-              Type any song, artist, or album name in the search bar above to stream instantly.
-            </p>
-
-            <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '8px', maxWidth: '780px', margin: '0 auto' }}>
-              {['Arijit Singh', 'Sid Sriram', 'Harris Jayaraj', 'Anirudh', 'Coldplay', 'Eminem', 'The Weeknd', 'Taylor Swift', 'Travis Scott', 'Drake', 'Pritam', 'AR Rahman'].map(tag => (
-                <button
-                  key={tag}
-                  className="badge-pill-btn"
-                  onClick={() => {
-                    searchMusicOnline(tag).then(res => {
-                      setResults(res);
-                    });
-                  }}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
+        /* Clean Minimal Landing View */
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', textAlign: 'center' }}>
+          <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(229, 9, 20, 0.12)', border: '1px solid rgba(229, 9, 20, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', boxShadow: '0 0 24px rgba(229, 9, 20, 0.2)' }}>
+            <SearchIcon size={28} color="#FF2A3A" />
           </div>
+          
+          <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '10px', letterSpacing: '-0.5px' }}>
+            What do you want to play?
+          </h1>
+          <p style={{ color: '#9CA3AF', fontSize: '0.96rem', maxWidth: '460px', marginBottom: '28px', lineHeight: '1.5' }}>
+            Search for artists, songs, or albums in the search bar above to start streaming.
+          </p>
 
-          {/* Recent Playlists Grid */}
-          <div style={{ marginTop: '12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-              <h2 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
-                Recent Playlists
-              </h2>
-              <span style={{ fontSize: '0.82rem', color: '#9CA3AF' }}>
-                Curated Collections
-              </span>
-            </div>
-
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', 
-              gap: '22px' 
-            }}>
-              {RECENT_PLAYLISTS.map((pl) => {
-                const isPlPlaying = pl.tracks.some(t => currentTrack && t.id === currentTrack.id) && isPlaying;
-
-                return (
-                  <div
-                    key={pl.id}
-                    className="glass-panel playlist-card-hover"
-                    style={{
-                      padding: '16px',
-                      borderRadius: '14px',
-                      cursor: 'pointer',
-                      position: 'relative'
-                    }}
-                    onClick={() => navigateTo('playlist', pl.id)}
-                  >
-                    <div style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: '10px', overflow: 'hidden', marginBottom: '14px', boxShadow: '0 8px 24px rgba(0,0,0,0.6)' }}>
-                      <img 
-                        src={pl.coverUrl} 
-                        alt={pl.title}
-                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      
-                      {/* Floating Play Button */}
-                      <button
-                        className="main-play-btn"
-                        style={{
-                          position: 'absolute',
-                          bottom: '10px',
-                          right: '10px',
-                          width: '42px',
-                          height: '42px',
-                          boxShadow: '0 4px 16px rgba(229, 9, 20, 0.5)'
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (pl.tracks && pl.tracks.length > 0) {
-                            playTrack(pl.tracks[0], pl.tracks);
-                          }
-                        }}
-                        title={isPlPlaying ? "Pause" : `Play ${pl.title}`}
-                      >
-                        {isPlPlaying ? (
-                          <Pause size={18} fill="#FFFFFF" />
-                        ) : (
-                          <Play size={18} fill="#FFFFFF" style={{ marginLeft: '2px' }} />
-                        )}
-                      </button>
-                    </div>
-
-                    <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#FFFFFF', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {pl.title}
-                    </h3>
-                    <p style={{ fontSize: '0.8rem', color: '#9CA3AF', lineHeight: '1.35', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {pl.description}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px', maxWidth: '640px' }}>
+            {['Arijit Singh', 'Sid Sriram', 'Harris Jayaraj', 'Anirudh', 'Coldplay', 'Eminem', 'The Weeknd', 'Taylor Swift'].map(tag => (
+              <button
+                key={tag}
+                className="badge-pill-btn"
+                onClick={() => {
+                  searchMusicOnline(tag).then(res => {
+                    setResults(res);
+                  });
+                }}
+              >
+                {tag}
+              </button>
+            ))}
           </div>
         </div>
       )}
