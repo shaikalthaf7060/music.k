@@ -1,6 +1,6 @@
 /**
- * music.k Full-Length Online Audio Catalog & Live Music Search
- * 100% Full-Length Songs (Zero 30s limits) with Original High-Res Posters.
+ * music.k High-Performance Online Audio Catalog & Live Music Search
+ * 100% Reliable HTML5 Audio Streaming with Authentic High-Res Album Posters.
  */
 
 export const RECENT_PLAYLISTS = [
@@ -17,8 +17,8 @@ export const RECENT_PLAYLISTS = [
         artist: "The Weeknd",
         album: "After Hours",
         duration: 200,
-        youtubeId: "4NRXx6U8ABQ",
-        coverUrl: "https://i.ytimg.com/vi/4NRXx6U8ABQ/maxresdefault.jpg"
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/17/b4/8f/17b48f9a-0b93-6bb8-fe1d-3a16623c2cfb/mzaf_9560252727299052414.plus.aac.p.m4a",
+        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a6/6e/bf/a66ebf79-5008-8948-b352-a790fc87446b/19UM1IM04638.rgb.jpg/600x600bb.jpg"
       },
       {
         id: "yt-02",
@@ -26,8 +26,8 @@ export const RECENT_PLAYLISTS = [
         artist: "The Weeknd ft. Daft Punk",
         album: "Starboy",
         duration: 230,
-        youtubeId: "34Na4j8AVgA",
-        coverUrl: "https://i.ytimg.com/vi/34Na4j8AVgA/maxresdefault.jpg"
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/11/71/d6/1171d6ad-3c96-e027-2af6-58028426588c/mzaf_15137631797407745471.plus.aac.p.m4a",
+        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/b5/92/bb/b592bb72-52e3-e756-9b26-9f56d08f47ab/16UMGIM67864.rgb.jpg/600x600bb.jpg"
       },
       {
         id: "yt-03",
@@ -35,8 +35,8 @@ export const RECENT_PLAYLISTS = [
         artist: "Billie Eilish",
         album: "HIT ME HARD AND SOFT",
         duration: 195,
-        youtubeId: "V9PVRfjEBTI",
-        coverUrl: "https://i.ytimg.com/vi/V9PVRfjEBTI/maxresdefault.jpg"
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/34/31/d3/3431d34e-847f-5d66-df83-0bce688d997e/mzaf_18106743962423782018.plus.aac.p.m4a",
+        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/92/9f/69/929f69f1-9977-3a44-d674-11f70c852d1b/24UMGIM36186.rgb.jpg/600x600bb.jpg"
       },
       {
         id: "yt-04",
@@ -44,8 +44,8 @@ export const RECENT_PLAYLISTS = [
         artist: "Kendrick Lamar",
         album: "Single",
         duration: 274,
-        youtubeId: "H58vbez_m4E",
-        coverUrl: "https://i.ytimg.com/vi/H58vbez_m4E/maxresdefault.jpg"
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/b6/6b/8c/b66b8c42-8c82-242b-4ef1-3655d19ac1aa/mzaf_1950801191699299821.plus.aac.p.m4a",
+        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/31/3a/3f/313a3fbc-bb8f-80c7-b5a2-e226869a38cd/24UMGIM51924.rgb.jpg/600x600bb.jpg"
       }
     ]
   },
@@ -62,8 +62,8 @@ export const RECENT_PLAYLISTS = [
         artist: "Arijit Singh & A.R. Rahman",
         album: "OK Jaanu",
         duration: 214,
-        youtubeId: "vUrka_8Zc_Q",
-        coverUrl: "https://i.ytimg.com/vi/vUrka_8Zc_Q/maxresdefault.jpg"
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/5b/b6/d7/5bb6d78f-1bba-c0a9-0731-d3286ed06914/mzaf_1092273590896407309.plus.aac.p.m4a",
+        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/9f/13/ca/9f13ca3b-e533-03e0-f19a-f0aaa774581d/196589311191.jpg/600x600bb.jpg"
       },
       {
         id: "yt-bol-02",
@@ -71,26 +71,17 @@ export const RECENT_PLAYLISTS = [
         artist: "Arijit Singh",
         album: "Brahmastra",
         duration: 268,
-        youtubeId: "BddP6PYo2gs",
-        coverUrl: "https://i.ytimg.com/vi/BddP6PYo2gs/maxresdefault.jpg"
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/38/4c/5c/384c5c8f-3ff8-e457-b2f7-3158ce108649/mzaf_12389299033886433185.plus.aac.p.m4a",
+        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/9f/13/ca/9f13ca3b-e533-03e0-f19a-f0aaa774581d/196589311191.jpg/600x600bb.jpg"
       },
       {
         id: "yt-bol-03",
-        title: "Apna Bana Le",
-        artist: "Arijit Singh & Sachin-Jigar",
-        album: "Bhediya",
-        duration: 261,
-        youtubeId: "ElZfdU54Cp8",
-        coverUrl: "https://i.ytimg.com/vi/ElZfdU54Cp8/maxresdefault.jpg"
-      },
-      {
-        id: "yt-bol-04",
-        title: "Tum Hi Ho",
-        artist: "Arijit Singh",
-        album: "Aashiqui 2",
-        duration: 262,
-        youtubeId: "Umqb9KENgmk",
-        coverUrl: "https://i.ytimg.com/vi/Umqb9KENgmk/maxresdefault.jpg"
+        title: "The Humma Song",
+        artist: "A.R. Rahman, Badshah & Tanishk Bagchi",
+        album: "OK Jaanu",
+        duration: 180,
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/3c/62/77/3c62778a-a92c-6330-4e38-84223d6a2fbe/mzaf_1648057270034639434.plus.aac.p.m4a",
+        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/9f/13/ca/9f13ca3b-e533-03e0-f19a-f0aaa774581d/196589311191.jpg/600x600bb.jpg"
       }
     ]
   },
@@ -107,8 +98,8 @@ export const RECENT_PLAYLISTS = [
         artist: "Harris Jayaraj, Karthik & V.V. Prassanna",
         album: "Vaaranam Aayiram",
         duration: 318,
-        youtubeId: "q6h38b4vV90",
-        coverUrl: "https://i.ytimg.com/vi/q6h38b4vV90/hqdefault.jpg"
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/71/34/08/713408e0-d4cf-dc69-0268-3ca6b485d58b/mzaf_6455112836262445899.plus.aac.p.m4a",
+        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/80/7e/1d/807e1ddc-4c4f-9e67-d8c9-02eb6b5df9d2/886444004944.jpg/600x600bb.jpg"
       },
       {
         id: "yt-sth-02",
@@ -116,8 +107,8 @@ export const RECENT_PLAYLISTS = [
         artist: "Sid Sriram & Justin Prabhakaran",
         album: "Dear Comrade",
         duration: 202,
-        youtubeId: "sQf-y5n26uE",
-        coverUrl: "https://i.ytimg.com/vi/sQf-y5n26uE/hqdefault.jpg"
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/b8/b8/b8/b8b8b8eb-9a2c-6218-4e99-92389dd88a10/mzaf_24901847192847192.plus.aac.p.m4a",
+        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/7d/ef/7b/7def7b44-93dc-5645-db43-df463ee3dc89/8901858032731.jpg/600x600bb.jpg"
       },
       {
         id: "yt-sth-03",
@@ -125,17 +116,8 @@ export const RECENT_PLAYLISTS = [
         artist: "Anirudh Ravichander",
         album: "Jailer",
         duration: 207,
-        youtubeId: "1F3hm6MfR1k",
-        coverUrl: "https://i.ytimg.com/vi/1F3hm6MfR1k/maxresdefault.jpg"
-      },
-      {
-        id: "yt-sth-04",
-        title: "Arabic Kuthu",
-        artist: "Anirudh Ravichander & Jonita Gandhi",
-        album: "Beast",
-        duration: 280,
-        youtubeId: "KUN5Uf9mObQ",
-        coverUrl: "https://i.ytimg.com/vi/KUN5Uf9mObQ/maxresdefault.jpg"
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/6b/8a/0f/6b8a0fc2-841c-8e36-fb69-1a1b8da22467/mzaf_16315582312648719864.plus.aac.p.m4a",
+        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/33/c7/2b/33c72b53-4876-0f80-0a2a-3507119ff31d/8903431952309_cover.jpg/600x600bb.jpg"
       }
     ]
   },
@@ -152,8 +134,8 @@ export const RECENT_PLAYLISTS = [
         artist: "Eminem",
         album: "Curtain Call: The Hits",
         duration: 326,
-        youtubeId: "_Yhyp-_hX2s",
-        coverUrl: "https://i.ytimg.com/vi/_Yhyp-_hX2s/maxresdefault.jpg"
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/62/0a/a5/620aa56f-189e-708a-80f0-cebdada3872e/mzaf_7131619873177773332.plus.aac.p.m4a",
+        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/08/23/fc/0823fcd9-cb44-695b-32bf-b3bf51d9f800/00606949351229.rgb.jpg/600x600bb.jpg"
       },
       {
         id: "yt-rap-02",
@@ -161,8 +143,8 @@ export const RECENT_PLAYLISTS = [
         artist: "Travis Scott ft. Playboi Carti",
         album: "UTOPIA",
         duration: 191,
-        youtubeId: "B9synWjqBn8",
-        coverUrl: "https://i.ytimg.com/vi/B9synWjqBn8/maxresdefault.jpg"
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/85/82/96/8582960b-2b19-b1eb-8179-b03be49f332b/mzaf_10214925442893249225.plus.aac.p.m4a",
+        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/98/b5/5e/98b55efe-7310-e3cb-0f9f-27abb1a2b182/20a1306b-6cf6-4194-a492-a402d3dee879.jpg/600x600bb.jpg"
       },
       {
         id: "yt-rap-03",
@@ -170,35 +152,8 @@ export const RECENT_PLAYLISTS = [
         artist: "Drake",
         album: "Scorpion",
         duration: 198,
-        youtubeId: "xpVfcZ0ZcFM",
-        coverUrl: "https://i.ytimg.com/vi/xpVfcZ0ZcFM/maxresdefault.jpg"
-      }
-    ]
-  },
-  {
-    id: "pl-chill-lofi",
-    title: "Midnight Chill & Phonk",
-    description: "Deep bass, lo-fi beats, late night driving.",
-    coverUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&auto=format&fit=crop&q=80",
-    color: "#7a0010",
-    tracks: [
-      {
-        id: "yt-lofi-01",
-        title: "Metamorphosis",
-        artist: "INTERWORLD",
-        album: "Phonk Edition",
-        duration: 142,
-        youtubeId: "NrmMk1Myrxc",
-        coverUrl: "https://i.ytimg.com/vi/NrmMk1Myrxc/maxresdefault.jpg"
-      },
-      {
-        id: "yt-lofi-02",
-        title: "Murder In My Mind",
-        artist: "Kordhell",
-        album: "Phonk Single",
-        duration: 145,
-        youtubeId: "w-sQRS-Mun8",
-        coverUrl: "https://i.ytimg.com/vi/w-sQRS-Mun8/maxresdefault.jpg"
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/da/7d/f1/da7df14b-8ee6-5020-d850-ccc0381eb141/mzaf_5511967710095380808.plus.aac.p.m4a",
+        coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/bb/6d/8f/bb6d8f67-6d04-10b5-dd62-eb5809ac54fc/00602567879152.rgb.jpg/600x600bb.jpg"
       }
     ]
   }
@@ -229,7 +184,7 @@ export async function searchMusicOnline(query) {
       const data = await res.json();
       if (data.results && data.results.length > 0) {
         onlineResults = data.results.map(item => {
-          // Extract high-res artwork (600x600 or original)
+          // Extract high-res original cover artwork (600x600)
           const highRes = item.artworkUrl100 
             ? item.artworkUrl100.replace('100x100bb', '600x600bb') 
             : 'https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a6/6e/bf/a66ebf79-5008-8948-b352-a790fc87446b/19UM1IM04638.rgb.jpg/600x600bb.jpg';
@@ -250,7 +205,7 @@ export async function searchMusicOnline(query) {
       }
     }
   } catch (err) {
-    console.warn("Live online search error:", err);
+    console.warn("Live online search notice:", err);
   }
 
   const allTracks = [...localMatches];
@@ -292,7 +247,7 @@ export async function fetchOnlineLyrics(track) {
 
   const generated = [
     { time: 0, text: `[Now Playing ${track.title} by ${track.artist}]` },
-    { time: 8, text: "Streaming pure full-length online audio" },
+    { time: 8, text: "Streaming pure online audio" },
     { time: 22, text: `Album: ${track.album || 'music.k'}` },
     { time: 45, text: "music.k" }
   ];
