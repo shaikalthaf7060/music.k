@@ -8,8 +8,7 @@ import {
   Sliders, 
   Volume2, 
   VolumeX, 
-  Volume1,
-  Maximize2
+  Volume1
 } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 
@@ -74,23 +73,23 @@ export default function FloatingPillPlayer() {
         {/* Left: Playback Controls */}
         <div className="pill-left-controls">
           <button className="pill-ctrl-btn" onClick={prevTrack} title="Previous">
-            <SkipBack size={19} fill="currentColor" />
+            <SkipBack size={17} fill="currentColor" />
           </button>
           
           <button className="pill-main-play-btn" onClick={togglePlay} title={isPlaying ? "Pause" : "Play"}>
             {isPlaying ? (
-              <Pause size={19} fill="currentColor" />
+              <Pause size={17} fill="currentColor" />
             ) : (
-              <Play size={19} fill="currentColor" style={{ marginLeft: '2px' }} />
+              <Play size={17} fill="currentColor" style={{ marginLeft: '2px' }} />
             )}
           </button>
 
           <button className="pill-ctrl-btn" onClick={nextTrack} title="Next">
-            <SkipForward size={19} fill="currentColor" />
+            <SkipForward size={17} fill="currentColor" />
           </button>
         </div>
 
-        {/* Center: Interactive Track & Scrub Island */}
+        {/* Center: Compact Interactive Track & Scrub Island */}
         <div className="pill-center-track-wrapper">
           <div 
             className="pill-center-track" 
@@ -112,7 +111,7 @@ export default function FloatingPillPlayer() {
             {/* Time Stamp Indicators */}
             <div className="pill-time-badge">
               <span>{formatTime(currentTime)}</span>
-              <span style={{ opacity: 0.5 }}>/</span>
+              <span style={{ opacity: 0.4 }}>/</span>
               <span>{formatTime(trackDuration)}</span>
             </div>
 
@@ -155,7 +154,7 @@ export default function FloatingPillPlayer() {
             onClick={() => setIsVisualizerOpen(prev => !prev)}
             title="Audio Visualizer"
           >
-            <Cast size={18} />
+            <Cast size={16} />
           </button>
 
           <button 
@@ -163,7 +162,7 @@ export default function FloatingPillPlayer() {
             onClick={() => setIsEqualizerOpen(prev => !prev)}
             title="Equalizer"
           >
-            <Sliders size={17} />
+            <Sliders size={15} />
           </button>
 
           <button 
@@ -172,11 +171,11 @@ export default function FloatingPillPlayer() {
             title={isMuted ? "Unmute" : "Mute"}
           >
             {isMuted || volume === 0 ? (
-              <VolumeX size={18} color="#9CA3AF" />
+              <VolumeX size={16} color="#9CA3AF" />
             ) : volume < 0.5 ? (
-              <Volume1 size={18} />
+              <Volume1 size={16} />
             ) : (
-              <Volume2 size={18} />
+              <Volume2 size={16} />
             )}
           </button>
         </div>

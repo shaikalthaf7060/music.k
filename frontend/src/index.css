@@ -1,6 +1,6 @@
 /* ==========================================================================
-   music.k — PURE FROSTED GLASS, 3D COVERFLOW & INTERACTIVE AUDIO SYSTEM
-   Matches Spotify Reference with Zero Red, Interactive Seeking & Reactive Glow
+   music.k — PURE FROSTED GLASS & CENTERED 3D COVERFLOW SYSTEM
+   Centered Logo Above Search + Compact Floating Pill Player + Top-Right Credit
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
@@ -73,7 +73,7 @@ input {
   align-items: center;
   position: relative;
   background: var(--bg-gradient);
-  padding-bottom: 95px;
+  padding-bottom: 85px;
 }
 
 .reactive-ambient-glow {
@@ -84,7 +84,7 @@ input {
   width: 500px;
   height: 350px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(140, 50, 160, 0.25) 0%, rgba(90, 20, 110, 0.08) 50%, transparent 80%);
+  background: radial-gradient(circle, rgba(140, 50, 160, 0.22) 0%, rgba(90, 20, 110, 0.06) 50%, transparent 80%);
   filter: blur(60px);
   pointer-events: none;
   z-index: 1;
@@ -95,127 +95,34 @@ input {
 .reactive-ambient-glow.active-glow {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1.15);
-  background: radial-gradient(circle, rgba(160, 60, 180, 0.35) 0%, rgba(100, 30, 120, 0.12) 50%, transparent 80%);
+  background: radial-gradient(circle, rgba(160, 60, 180, 0.32) 0%, rgba(100, 30, 120, 0.1) 50%, transparent 80%);
 }
 
 /* ==========================================================================
-   Hero Top Header: Logo + Attractive Search + Developed By Althaf
+   Top-Right Credit: Developed by Althaf
    ========================================================================== */
 
-.hero-top-header {
+.corner-dev-credit {
+  position: absolute;
+  top: 20px;
+  right: 28px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-top: 18px;
-  z-index: 50;
-  width: 100%;
-  max-width: 1200px;
-  padding: 0 32px;
-}
-
-/* Left: Monochrome Logo */
-.hero-logo-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  opacity: 0.8;
-  flex-shrink: 0;
-  min-width: 140px;
-}
-
-.hero-brand-name {
-  font-family: var(--font-display);
-  font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.hero-dot {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-/* Center: Attractive Glassmorphic Search Bar */
-.hero-search-wrapper {
-  position: relative;
-  width: min(520px, 50vw);
-  height: 44px;
-  border-radius: 30px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  display: flex;
-  align-items: center;
-  padding: 0 18px;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.hero-search-wrapper:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.hero-search-wrapper:focus-within {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.32);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 28px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  transform: translateY(-1px);
-}
-
-.hero-search-icon {
-  margin-right: 12px;
-  flex-shrink: 0;
-}
-
-.hero-search-input {
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  color: #FFFFFF;
-  font-size: 0.92rem;
-  font-weight: 500;
-}
-
-.hero-search-input::placeholder {
-  color: rgba(255, 255, 255, 0.35);
-}
-
-.search-clear-btn {
-  color: rgba(255, 255, 255, 0.4);
-  padding: 4px;
-  border-radius: 50%;
-  margin-left: 6px;
-}
-
-.search-clear-btn:hover {
-  color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* Right: Developed by Althaf (Seamless Glass Badge) */
-.hero-dev-credit {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  min-width: 140px;
-  justify-content: flex-end;
+  gap: 7px;
+  z-index: 60;
 }
 
 .dev-text {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.38);
   font-weight: 500;
 }
 
 .dev-link-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
+  gap: 5px;
+  padding: 5px 12px;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -223,7 +130,7 @@ input {
   -webkit-backdrop-filter: blur(16px);
   color: #FFFFFF;
   text-decoration: none;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
   transition: all 0.2s ease;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
@@ -231,8 +138,8 @@ input {
 
 .dev-link-badge:hover {
   background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 16px rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 14px rgba(255, 255, 255, 0.08);
   transform: translateY(-1px);
 }
 
@@ -242,6 +149,105 @@ input {
 
 .dev-name {
   color: #FFFFFF;
+}
+
+/* ==========================================================================
+   Hero Top Header: Centered Logo Directly Above Search Bar
+   ========================================================================== */
+
+.hero-top-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  z-index: 50;
+  width: 100%;
+}
+
+/* Centered Monochrome Logo */
+.hero-logo-box {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.hero-logo-box:hover {
+  opacity: 1;
+}
+
+.hero-brand-name {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.hero-dot {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Attractive Frosted Glass Search Bar */
+.hero-search-wrapper {
+  position: relative;
+  width: min(440px, 90vw);
+  height: 42px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-search-wrapper:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.hero-search-wrapper:focus-within {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.hero-search-icon {
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.hero-search-input {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  color: #FFFFFF;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.hero-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.search-clear-btn {
+  color: rgba(255, 255, 255, 0.4);
+  padding: 3px;
+  border-radius: 50%;
+  margin-left: 4px;
+}
+
+.search-clear-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 /* ==========================================================================
@@ -262,8 +268,8 @@ input {
 .coverflow-container {
   perspective: 1200px;
   width: 100%;
-  max-width: 960px;
-  height: 400px;
+  max-width: 920px;
+  height: 390px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -275,16 +281,16 @@ input {
   align-items: center;
   justify-content: center;
   transform-style: preserve-3d;
-  height: 380px;
+  height: 370px;
   width: 100%;
   position: relative;
 }
 
 .coverflow-card {
   position: absolute;
-  width: 240px;
-  height: 330px;
-  border-radius: 26px;
+  width: 230px;
+  height: 320px;
+  border-radius: 24px;
   background: rgba(36, 24, 40, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
@@ -292,7 +298,7 @@ input {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  padding: 12px;
+  padding: 10px;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
 }
@@ -312,8 +318,8 @@ input {
 .card-artwork-box {
   position: relative;
   width: 100%;
-  height: 220px;
-  border-radius: 18px;
+  height: 210px;
+  border-radius: 16px;
   overflow: hidden;
   background: #180c1a;
 }
@@ -345,8 +351,8 @@ input {
 }
 
 .coverflow-play-pill {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.9);
   color: #120c15;
@@ -354,12 +360,12 @@ input {
 }
 
 .card-meta {
-  padding: 14px 6px 6px;
+  padding: 12px 4px 4px;
   text-align: center;
 }
 
 .card-artist {
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   font-weight: 700;
   color: #FFFFFF;
   white-space: nowrap;
@@ -368,9 +374,9 @@ input {
 }
 
 .card-title {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: #9CA3AF;
-  margin-top: 3px;
+  margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -381,7 +387,7 @@ input {
   top: 50%;
   transform: translateY(-50%);
   width: 100%;
-  max-width: 760px;
+  max-width: 720px;
   display: flex;
   justify-content: space-between;
   pointer-events: none;
@@ -389,8 +395,8 @@ input {
 }
 
 .coverflow-nav-btn {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -407,12 +413,12 @@ input {
 }
 
 /* ==========================================================================
-   Bottom Floating Pill Player (Interactive Seeking Everywhere)
+   Bottom Floating Pill Player (Compact Width & Height)
    ========================================================================== */
 
 .floating-pill-player-wrapper {
   position: fixed;
-  bottom: 24px;
+  bottom: 22px;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -425,23 +431,23 @@ input {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  width: min(720px, 94vw);
-  height: 68px;
-  padding: 0 20px;
-  border-radius: 40px;
+  gap: 12px;
+  width: min(540px, 92vw);
+  height: 56px;
+  padding: 0 16px;
+  border-radius: 36px;
   background: rgba(36, 24, 40, 0.85);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 /* Left Group */
 .pill-left-controls {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 
 .pill-ctrl-btn {
@@ -455,8 +461,8 @@ input {
 }
 
 .pill-main-play-btn {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   color: #FFFFFF;
   transition: all 0.15s ease;
@@ -473,7 +479,7 @@ input {
   flex-direction: column;
   align-items: center;
   flex: 1;
-  max-width: 320px;
+  max-width: 250px;
   position: relative;
 }
 
@@ -481,9 +487,9 @@ input {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 5px 12px;
-  border-radius: 20px;
+  gap: 8px;
+  padding: 3px 10px;
+  border-radius: 18px;
   background: rgba(22, 14, 26, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.08);
   cursor: pointer;
@@ -498,8 +504,8 @@ input {
 }
 
 .pill-track-thumb {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border-radius: 6px;
   object-fit: cover;
   flex-shrink: 0;
@@ -513,7 +519,7 @@ input {
 }
 
 .pill-track-artist {
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: #FFFFFF;
   white-space: nowrap;
@@ -522,7 +528,7 @@ input {
 }
 
 .pill-track-title {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: #9CA3AF;
   white-space: nowrap;
   overflow: hidden;
@@ -530,11 +536,11 @@ input {
 }
 
 .pill-time-badge {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.66rem;
+  color: rgba(255, 255, 255, 0.55);
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
 }
@@ -543,8 +549,8 @@ input {
   display: inline-flex;
   align-items: flex-end;
   gap: 2px;
-  height: 12px;
-  margin-left: 4px;
+  height: 10px;
+  margin-left: 2px;
   flex-shrink: 0;
 }
 
@@ -555,20 +561,20 @@ input {
   animation: waveAnim 0.9s ease-in-out infinite alternate;
 }
 
-.pill-soundwave span:nth-child(2) { animation-delay: 0.2s; height: 10px; }
-.pill-soundwave span:nth-child(3) { animation-delay: 0.4s; height: 6px; }
+.pill-soundwave span:nth-child(2) { animation-delay: 0.2s; height: 8px; }
+.pill-soundwave span:nth-child(3) { animation-delay: 0.4s; height: 5px; }
 
 /* Interactive Timeline Scrubber */
 .pill-scrub-bar {
   width: 100%;
-  padding: 4px 0 0;
+  padding: 3px 0 0;
   cursor: pointer;
   position: relative;
 }
 
 .pill-scrub-track {
   width: 100%;
-  height: 4px;
+  height: 3px;
   border-radius: 2px;
   background: rgba(255, 255, 255, 0.1);
   position: relative;
@@ -577,7 +583,7 @@ input {
 }
 
 .pill-scrub-bar:hover .pill-scrub-track {
-  height: 6px;
+  height: 5px;
 }
 
 .pill-scrub-fill {
@@ -591,11 +597,11 @@ input {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: #FFFFFF;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
   opacity: 0;
   transition: opacity 0.15s ease;
 }
@@ -606,13 +612,13 @@ input {
 
 .scrub-tooltip {
   position: absolute;
-  bottom: 18px;
+  bottom: 16px;
   transform: translateX(-50%);
   background: rgba(18, 10, 22, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 2px 6px;
+  padding: 2px 5px;
   border-radius: 4px;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: #FFFFFF;
   pointer-events: none;
   font-variant-numeric: tabular-nums;
@@ -624,7 +630,7 @@ input {
 .pill-right-controls {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 
 .pill-tool-btn {
@@ -638,8 +644,8 @@ input {
 }
 
 @keyframes waveAnim {
-  0% { height: 3px; }
-  100% { height: 12px; }
+  0% { height: 2px; }
+  100% { height: 10px; }
 }
 
 /* ==========================================================================
@@ -671,27 +677,27 @@ input {
 
 /* Responsive Rules for Mobile */
 @media (max-width: 768px) {
-  .hero-top-header {
-    flex-direction: column;
-    padding: 0 16px;
-    gap: 12px;
+  .corner-dev-credit {
+    position: static;
+    margin-top: 8px;
   }
   
   .hero-search-wrapper {
-    width: 100%;
+    width: 90vw;
   }
 
   .coverflow-card {
-    width: 200px;
-    height: 290px;
+    width: 190px;
+    height: 280px;
   }
   
   .card-artwork-box {
-    height: 180px;
+    height: 170px;
   }
 
   .floating-pill-player {
-    height: 62px;
+    width: 92vw;
+    height: 52px;
     padding: 0 12px;
   }
 

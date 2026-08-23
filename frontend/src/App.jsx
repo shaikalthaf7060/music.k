@@ -117,23 +117,23 @@ function MainAppContent() {
 
   return (
     <div className="experience-container">
-      {/* Reactive Ambient Glow that pulses when songs change */}
+      {/* Reactive Ambient Background Glow */}
       <div className={`reactive-ambient-glow ${currentTrack ? 'active-glow' : ''}`} />
 
-      {/* Top Header Bar: Logo + Attractive Glass Search Bar + Developed by Althaf */}
+      {/* Top Header: Centered Logo ABOVE Search Bar */}
       <header className="hero-top-header">
-        {/* Left: Seamless Blended Monochrome Logo */}
+        {/* Centered Website Logo ABOVE Search Bar */}
         <div className="hero-logo-box">
-          <Logo size={26} />
+          <Logo size={24} />
           <span className="hero-brand-name">music<span className="hero-dot">.k</span></span>
         </div>
 
-        {/* Center: Attractive Glowing Glass Search Bar */}
+        {/* Centered Frosted Glass Search Bar */}
         <div className="hero-search-wrapper">
-          <Search size={18} className="hero-search-icon" color="rgba(255, 255, 255, 0.45)" />
+          <Search size={17} className="hero-search-icon" color="rgba(255, 255, 255, 0.45)" />
           <input 
             type="text" 
-            placeholder="Search any song, artist, album worldwide..."
+            placeholder="Search songs, artists, albums..."
             className="hero-search-input"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -144,35 +144,17 @@ function MainAppContent() {
               onClick={() => setSearchQuery('')}
               title="Clear Search"
             >
-              <X size={15} />
+              <X size={14} />
             </button>
           )}
-        </div>
-
-        {/* Right: Developed by Althaf (Seamlessly Blended Glass Chip) */}
-        <div className="hero-dev-credit">
-          <span className="dev-text">Developed by</span>
-          <a 
-            href="https://github.com/shaikalthaf7060" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="dev-link-badge"
-            title="Visit Althaf on GitHub"
-          >
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" className="github-icon">
-              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-            </svg>
-            <span className="dev-name">Althaf</span>
-            <ExternalLink size={11} style={{ opacity: 0.6 }} />
-          </a>
         </div>
       </header>
 
       {/* Main 3D Coverflow Stage with Reactive Transitions */}
       <main className="hero-main-stage">
         {isSearching && (
-          <div style={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600, fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-            <Sparkles size={14} color="rgba(255, 255, 255, 0.6)" />
+          <div style={{ color: 'rgba(255, 255, 255, 0.6)', fontWeight: 600, fontSize: '0.84rem', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+            <Sparkles size={13} color="rgba(255, 255, 255, 0.6)" />
             <span>Finding songs...</span>
           </div>
         )}
@@ -180,8 +162,26 @@ function MainAppContent() {
         <CoverflowStage tracks={activeCoverflowTracks} />
       </main>
 
-      {/* Bottom Floating Pill Player (Matches Reference Image) */}
+      {/* Bottom Floating Pill Player (Compact Width) */}
       <FloatingPillPlayer />
+
+      {/* Developed by Althaf (Placed at Top-Right in Sleek Glass Badge) */}
+      <div className="corner-dev-credit">
+        <span className="dev-text">Developed by</span>
+        <a 
+          href="https://github.com/shaikalthaf7060" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="dev-link-badge"
+          title="Visit Althaf on GitHub"
+        >
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" className="github-icon">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+          </svg>
+          <span className="dev-name">Althaf</span>
+          <ExternalLink size={10} style={{ opacity: 0.6 }} />
+        </a>
+      </div>
 
       {/* Modals & Overlays */}
       <NowPlayingModal />
