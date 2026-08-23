@@ -1,10 +1,10 @@
 import React from 'react';
-import { Search, Home, Library } from 'lucide-react';
+import { Search, Library, Heart } from 'lucide-react';
 import { useAudio } from '../context/AudioContext';
 import Logo from './Logo';
 
 export default function Sidebar() {
-  const { currentView, navigateTo } = useAudio();
+  const { currentView, navigateTo, likedTrackIds } = useAudio();
 
   return (
     <aside className="sidebar glossy-sidebar" style={{ width: '240px', padding: '20px 14px' }}>
@@ -30,7 +30,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* Clean Navigation: Search, Home, Your Library */}
+      {/* Clean Navigation: Search, Your Library, Liked Songs */}
       <ul className="nav-list" style={{ gap: '8px' }}>
         <li>
           <button 
@@ -43,20 +43,20 @@ export default function Sidebar() {
         </li>
         <li>
           <button 
-            className={`nav-item-btn glossy-nav-btn ${currentView === 'home' ? 'active' : ''}`}
-            onClick={() => navigateTo('home')}
-          >
-            <Home size={20} className="nav-icon" />
-            <span>Trending</span>
-          </button>
-        </li>
-        <li>
-          <button 
             className={`nav-item-btn glossy-nav-btn ${currentView === 'library' ? 'active' : ''}`}
             onClick={() => navigateTo('library')}
           >
             <Library size={20} className="nav-icon" />
             <span>Your Library</span>
+          </button>
+        </li>
+        <li>
+          <button 
+            className={`nav-item-btn glossy-nav-btn ${currentView === 'liked' ? 'active' : ''}`}
+            onClick={() => navigateTo('liked')}
+          >
+            <Heart size={20} className="nav-icon" fill={currentView === 'liked' ? "#FF2A3A" : "none"} />
+            <span>Liked Songs</span>
           </button>
         </li>
       </ul>

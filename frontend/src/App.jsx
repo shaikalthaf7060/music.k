@@ -110,7 +110,6 @@ function MainAppContent() {
   const activeViewComponent = useMemo(() => {
     switch (currentView) {
       case 'home':
-        return <HomeView />;
       case 'search':
         return <SearchView searchQuery={searchQuery} />;
       case 'library':
