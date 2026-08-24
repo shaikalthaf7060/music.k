@@ -245,10 +245,10 @@ export async function fetchOnlineLyrics(track) {
   } catch (e) {}
 
   const generated = [
-    { time: 0, text: `[Now Playing ${track.title} by ${track.artist}]` },
-    { time: 8, text: "Streaming pure online audio" },
+    { time: 0, text: `Playing: ${track.title} • ${track.artist}` },
+    { time: 8, text: "High fidelity online audio" },
     { time: 22, text: `Album: ${track.album || 'music.k'}` },
-    { time: 45, text: "music.k" }
+    { time: 45, text: "music.k pure sound experience" }
   ];
 
   return { trackId: track.id, lyrics: generated };

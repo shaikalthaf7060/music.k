@@ -19,7 +19,7 @@ import {
 import { useAudio } from '../context/AudioContext';
 import Logo from './Logo';
 
-const DEFAULT_COVER = "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a6/6e/bf/a66ebf79-5008-8948-b352-a790fc87446b/19UM1IM04638.rgb.jpg/600x600bb.jpg";
+const DEFAULT_COVER = "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80";
 
 function formatTime(seconds) {
   if (isNaN(seconds) || seconds < 0) return "0:00";
@@ -65,7 +65,7 @@ export default function NowPlayingModal() {
   if (!isNowPlayingOpen || !currentTrack) return null;
 
   const isLiked = Boolean(currentTrack && Array.isArray(likedTrackIds) && likedTrackIds.includes(currentTrack.id));
-  const trackDuration = currentTrack?.duration || duration || 200;
+  const trackDuration = currentTrack?.duration || duration || 210;
   const progressPercent = trackDuration > 0 ? Math.min(100, (currentTime / trackDuration) * 100) : 0;
 
   const handleScrubClick = (e) => {
@@ -78,92 +78,43 @@ export default function NowPlayingModal() {
 
   const activeLyricText = activeLyrics && currentLyricIndex >= 0 && activeLyrics[currentLyricIndex]
     ? activeLyrics[currentLyricIndex].text
-    : "Streaming pure online audio...";
+    : `Playing ${currentTrack.title} • ${currentTrack.artist}`;
 
   return (
     <div className="modal-backdrop" onClick={() => setIsNowPlayingOpen(false)}>
       <div 
-        className="glossy-card now-playing-modal-box"
+        className="now-playing-card"
         onClick={(e) => e.stopPropagation()}
-        style={{
-          width: '92%',
-          maxWidth: '430px',
-          maxHeight: '94vh',
-          padding: '20px 24px',
-          background: 'linear-gradient(145deg, rgba(28, 12, 16, 0.96) 0%, rgba(14, 14, 18, 0.98) 100%)',
-          border: '1px solid rgba(229, 9, 20, 0.35)',
-          borderRadius: '20px',
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.95), 0 0 40px rgba(229, 9, 20, 0.25)',
-          backdropFilter: 'blur(30px)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          gap: '14px',
-          overflowY: 'auto'
-        }}
       >
         {/* Top Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Logo size={22} />
-            <span style={{ fontSize: '0.78rem', fontWeight: 800, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#FF2A3A' }}>
-              NOW PLAYING • music.k
-            </span>
+        <div className="np-header">
+          <div className="np-brand">
+            <Logo size={20} />
+            <span className="np-header-title">NOW PLAYING</span>
           </div>
 
           <button 
-            className="action-icon-btn" 
+            className="np-close-btn" 
             onClick={() => setIsNowPlayingOpen(false)}
-            style={{ width: '32px', height: '32px', background: 'rgba(255,255,255,0.08)' }}
-            title="Close Full Player"
+            title="Close Player"
           >
             <X size={18} />
           </button>
         </div>
 
-        {/* Compact Responsive Glossy Album Artwork */}
-        <div 
-          style={{
-            position: 'relative',
-            width: 'min(240px, 30vh)',
-            height: 'min(240px, 30vh)',
-            margin: '0 auto',
-            borderRadius: '16px',
-            overflow: 'hidden',
-            boxShadow: '0 12px 32px rgba(0,0,0,0.85), 0 0 25px rgba(229, 9, 20, 0.3)',
-            border: '1px solid rgba(255,255,255,0.12)',
-            flexShrink: 0
-          }}
-        >
+        {/* Artwork Stage */}
+        <div className="np-artwork-container">
           <img 
-            src={currentTrack.coverUrl} 
+            src={currentTrack.coverUrl || DEFAULT_COVER} 
             alt={currentTrack.title}
+            className="np-artwork-img"
             onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER; }}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
-            }}
           />
 
-          {/* Floating soundwave indicator */}
+          {/* Animated soundwave pill */}
           {isPlaying && (
-            <div 
-              style={{
-                position: 'absolute',
-                bottom: '10px',
-                right: '10px',
-                background: 'rgba(0,0,0,0.75)',
-                backdropFilter: 'blur(8px)',
-                padding: '4px 8px',
-                borderRadius: '14px',
-                border: '1px solid rgba(229, 9, 20, 0.4)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}
-            >
-              <div className="sound-wave" style={{ height: '12px' }}>
+            <div className="np-soundwave-badge">
+              <div className="sound-wave">
                 <span /><span /><span /><span />
               </div>
             </div>
@@ -171,130 +122,97 @@ export default function NowPlayingModal() {
         </div>
 
         {/* Track Title & Artist with Like Heart */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '2px' }}>
-          <div style={{ overflow: 'hidden', paddingRight: '10px' }}>
-            <h2 
-              style={{ 
-                fontFamily: 'var(--font-display)', 
-                fontSize: '1.35rem', 
-                fontWeight: 800, 
-                whiteSpace: 'nowrap', 
-                overflow: 'hidden', 
-                textOverflow: 'ellipsis',
-                color: 'white',
-                marginBottom: '2px'
-              }}
-            >
+        <div className="np-meta-row">
+          <div className="np-track-info">
+            <h2 className="np-track-title" title={currentTrack.title}>
               {currentTrack.title}
             </h2>
-            <p 
-              style={{ 
-                fontSize: '0.88rem', 
-                color: 'var(--text-secondary)', 
-                whiteSpace: 'nowrap', 
-                overflow: 'hidden', 
-                textOverflow: 'ellipsis' 
-              }}
-            >
-              {currentTrack.artist} • <span style={{ color: 'var(--text-muted)' }}>{currentTrack.album || 'Single'}</span>
+            <p className="np-track-artist" title={currentTrack.artist}>
+              {currentTrack.artist} <span className="np-album-sep">•</span> <span className="np-album-name">{currentTrack.album || 'Single'}</span>
             </p>
           </div>
 
           <button 
-            className={`like-heart-btn ${isLiked ? 'liked' : ''}`}
+            className={`np-heart-btn ${isLiked ? 'liked' : ''}`}
             onClick={() => toggleLike(currentTrack.id)}
-            style={{ padding: '6px' }}
+            title={isLiked ? "Remove from Liked" : "Add to Liked"}
           >
-            <Heart size={22} fill={isLiked ? "#FF2A3A" : "none"} strokeWidth={2} />
+            <Heart size={22} fill={isLiked ? "#FFFFFF" : "none"} strokeWidth={2} />
           </button>
         </div>
 
-        {/* Active Lyric Teaser */}
+        {/* Active Lyric Teaser Pill */}
         <div 
+          className="np-lyrics-teaser"
           onClick={() => {
             setIsNowPlayingOpen(false);
             setIsLyricsOpen(true);
           }}
-          style={{
-            background: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(229, 9, 20, 0.2)',
-            borderRadius: '10px',
-            padding: '8px 12px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
+          title="Open Synced Lyrics"
         >
-          <Mic2 size={16} color="#FF2A3A" />
-          <span style={{ fontSize: '0.82rem', color: 'white', fontWeight: 600, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <Mic2 size={16} className="np-mic-icon" />
+          <span className="np-lyric-text">
             {activeLyricText}
           </span>
-          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-            Lyrics ›
+          <span className="np-lyrics-arrow">
+            LYRICS ›
           </span>
         </div>
 
         {/* Scrubber Progress Bar */}
-        <div>
+        <div className="np-scrubber-box">
           <div 
-            className="slider-bar-track" 
+            className="np-scrubber-track" 
             ref={scrubRef}
             onClick={handleScrubClick}
-            style={{ height: '5px', background: 'rgba(255,255,255,0.12)' }}
           >
             <div 
-              className="slider-fill" 
+              className="np-scrubber-fill" 
               style={{ width: `${progressPercent}%` }}
             >
-              <div className="slider-thumb" style={{ opacity: 1, width: '12px', height: '12px' }} />
+              <div className="np-scrubber-thumb" />
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
-            <span className="time-stamp" style={{ fontSize: '0.74rem' }}>{formatTime(currentTime)}</span>
-            <span className="time-stamp" style={{ fontSize: '0.74rem' }}>{formatTime(trackDuration)}</span>
+          <div className="np-time-row">
+            <span className="np-timestamp">{formatTime(currentTime)}</span>
+            <span className="np-timestamp">{formatTime(trackDuration)}</span>
           </div>
         </div>
 
         {/* Controls Deck */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="np-controls-deck">
           <button 
-            className={`ctrl-btn ${isShuffle ? 'active' : ''}`}
+            className={`np-ctrl-btn ${isShuffle ? 'active' : ''}`}
             onClick={toggleShuffle}
-            title="Shuffle"
+            title={isShuffle ? "Shuffle On" : "Shuffle Off"}
           >
-            <Shuffle size={18} />
+            <Shuffle size={19} />
           </button>
 
           <button 
-            className="ctrl-btn"
+            className="np-ctrl-btn"
             onClick={prevTrack}
             title="Previous Track"
           >
             <SkipBack size={22} fill="currentColor" />
           </button>
 
-          {/* Large Glossy Circular Play Button */}
+          {/* Large Frosted Glass Center Play Button */}
           <button 
-            className="main-play-btn"
+            className="np-play-btn"
             onClick={togglePlay}
-            style={{ 
-              width: '56px', 
-              height: '56px', 
-              boxShadow: '0 8px 24px rgba(229, 9, 20, 0.6), 0 0 16px rgba(255, 42, 58, 0.4)' 
-            }}
             title={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? (
-              <Pause size={24} fill="#ffffff" />
+              <Pause size={24} fill="currentColor" />
             ) : (
-              <Play size={24} fill="#ffffff" style={{ marginLeft: '3px' }} />
+              <Play size={24} fill="currentColor" style={{ marginLeft: '3px' }} />
             )}
           </button>
 
           <button 
-            className="ctrl-btn"
+            className="np-ctrl-btn"
             onClick={nextTrack}
             title="Next Track"
           >
@@ -302,42 +220,52 @@ export default function NowPlayingModal() {
           </button>
 
           <button 
-            className={`ctrl-btn ${repeatMode !== 'off' ? 'active' : ''}`}
+            className={`np-ctrl-btn ${repeatMode !== 'off' ? 'active' : ''}`}
             onClick={toggleRepeat}
             title={`Repeat: ${repeatMode.toUpperCase()}`}
           >
-            {repeatMode === 'one' ? <Repeat1 size={19} /> : <Repeat size={19} />}
+            {repeatMode === 'one' ? <Repeat1 size={20} /> : <Repeat size={20} />}
           </button>
         </div>
 
-        {/* Bottom Tools & Volume */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '12px' }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
+        {/* Bottom Utility Deck (Equalizer, Visualizer & Volume) */}
+        <div className="np-bottom-deck">
+          <div className="np-utility-group">
             <button 
-              className={`tool-icon-btn ${isEqualizerOpen ? 'active' : ''}`}
+              className={`np-tool-btn ${isEqualizerOpen ? 'active' : ''}`}
               onClick={() => {
                 setIsNowPlayingOpen(false);
                 setIsEqualizerOpen(true);
               }}
               title="Studio Equalizer"
             >
-              <Sliders size={17} />
+              <Sliders size={16} />
             </button>
             <button 
-              className={`tool-icon-btn ${isVisualizerOpen ? 'active' : ''}`}
+              className={`np-tool-btn ${isVisualizerOpen ? 'active' : ''}`}
               onClick={() => {
                 setIsNowPlayingOpen(false);
                 setIsVisualizerOpen(true);
               }}
-              title="Audio Visualizer"
+              title="Audio Spectrum Visualizer"
             >
-              <Activity size={17} />
+              <Activity size={16} />
             </button>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button className="tool-icon-btn" onClick={toggleMute}>
-              {isMuted || volume === 0 ? <VolumeX size={17} color="#FF4757" /> : <Volume2 size={17} />}
+          <div className="np-volume-group">
+            <button 
+              className="np-tool-btn" 
+              onClick={toggleMute} 
+              title={isMuted ? "Unmute" : "Mute"}
+            >
+              {isMuted || volume === 0 ? (
+                <VolumeX size={16} color="#9CA3AF" />
+              ) : volume < 0.5 ? (
+                <Volume1 size={16} />
+              ) : (
+                <Volume2 size={16} />
+              )}
             </button>
             <input 
               type="range"
@@ -345,8 +273,9 @@ export default function NowPlayingModal() {
               max="1"
               step="0.01"
               value={isMuted ? 0 : volume}
-              onChange={(e) => setVolume(e.target.value)}
-              style={{ width: '80px', accentColor: '#FF2A3A', cursor: 'pointer' }}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+              className="np-volume-slider"
+              title={`Volume: ${Math.round((isMuted ? 0 : volume) * 100)}%`}
             />
           </div>
         </div>
