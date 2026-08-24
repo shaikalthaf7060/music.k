@@ -9,22 +9,22 @@ export const RECENT_PLAYLISTS = [
   {
     id: "pl-top-hits",
     title: "Global Top Hits",
-    description: "The hottest full-length tracks worldwide right now.",
+    description: "The hottest tracks worldwide right now.",
     coverUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80",
     color: "#E50914",
     tracks: [
       {
-        id: "aud-01",
-        title: "Blinding Lights (Full Song)",
+        id: "hit-01",
+        title: "Blinding Lights",
         artist: "The Weeknd",
         album: "After Hours",
-        duration: 227,
-        audioUrl: "https://discoveryprovider.audius.co/v1/tracks/5KZ2E72/stream?app_name=musick_app",
+        duration: 200,
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/a6/6e/bf/a66ebf79-5008-8948-b352-a790fc87446b/mzaf_15137631797407745471.plus.aac.p.m4a",
         coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a6/6e/bf/a66ebf79-5008-8948-b352-a790fc87446b/19UM1IM04638.rgb.jpg/600x600bb.jpg"
       },
       {
-        id: "aud-02",
-        title: "Starboy (Full Song)",
+        id: "hit-02",
+        title: "Starboy",
         artist: "The Weeknd ft. Daft Punk",
         album: "Starboy",
         duration: 230,
@@ -32,8 +32,8 @@ export const RECENT_PLAYLISTS = [
         coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/b5/92/bb/b592bb72-52e3-e756-9b26-9f56d08f47ab/16UMGIM67864.rgb.jpg/600x600bb.jpg"
       },
       {
-        id: "aud-03",
-        title: "BIRDS OF A FEATHER (Full Song)",
+        id: "hit-03",
+        title: "BIRDS OF A FEATHER",
         artist: "Billie Eilish",
         album: "HIT ME HARD AND SOFT",
         duration: 195,
@@ -41,12 +41,12 @@ export const RECENT_PLAYLISTS = [
         coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/92/9f/69/929f69f1-9977-3a44-d674-11f70c852d1b/24UMGIM36186.rgb.jpg/600x600bb.jpg"
       },
       {
-        id: "aud-04",
-        title: "Not Like Us (Full Song)",
+        id: "hit-04",
+        title: "Not Like Us",
         artist: "Kendrick Lamar",
         album: "Single",
         duration: 225,
-        audioUrl: "https://discoveryprovider.audius.co/v1/tracks/O7eYr/stream?app_name=musick_app",
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/31/3a/3f/313a3fbc-bb8f-80c7-b5a2-e226869a38cd/mzaf_1714856428784.plus.aac.p.m4a",
         coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/31/3a/3f/313a3fbc-bb8f-80c7-b5a2-e226869a38cd/24UMGIM51924.rgb.jpg/600x600bb.jpg"
       }
     ]
@@ -59,8 +59,8 @@ export const RECENT_PLAYLISTS = [
     color: "#ff4757",
     tracks: [
       {
-        id: "aud-bol-01",
-        title: "Enna Sona (Full Song)",
+        id: "bol-01",
+        title: "Enna Sona",
         artist: "Arijit Singh & A.R. Rahman",
         album: "OK Jaanu",
         duration: 214,
@@ -68,17 +68,17 @@ export const RECENT_PLAYLISTS = [
         coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/9f/13/ca/9f13ca3b-e533-03e0-f19a-f0aaa774581d/196589311191.jpg/600x600bb.jpg"
       },
       {
-        id: "aud-bol-02",
-        title: "Kesariya (Full Song)",
-        artist: "Arijit Singh",
+        id: "bol-02",
+        title: "Kesariya",
+        artist: "Pritam & Arijit Singh",
         album: "Brahmastra",
-        duration: 283,
-        audioUrl: "https://discoveryprovider.audius.co/v1/tracks/3B5Z7/stream?app_name=musick_app",
+        duration: 268,
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/9f/13/ca/9f13ca3b-e533-03e0-f19a-f0aaa774581d/mzaf_196589311191.plus.aac.p.m4a",
         coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/9f/13/ca/9f13ca3b-e533-03e0-f19a-f0aaa774581d/196589311191.jpg/600x600bb.jpg"
       },
       {
-        id: "aud-bol-03",
-        title: "The Humma Song (Full Song)",
+        id: "bol-03",
+        title: "The Humma Song",
         artist: "A.R. Rahman, Badshah & Tanishk Bagchi",
         album: "OK Jaanu",
         duration: 180,
@@ -95,8 +95,8 @@ export const RECENT_PLAYLISTS = [
     color: "#ff2a3a",
     tracks: [
       {
-        id: "aud-sth-01",
-        title: "Ava Enna (Full Song)",
+        id: "sth-01",
+        title: "Ava Enna",
         artist: "Harris Jayaraj, Karthik & V.V. Prassanna",
         album: "Vaaranam Aayiram",
         duration: 318,
@@ -104,8 +104,8 @@ export const RECENT_PLAYLISTS = [
         coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/80/7e/1d/807e1ddc-4c4f-9e67-d8c9-02eb6b5df9d2/886444004944.jpg/600x600bb.jpg"
       },
       {
-        id: "aud-sth-02",
-        title: "Sakhiye (Full Song)",
+        id: "sth-02",
+        title: "Sakhiye",
         artist: "Sid Sriram & Justin Prabhakaran",
         album: "Dear Comrade",
         duration: 202,
@@ -122,17 +122,17 @@ export const RECENT_PLAYLISTS = [
     color: "#b30000",
     tracks: [
       {
-        id: "aud-rap-01",
-        title: "Lose Yourself (Full Song)",
+        id: "rap-01",
+        title: "Lose Yourself",
         artist: "Eminem",
         album: "Curtain Call: The Hits",
         duration: 326,
-        audioUrl: "https://discoveryprovider.audius.co/v1/tracks/B2E10/stream?app_name=musick_app",
+        audioUrl: "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview125/v4/08/23/fc/0823fcd9-cb44-695b-32bf-b3bf51d9f800/mzaf_00606949351229.plus.aac.p.m4a",
         coverUrl: "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/08/23/fc/0823fcd9-cb44-695b-32bf-b3bf51d9f800/00606949351229.rgb.jpg/600x600bb.jpg"
       },
       {
-        id: "aud-rap-02",
-        title: "God's Plan (Full Song)",
+        id: "rap-02",
+        title: "God's Plan",
         artist: "Drake",
         album: "Scorpion",
         duration: 198,
@@ -146,7 +146,7 @@ export const RECENT_PLAYLISTS = [
 export const ONLINE_CHARTS = RECENT_PLAYLISTS.flatMap(p => p.tracks);
 
 /**
- * Searches Audius + Apple Music to retrieve both full-length streams and high-res official covers.
+ * Searches Official Global Catalog to retrieve 100% exact song titles, official artists, and HD covers.
  */
 export async function searchMusicOnline(query) {
   if (!query || !query.trim()) {
@@ -155,63 +155,42 @@ export async function searchMusicOnline(query) {
 
   const cleanQuery = query.trim();
   let tracks = [];
+  const seenIds = new Set();
 
-  // 1. Fetch from Audius for Full-Length Audio Tracks
+  // 1. Primary Engine: Official Studio Master Catalog Search (Apple/iTunes Official Index)
   try {
-    const audiusUrl = `https://discoveryprovider.audius.co/v1/tracks/search?query=${encodeURIComponent(cleanQuery)}&app_name=${AUDIUS_APP}`;
-    const audRes = await fetch(audiusUrl);
-    if (audRes.ok) {
-      const audData = await audRes.json();
-      if (audData.data && Array.isArray(audData.data) && audData.data.length > 0) {
-        audData.data.slice(0, 15).forEach(t => {
-          const cover = t.artwork?.['480x480'] || t.artwork?.['150x150'] || t.artwork?.['1000x1000'] || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80';
-          tracks.push({
-            id: `audius-${t.id}`,
-            title: t.title,
-            artist: t.user?.name || "Artist",
-            album: t.genre ? `${t.genre} • Full Stream` : "Full Audio Track",
-            duration: t.duration || 210,
-            genre: t.genre || "Music",
-            year: t.release_date ? new Date(t.release_date).getFullYear() : 2024,
-            plays: t.play_count ? `${Math.round(t.play_count / 1000)}k` : "Popular",
-            coverUrl: cover,
-            audioUrl: `https://discoveryprovider.audius.co/v1/tracks/${t.id}/stream?app_name=${AUDIUS_APP}`
-          });
-        });
-      }
-    }
-  } catch (e) {
-    console.warn("Audius lookup notice:", e);
-  }
-
-  // 2. Fetch from Apple Music for Official Studio Master Releases
-  try {
-    const itunesUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(cleanQuery)}&entity=song&limit=20`;
+    const itunesUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(cleanQuery)}&entity=song&limit=25`;
     const itunesRes = await fetch(itunesUrl);
     if (itunesRes.ok) {
       const itunesData = await itunesRes.json();
       if (itunesData.results && Array.isArray(itunesData.results)) {
         itunesData.results.forEach(item => {
-          if (item.trackName) {
-            const highRes = item.artworkUrl100 ? item.artworkUrl100.replace('100x100bb', '600x600bb') : 'https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/9f/13/ca/9f13ca3b-e533-03e0-f19a-f0aaa774581d/196589311191.jpg/600x600bb.jpg';
+          if (item.trackName && !seenIds.has(item.trackId)) {
+            seenIds.add(item.trackId);
+            const highRes = item.artworkUrl100 
+              ? item.artworkUrl100.replace('100x100bb', '600x600bb') 
+              : 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80';
+            
+            const durationSec = Math.round((item.trackTimeMillis || 210000) / 1000);
+
             tracks.push({
-              id: `online-${item.trackId}`,
+              id: `track-${item.trackId}`,
               title: item.trackName,
               artist: item.artistName,
               album: item.collectionName || "Single",
-              duration: Math.round((item.trackTimeMillis || 210000) / 1000),
+              duration: durationSec,
               genre: item.primaryGenreName || "Music",
               year: item.releaseDate ? new Date(item.releaseDate).getFullYear() : 2024,
               plays: "Official Release",
               coverUrl: highRes,
-              audioUrl: item.previewUrl
+              audioUrl: item.previewUrl || `https://discoveryprovider.audius.co/v1/tracks/search?query=${encodeURIComponent(item.trackName + ' ' + item.artistName)}&app_name=${AUDIUS_APP}`
             });
           }
         });
       }
     }
   } catch (e) {
-    console.warn("Apple lookup notice:", e);
+    console.warn("Official music search notice:", e);
   }
 
   const topResult = tracks.length > 0 ? { type: "track", data: tracks[0] } : null;
