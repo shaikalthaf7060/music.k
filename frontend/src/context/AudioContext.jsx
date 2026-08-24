@@ -239,7 +239,7 @@ export function AudioProvider({ children }) {
       setIsPlaying(false);
     } else {
       if (currentTrack) {
-        if (!ytController.audio?.src || ytController.audio.src === '' || ytController.audio.src === window.location.href) {
+        if (!ytController.currentTrack || ytController.currentTrack.id !== currentTrack.id) {
           ytController.playTrack(currentTrack);
         } else {
           ytController.play();

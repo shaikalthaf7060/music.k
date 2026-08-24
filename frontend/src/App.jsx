@@ -191,6 +191,24 @@ function MainAppContent() {
       <EqualizerModal />
       <QueueDrawer />
       <CreatePlaylistModal />
+
+      {/* Headless Off-Screen Audio Stream Engine (Option 2 - 100% Full-Length Playback) */}
+      <div 
+        id="yt-music-headless-container" 
+        style={{ 
+          position: 'fixed', 
+          top: '-9999px', 
+          left: '-9999px', 
+          width: '1px', 
+          height: '1px', 
+          opacity: 0, 
+          pointerEvents: 'none', 
+          zIndex: -1 
+        }}
+        aria-hidden="true"
+      >
+        <div id="yt-music-iframe" />
+      </div>
     </div>
   );
 }
