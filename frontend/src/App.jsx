@@ -197,13 +197,13 @@ function MainAppContent() {
         id="yt-music-headless-container" 
         style={{ 
           position: 'fixed', 
-          top: '-9999px', 
-          left: '-9999px', 
-          width: '1px', 
-          height: '1px', 
-          opacity: 0, 
+          bottom: '-300px', 
+          right: '-300px', 
+          width: '240px', 
+          height: '160px', 
+          opacity: 0.001, 
           pointerEvents: 'none', 
-          zIndex: -1 
+          zIndex: -9999 
         }}
         aria-hidden="true"
       >

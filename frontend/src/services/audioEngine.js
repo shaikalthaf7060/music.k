@@ -1,14 +1,14 @@
 /**
- * music.k Client-Side Headless Full-Length Streaming Engine (Option 2)
- * 100% Full-Length Online Audio Playback (Zero 30-Second Limit, Zero Backend Required).
- * Headless off-screen audio bridge with synchronized playback controls, scrubber, visualizer DSP.
+ * music.k 100% Full-Length Audio Engine (Option 2)
+ * Pure audio experience with 0 second limits (No 30s previews).
+ * Headless YouTube Audio Bridge with verified video IDs and dynamic search fallback.
  */
 
 const VERIFIED_TRACK_MAP = {
   // Global Top Hits
-  "blinding lights": "4NRXx6U8ABQ",
-  "starboy": "dqt8Z1k0oWQ",
-  "birds of a feather": "d5gxZEYUSJk",
+  "blinding lights": "fHI8X4OXluQ",
+  "starboy": "Rif-RTvmmss",
+  "birds of a feather": "QiBP5fhU4o8",
   "not like us": "T6eK-2OQtew",
   "cruel summer": "ic8j13piAhQ",
   "espresso": "eVli-tstM5E",
@@ -30,8 +30,8 @@ const VERIFIED_TRACK_MAP = {
   "dynamite": "gdZLi9oWNZg",
 
   // Bollywood & Indian Hits
-  "enna sona": "of3gZ_N-_a8",
-  "kesariya": "BddP6PYo2gs",
+  "enna sona": "ZfrR0C3PE1A",
+  "kesariya": "6RdS6wLu7RY",
   "the humma song": "1tVL11ULjYY",
   "humma song": "1tVL11ULjYY",
   "channa mereya": "bzSTpdcs-EI",
@@ -68,37 +68,37 @@ export function resolveTrackVideoId(title = "", artist = "") {
   const cleanTitle = title.toLowerCase().replace(/\(.*?\)|\[.*?\]/g, '').trim();
   const cleanArtist = artist.toLowerCase().trim();
 
-  // 1. Check exact title match
+  // 1. Exact title match
   if (VERIFIED_TRACK_MAP[cleanTitle]) {
     return VERIFIED_TRACK_MAP[cleanTitle];
   }
 
-  // 2. Check title substring match
+  // 2. Substring title match
   for (const [key, id] of Object.entries(VERIFIED_TRACK_MAP)) {
     if (cleanTitle.includes(key) || key.includes(cleanTitle)) {
       return id;
     }
   }
 
-  // 3. Check artist match
-  if (cleanArtist.includes("weeknd")) return "4NRXx6U8ABQ";
-  if (cleanArtist.includes("arijit")) return "BddP6PYo2gs";
-  if (cleanArtist.includes("billie eilish")) return "d5gxZEYUSJk";
+  // 3. Artist fallback mapping
+  if (cleanArtist.includes("weeknd")) return "fHI8X4OXluQ";
+  if (cleanArtist.includes("arijit")) return "6RdS6wLu7RY";
+  if (cleanArtist.includes("billie eilish")) return "QiBP5fhU4o8";
   if (cleanArtist.includes("kendrick")) return "T6eK-2OQtew";
+  if (cleanArtist.includes("pritam")) return "6RdS6wLu7RY";
   if (cleanArtist.includes("rahman")) return "1tVL11ULjYY";
   if (cleanArtist.includes("anirudh")) return "1F3hm6MfR1k";
   if (cleanArtist.includes("eminem")) return "_Yhyp-_hX2s";
   if (cleanArtist.includes("drake")) return "uxpDa-c-4Mc";
+  if (cleanArtist.includes("taylor swift")) return "ic8j13piAhQ";
 
   return null;
 }
 
-class HeadlessAudioEngine {
+class FullLengthAudioEngine {
   constructor() {
-    this.ytPlayer = null;
-    this.isYtReady = false;
-    this.nativeAudio = typeof Audio !== 'undefined' ? new Audio() : null;
-    this.activeEngine = 'youtube'; // 'youtube' or 'native'
+    this.player = null;
+    this.isReady = false;
     this.currentTrack = null;
     this.pendingTrack = null;
     this.isPlaying = false;
@@ -106,127 +106,100 @@ class HeadlessAudioEngine {
     this.currentTime = 0;
     this.duration = 200;
     this.listeners = new Set();
-    this.pollInterval = null;
-
-    if (this.nativeAudio) {
-      this.nativeAudio.preload = 'auto';
-      this.nativeAudio.volume = this.volume;
-
-      this.nativeAudio.addEventListener('play', () => {
-        if (this.activeEngine === 'native') {
-          this.isPlaying = true;
-          this.notify('stateChange', 1);
-        }
-      });
-
-      this.nativeAudio.addEventListener('pause', () => {
-        if (this.activeEngine === 'native') {
-          this.isPlaying = false;
-          this.notify('stateChange', 2);
-        }
-      });
-
-      this.nativeAudio.addEventListener('ended', () => {
-        if (this.activeEngine === 'native') {
-          this.isPlaying = false;
-          this.notify('stateChange', 0);
-        }
-      });
-
-      this.nativeAudio.addEventListener('timeupdate', () => {
-        if (this.activeEngine === 'native') {
-          this.currentTime = this.nativeAudio.currentTime || 0;
-          this.duration = this.nativeAudio.duration || this.currentTrack?.duration || 200;
-          this.notify('timeUpdate', {
-            currentTime: this.currentTime,
-            duration: this.duration
-          });
-        }
-      });
-    }
+    this.pollTimer = null;
   }
 
   init(containerId = 'yt-music-iframe') {
-    if (this.isYtReady && this.ytPlayer) return;
-
+    if (this.isReady && this.player) return;
     if (typeof window === 'undefined') return;
 
     if (!window.YT || !window.YT.Player) {
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      if (firstScriptTag && firstScriptTag.parentNode) {
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      } else {
-        document.head.appendChild(tag);
+      if (!document.getElementById('yt-iframe-api-script')) {
+        const tag = document.createElement('script');
+        tag.id = 'yt-iframe-api-script';
+        tag.src = 'https://www.youtube.com/iframe_api';
+        const first = document.getElementsByTagName('script')[0];
+        if (first && first.parentNode) {
+          first.parentNode.insertBefore(tag, first);
+        } else {
+          document.head.appendChild(tag);
+        }
       }
 
       window.onYouTubeIframeAPIReady = () => {
-        this.createHeadlessPlayer(containerId);
+        this.mountPlayer(containerId);
       };
     } else {
-      this.createHeadlessPlayer(containerId);
+      this.mountPlayer(containerId);
     }
   }
 
-  createHeadlessPlayer(containerId) {
-    if (this.ytPlayer) return;
+  mountPlayer(containerId) {
+    if (this.player) return;
     const el = document.getElementById(containerId);
     if (!el) return;
 
     try {
-      this.ytPlayer = new window.YT.Player(containerId, {
-        height: '100%',
-        width: '100%',
-        videoId: '4NRXx6U8ABQ',
+      this.player = new window.YT.Player(containerId, {
+        height: '160',
+        width: '240',
+        videoId: 'fHI8X4OXluQ', // Blinding Lights official audio
         playerVars: {
-          autoplay: 1,
+          autoplay: 0,
           controls: 0,
           disablekb: 1,
           fs: 0,
           rel: 0,
           modestbranding: 1,
           playsinline: 1,
+          enablejsapi: 1,
           origin: window.location.origin
         },
         events: {
           onReady: () => {
-            this.isYtReady = true;
-            this.ytPlayer.setVolume(Math.round(this.volume * 100));
+            this.isReady = true;
+            try {
+              this.player.setVolume(Math.round(this.volume * 100));
+            } catch (e) {}
+
             if (this.pendingTrack) {
               this.playTrack(this.pendingTrack);
               this.pendingTrack = null;
             }
           },
           onStateChange: (event) => {
-            // 1: Playing, 2: Paused, 0: Ended, 3: Buffering
-            if (this.activeEngine === 'youtube') {
-              if (event.data === 1) {
-                this.isPlaying = true;
-                this.startPolling();
-                this.notify('stateChange', 1);
-              } else if (event.data === 2) {
-                this.isPlaying = false;
-                this.stopPolling();
-                this.notify('stateChange', 2);
-              } else if (event.data === 0) {
-                this.isPlaying = false;
-                this.stopPolling();
-                this.notify('stateChange', 0);
-              }
+            // 1: PLAYING, 2: PAUSED, 0: ENDED
+            if (event.data === 1) {
+              this.isPlaying = true;
+              this.startTicker();
+              this.notify('stateChange', 1);
+            } else if (event.data === 2) {
+              this.isPlaying = false;
+              this.stopTicker();
+              this.notify('stateChange', 2);
+            } else if (event.data === 0) {
+              this.isPlaying = false;
+              this.stopTicker();
+              this.notify('stateChange', 0);
             }
           },
           onError: (event) => {
-            console.warn('Headless audio notice (code', event.data, ')');
-            // Fallback to native audio if needed
-            if (this.currentTrack?.audioUrl && this.nativeAudio) {
-              this.playNativeStream(this.currentTrack.audioUrl);
+            console.warn('YouTube stream notice (code', event.data, ')');
+            // Try playlist search fallback if direct video fails
+            if (this.currentTrack && this.player && this.player.loadPlaylist) {
+              try {
+                this.player.loadPlaylist({
+                  listType: 'search',
+                  list: `${this.currentTrack.artist} ${this.currentTrack.title} audio`
+                });
+                this.player.playVideo();
+              } catch (e) {}
             }
           }
         }
       });
     } catch (e) {
-      console.warn('Headless audio initialization notice:', e);
+      console.warn('Player mount error:', e);
     }
   }
 
@@ -241,13 +214,13 @@ class HeadlessAudioEngine {
     });
   }
 
-  startPolling() {
-    this.stopPolling();
-    this.pollInterval = setInterval(() => {
-      if (this.activeEngine === 'youtube' && this.ytPlayer && this.isYtReady) {
+  startTicker() {
+    this.stopTicker();
+    this.pollTimer = setInterval(() => {
+      if (this.player && this.isReady) {
         try {
-          const t = this.ytPlayer.getCurrentTime();
-          const d = this.ytPlayer.getDuration();
+          const t = this.player.getCurrentTime();
+          const d = this.player.getDuration();
           if (t !== undefined && !isNaN(t)) {
             this.currentTime = t;
             if (d && !isNaN(d) && d > 0) {
@@ -263,10 +236,10 @@ class HeadlessAudioEngine {
     }, 350);
   }
 
-  stopPolling() {
-    if (this.pollInterval) {
-      clearInterval(this.pollInterval);
-      this.pollInterval = null;
+  stopTicker() {
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer);
+      this.pollTimer = null;
     }
   }
 
@@ -276,146 +249,90 @@ class HeadlessAudioEngine {
     this.currentTime = 0;
     this.duration = track.duration || 200;
 
-    // Resolve Full-Length Video ID for this song
+    if (!this.isReady || !this.player || !this.player.loadVideoById) {
+      this.pendingTrack = track;
+      this.init('yt-music-iframe');
+      return;
+    }
+
     const videoId = track.youtubeId || resolveTrackVideoId(track.title, track.artist);
 
-    if (videoId) {
-      this.activeEngine = 'youtube';
-      if (this.nativeAudio) {
-        this.nativeAudio.pause();
-      }
-
-      if (!this.isYtReady || !this.ytPlayer || !this.ytPlayer.loadVideoById) {
-        this.pendingTrack = track;
-        this.init('yt-music-iframe');
-        return;
-      }
-
-      try {
-        this.ytPlayer.loadVideoById({
+    try {
+      if (videoId) {
+        this.player.loadVideoById({
           videoId: videoId,
           suggestedQuality: 'small'
         });
-        this.ytPlayer.playVideo();
-        this.isPlaying = true;
-        this.notify('stateChange', 1);
-      } catch (e) {
-        console.warn('Error launching headless track:', e);
-      }
-    } else if (this.isYtReady && this.ytPlayer && this.ytPlayer.loadPlaylist) {
-      // Dynamic query search for arbitrary tracks
-      this.activeEngine = 'youtube';
-      if (this.nativeAudio) {
-        this.nativeAudio.pause();
-      }
-
-      try {
-        const searchQuery = `${track.artist} ${track.title} audio`.trim();
-        this.ytPlayer.loadPlaylist({
+      } else {
+        // Search and stream on YouTube
+        const query = `${track.artist} ${track.title} audio`.trim();
+        this.player.loadPlaylist({
           listType: 'search',
-          list: searchQuery
+          list: query
         });
-        this.ytPlayer.playVideo();
-        this.isPlaying = true;
-        this.notify('stateChange', 1);
-      } catch (e) {
-        if (track.audioUrl) {
-          this.playNativeStream(track.audioUrl);
-        }
       }
-    } else if (track.audioUrl) {
-      this.playNativeStream(track.audioUrl);
+      this.player.playVideo();
+      this.isPlaying = true;
+      this.notify('stateChange', 1);
+    } catch (e) {
+      console.warn('Playback launch error:', e);
     }
-  }
-
-  playNativeStream(url) {
-    if (!this.nativeAudio) return;
-    this.activeEngine = 'native';
-    if (this.ytPlayer && this.isYtReady) {
-      try { this.ytPlayer.pauseVideo(); } catch (e) {}
-    }
-
-    try {
-      this.nativeAudio.pause();
-      this.nativeAudio.src = url;
-      this.nativeAudio.currentTime = 0;
-      const p = this.nativeAudio.play();
-      if (p !== undefined) {
-        p.then(() => {
-          this.isPlaying = true;
-          this.notify('stateChange', 1);
-        }).catch(() => {});
-      }
-    } catch (e) {}
   }
 
   play() {
-    if (this.activeEngine === 'youtube' && this.ytPlayer && this.isYtReady) {
+    if (this.player && this.isReady) {
       try {
-        this.ytPlayer.playVideo();
+        this.player.playVideo();
         this.isPlaying = true;
         this.notify('stateChange', 1);
       } catch (e) {}
-    } else if (this.nativeAudio) {
-      this.nativeAudio.play().then(() => {
-        this.isPlaying = true;
-        this.notify('stateChange', 1);
-      }).catch(() => {});
     }
   }
 
   pause() {
     this.isPlaying = false;
-    this.stopPolling();
-    if (this.activeEngine === 'youtube' && this.ytPlayer && this.isYtReady) {
+    this.stopTicker();
+    if (this.player && this.isReady) {
       try {
-        this.ytPlayer.pauseVideo();
+        this.player.pauseVideo();
         this.notify('stateChange', 2);
       } catch (e) {}
-    } else if (this.nativeAudio) {
-      this.nativeAudio.pause();
-      this.notify('stateChange', 2);
     }
   }
 
   seekTo(seconds) {
     const s = Math.max(0, parseFloat(seconds));
     this.currentTime = s;
-    if (this.activeEngine === 'youtube' && this.ytPlayer && this.isYtReady) {
+    if (this.player && this.isReady) {
       try {
-        this.ytPlayer.seekTo(s, true);
+        this.player.seekTo(s, true);
       } catch (e) {}
-    } else if (this.nativeAudio) {
-      this.nativeAudio.currentTime = s;
     }
   }
 
   setVolume(fraction) {
     const v = Math.max(0, Math.min(1, parseFloat(fraction)));
     this.volume = v;
-    if (this.ytPlayer && this.isYtReady) {
+    if (this.player && this.isReady) {
       try {
-        this.ytPlayer.setVolume(Math.round(v * 100));
+        this.player.setVolume(Math.round(v * 100));
       } catch (e) {}
-    }
-    if (this.nativeAudio) {
-      this.nativeAudio.volume = v;
     }
   }
 
   getCurrentTime() {
-    if (this.activeEngine === 'youtube' && this.ytPlayer && this.isYtReady) {
+    if (this.player && this.isReady) {
       try {
-        return this.ytPlayer.getCurrentTime() || this.currentTime;
+        return this.player.getCurrentTime() || this.currentTime;
       } catch (e) {}
     }
     return this.currentTime || 0;
   }
 
   getDuration() {
-    if (this.activeEngine === 'youtube' && this.ytPlayer && this.isYtReady) {
+    if (this.player && this.isReady) {
       try {
-        const d = this.ytPlayer.getDuration();
+        const d = this.player.getDuration();
         if (d > 0) return d;
       } catch (e) {}
     }
@@ -439,6 +356,7 @@ class HeadlessAudioEngine {
   }
 }
 
-export const audioEngine = new HeadlessAudioEngine();
+export const audioEngine = new FullLengthAudioEngine();
 export const ytController = audioEngine;
+
 
